@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  feedbacky_db:
+    restart: always
+    image: postgres:14.1-alpine
+    container_name: feedbacky_db
+    environment:
+      POSTGRES_DB: feedbacky_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_PORT: 5432
+    ports:
+      - "5432:5432"
+    volumes:
+      - feedbacky_db:/var/lib/postgresql/data
+    networks:
+      - postgres
+  test_db:
+    restart: always
+    image: postgres:14.1-alpine
+    container_name: test_db
+    environment:
+      POSTGRES_DB: test_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_PORT: 5432
+    ports:
+      - "5434:5432"
+    networks:
+      - postgres
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  feedbacky_db:

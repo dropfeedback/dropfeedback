@@ -12,7 +12,7 @@ So, let’s start building your startup!
 - Expected code coverage is 100%
 - You can use any tech stack which you feel comfortable with
 
-Your first customer is Trendyol, and you can reach Trendyol’s expectations on the images below: 
+Your first customer is Trendyol, and you can reach Trendyol’s expectations on the images below:
 
 <img src="./assets/feedbacky1.png" width="600" height="400">
 
@@ -20,9 +20,9 @@ Your first customer is Trendyol, and you can reach Trendyol’s expectations on 
 
 **Nice to have topics that could help your possible client to buy your service:**
 
-- An online demo 
-- Well documented product 
-- Dealing with security concerns 
+- An online demo
+- Well documented product
+- Dealing with security concerns
 - Bug free and 100% unit test coverage
 - Well performanced client side library
 - Responsive Design

@@ -1,0 +1,14 @@
+{
+  "extends": ["//"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build", "@feedbacky/db#db:generate"]
+    },
+    "dev": {
+      "dependsOn": ["@feedbacky/db#db:generate"]
+    },
+    "test": {
+      "dependsOn": ["@feedbacky/db#db:generate"]
+    }
+  }
+}

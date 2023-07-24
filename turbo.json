@@ -1,0 +1,30 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDotEnv": [".env.local", ".env"],
+  "pipeline": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": ["^build"]
+    },
+    "lint": {},
+    "test": {
+      "outputs": ["coverage/**"],
+      "dependsOn": []
+    },
+    "test:watch": {
+      "cache": false
+    },
+    "build-widget": {
+      "cache": false
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "db:push": {
+      "cache": false
+    }
+  }
+}
