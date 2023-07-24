@@ -2,6 +2,12 @@
 	import type { IFeedbackForm } from '../../types';
 	import { writable } from 'svelte/store';
 	import { sendFeedback } from '../../api';
+	import type { WidgetProps } from '../../types/widget-props';
+
+	export let widgetProps: {
+		projectId: NonNullable<WidgetProps['projectId']>;
+		meta: WidgetProps['meta'];
+	};
 
 	export let onFinish: (data: IFeedbackForm) => void;
 
@@ -13,10 +19,12 @@
 
 	const handleOnSubmit = async () => {
 		loading = true;
+
 		try {
 			await sendFeedback({
 				content: $formValues.content,
-				projectId: 'd8e7dc71-2c09-443b-ad31-da982750766f'
+				projectId: widgetProps.projectId,
+				meta: widgetProps?.meta || null
 			});
 			onFinish($formValues);
 			formValues.set({
