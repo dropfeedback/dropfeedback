@@ -31,8 +31,16 @@ export class FeedbacksService {
     }
   }
 
-  async createByProjectId({ dto }: { dto: FeedbackDto }) {
-    const { projectId, ...payload } = dto;
+  async createByProjectId({
+    dto,
+    origin,
+    device,
+  }: {
+    dto: FeedbackDto;
+    origin: string;
+    device: string;
+  }) {
+    const { projectId, ...data } = dto;
 
     try {
       const newFeedback = await this.prisma.feedback.create({
@@ -40,10 +48,12 @@ export class FeedbacksService {
           project: true,
         },
         data: {
-          ...payload,
+          origin,
+          device,
+          ...data,
           project: {
             connect: {
-              id: dto.projectId,
+              id: projectId,
             },
           },
         },

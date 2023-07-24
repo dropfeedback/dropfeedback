@@ -8,7 +8,8 @@ import {
 import { Feedback, Prisma } from 'src/prisma';
 
 export class FeedbackDto
-  implements Omit<Feedback, 'id' | 'createdAt' | 'userId'>
+  implements
+    Omit<Feedback, 'id' | 'createdAt' | 'userId' | 'device' | 'origin'>
 {
   @IsNotEmpty()
   @IsString()

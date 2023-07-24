@@ -7,9 +7,10 @@ import {
   HttpStatus,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
 import { FeedbacksService } from './feedbacks.service';
-import { GetCurrentUser, Public } from 'src/common/decorators';
+import { Device, GetCurrentUser, Origin, Public } from 'src/common/decorators';
 import { JwtPayload } from 'src/auth/types';
 import { FeedbackDto } from './dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -37,7 +38,11 @@ export class FeedbacksController {
   @Post('/')
   @Public()
   @HttpCode(HttpStatus.CREATED)
-  createByProjectId(@Body() dto: FeedbackDto) {
-    return this.feedbackService.createByProjectId({ dto });
+  createByProjectId(
+    @Body() dto: FeedbackDto,
+    @Device() device: string,
+    @Origin() origin: string,
+  ) {
+    return this.feedbackService.createByProjectId({ dto, origin, device });
   }
 }
