@@ -152,14 +152,14 @@ export class AuthService {
       this.jwtService.signAsync(
         { sub: id, email },
         {
-          expiresIn: this.config.get<string>('ACCESS_TOKEN_EXPIRES_IN'),
+          expiresIn: this.config.get<number>('ACCESS_TOKEN_EXPIRES_IN'),
           secret: this.config.get<string>('ACCESS_TOKEN_SECRET'),
         },
       ),
       this.jwtService.signAsync(
         { sub: id, email },
         {
-          expiresIn: this.config.get<string>('REFRESH_TOKEN_EXPIRES_IN'),
+          expiresIn: this.config.get<number>('REFRESH_TOKEN_EXPIRES_IN'),
           secret: this.config.get<string>('REFRESH_TOKEN_SECRET'),
         },
       ),
