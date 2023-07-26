@@ -61,8 +61,8 @@ export class FeedbacksService {
 
       return newFeedback;
     } catch (error) {
-      if (error.code === 'P2023') {
-        throw new BadRequestException('Project ID is invalid');
+      if (error.code === 'P2023' || error.code === 'P2025') {
+        throw new BadRequestException('Project ID is Invalid');
       }
 
       throw new BadRequestException('Something went wrong');

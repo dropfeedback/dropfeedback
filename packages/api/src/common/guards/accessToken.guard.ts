@@ -26,7 +26,6 @@ export class AccessTokenGuard extends AuthGuard('jwt') {
   handleRequest(err, user, _info, context) {
     if (err || !user) {
       const response = context.switchToHttp().getResponse();
-      response.clearCookie('refreshToken');
       response.clearCookie('accessToken');
 
       throw err || new UnauthorizedException();
