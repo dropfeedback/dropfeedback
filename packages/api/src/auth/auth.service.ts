@@ -18,6 +18,13 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
+  async me(id: string) {
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: { id: true, email: true },
+    });
+  }
+
   async signupLocal(dto: AuthDto): Promise<Tokens> {
     try {
       const hashedPassword = await this.hashData(dto.password);

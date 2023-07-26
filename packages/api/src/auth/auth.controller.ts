@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -24,6 +25,13 @@ export class AuthController {
     private authService: AuthService,
     private config: ConfigService,
   ) {}
+
+  @Get('/me')
+  @ApiBearerAuth('access-token')
+  @HttpCode(HttpStatus.OK)
+  async me(@GetCurrentUser() user: JwtPayload) {
+    return this.authService.me(user.sub);
+  }
 
   @Post('/local/signup')
   @Public()

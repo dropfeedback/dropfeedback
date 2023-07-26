@@ -10,7 +10,10 @@ async function bootstrap() {
   initSwagger(app);
 
   app.use(cookieParser());
-  app.enableCors();
+  app.enableCors({
+    credentials: true,
+    origin: true,
+  });
   app.useGlobalPipes(new ValidationPipe());
 
   const configService = app.get(ConfigService);
