@@ -25,7 +25,7 @@ model User {
 
 model Project {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name      String   @unique @db.VarChar(255)
+  name      String   @db.VarChar(255)
   createdAt DateTime @default(now())
 
   user      User?      @relation(fields: [userId], references: [id])

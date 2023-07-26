@@ -62,23 +62,5 @@ describe('ProjectsService', () => {
       const projectNames = projects.map((project) => project.name);
       expect(projectNames).toContain(projectName);
     });
-
-    it('should throw error when name is not unique ', async () => {
-      const projectName = 'duplicated project';
-
-      await service.createProject({
-        userId: user.id,
-        dto: { name: projectName },
-      });
-
-      try {
-        await service.createProject({
-          userId: user.id,
-          dto: { name: projectName },
-        });
-      } catch (error) {
-        expect(error.status).toBe(409);
-      }
-    });
   });
 });

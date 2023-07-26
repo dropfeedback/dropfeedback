@@ -25,6 +25,8 @@ CREATE TABLE "feedbacks" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "content" TEXT NOT NULL,
     "meta" JSON,
+    "origin" VARCHAR(255),
+    "device" VARCHAR(255),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "projectId" UUID NOT NULL,
 
@@ -33,9 +35,6 @@ CREATE TABLE "feedbacks" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "projects_name_key" ON "projects"("name");
 
 -- AddForeignKey
 ALTER TABLE "projects" ADD CONSTRAINT "projects_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
