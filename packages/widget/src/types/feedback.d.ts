@@ -1,6 +1,7 @@
 export type IFeedbackForm = {
-    content: string;
+	content: string;
 };
 export type IFeedback = IFeedbackForm & {
-    projectId: string;
+	projectId: string;
+	meta?: object | null;
 };

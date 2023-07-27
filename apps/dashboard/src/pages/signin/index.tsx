@@ -1,5 +1,7 @@
 import { cn } from "@/lib";
 import { AuthForm } from "@/components/auth-form";
+import { PATHS, Path } from "@/hooks/useTypeSafeRouter";
+import Link from "next/link";
 
 export default function Signin() {
   return (
@@ -12,10 +14,12 @@ export default function Signin() {
       <AuthForm type="signin" />
 
       <div className="mt-4">
-        <a href="/signup" className="text-blue-500 hover:underline">
+        <Link href={PATHS.SignIn} className="text-blue-500 hover:underline">
           Create an account
-        </a>
+        </Link>
       </div>
     </div>
   );
 }
+
+Signin.redirectIfAuthenticated = "/dashboard" satisfies Path;

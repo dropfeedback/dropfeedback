@@ -59,7 +59,6 @@ export class AuthController {
     return tokens;
   }
 
-  @Public()
   @Post('/logout')
   @HttpCode(HttpStatus.OK)
   logout(

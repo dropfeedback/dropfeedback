@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ProjectDto } from 'src/projects/dto';
 import { FeedbackDto } from './dto';
 
 @Injectable()
@@ -10,16 +9,25 @@ export class FeedbacksService {
   async getAllByProjectId({
     projectId,
     userId,
+    search,
   }: {
     projectId: string;
     userId: string;
+    search?: string;
   }) {
     try {
       const feedbacks = await this.prisma.feedback.findMany({
+        orderBy: {
+          createdAt: 'desc',
+        },
         where: {
           projectId,
           project: {
             userId,
+          },
+          content: {
+            contains: search,
+            mode: 'insensitive',
           },
         },
       });

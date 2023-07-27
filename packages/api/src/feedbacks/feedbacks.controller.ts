@@ -26,12 +26,14 @@ export class FeedbacksController {
   getAllByProjectId(
     @GetCurrentUser() user: JwtPayload,
     @Query('projectId') projectId: string,
+    @Query('search') search: string,
   ) {
     if (!projectId) throw new BadRequestException('Project id is required');
 
     return this.feedbackService.getAllByProjectId({
       userId: user.sub,
       projectId,
+      search,
     });
   }
 

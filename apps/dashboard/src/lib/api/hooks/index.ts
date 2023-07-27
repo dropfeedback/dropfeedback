@@ -1,8 +1,9 @@
 import { api } from "@/lib";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { GetFeedbacksParams, Project } from "../validators";
+import { GetFeedbacksParams, MeResponse, Project } from "../validators";
 import { toast } from "react-hot-toast";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export const useProjects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(() => {
@@ -44,11 +45,38 @@ export const useCreateProject = () => {
   return result;
 };
 
-export const useFeedbacks = ({ projectId }: GetFeedbacksParams) => {
+export const useFeedbacks = (params: GetFeedbacksParams) => {
+  const debouncedSearch = useDebounce(params?.search || "", 200);
+
   const result = useQuery({
-    queryKey: ["getFeedbacks"],
-    queryFn: () => api.getFeedbacks({ projectId }),
-    enabled: !!projectId,
+    queryKey: ["getFeedbacks", params?.projectId, debouncedSearch],
+    queryFn: () => api.getFeedbacks(params),
+    enabled: !!params?.projectId,
+    keepPreviousData: true,
+    staleTime: 1000,
+  });
+
+  return result;
+};
+
+export const useMe = () => {
+  const result = useQuery<MeResponse>({
+    queryKey: ["me"],
+    queryFn: () => api.me(),
+    retry: false,
+  });
+
+  return result;
+};
+
+export const useLogout = () => {
+  const queryClient = useQueryClient();
+
+  const result = useMutation(api.logout, {
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+      toast.success("Logout successfully");
+    },
   });
 
   return result;

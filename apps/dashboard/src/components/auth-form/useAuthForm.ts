@@ -3,20 +3,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { AuthFormType } from "./types";
 import { api } from "@/lib";
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/router";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type Props = {
   type: AuthFormType;
 };
 
 export const useAuthForm = (props: Props) => {
-  const router = useRouter();
+  const queryClient = useQueryClient();
 
   const apiMethod = props.type === "signup" ? api.signup : api.signin;
   const { mutate, ...mutationResult } = useMutation(apiMethod, {
     onSuccess: () => {
-      router.push("/dashboard");
+      queryClient.invalidateQueries({ queryKey: ["me"] });
     },
   });
 

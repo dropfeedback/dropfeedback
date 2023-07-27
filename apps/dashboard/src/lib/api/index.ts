@@ -23,9 +23,12 @@ const getProjects = async () => {
   return data;
 };
 
-const getFeedbacks = async ({ projectId }: validators.GetFeedbacksParams) => {
+const getFeedbacks = async (params: validators.GetFeedbacksParams) => {
   const { data } = await axiosInstance.get<validators.GetFeedbacksResponse>(
-    `${BASE_URL}/feedbacks?projectId=${projectId}`,
+    `${BASE_URL}/feedbacks`,
+    {
+      params,
+    },
   );
   return data;
 };
@@ -53,6 +56,11 @@ const signin = async (payload: validators.AuthPayload) => {
   return data;
 };
 
+const logout = async () => {
+  const { data } = await axiosInstance.post(`${BASE_URL}/auth/logout`);
+  return data;
+};
+
 const refreshTokens = async () => {
   const { data } = await axiosInstance.post(`${BASE_URL}/auth/refresh`);
 
@@ -73,7 +81,9 @@ axiosInstance.interceptors.response.use(
 
     // API returns 403 when could not refresh tokens.
     if (status === 403) {
-      window.location.replace("/signin");
+      if (window.location.pathname !== "/signin") {
+        window.location.replace("/signin");
+      }
       return Promise.reject(error);
     }
 
@@ -85,8 +95,6 @@ axiosInstance.interceptors.response.use(
       await refreshTokens();
       return axiosInstance(originalRequest);
     }
-
-    console.log(response);
 
     toast.error(response.data.message, { id: response.data.message });
     return Promise.reject(error);
@@ -100,6 +108,7 @@ export const api = {
   me,
   signup,
   signin,
+  logout,
   refreshTokens,
 };
 
