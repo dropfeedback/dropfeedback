@@ -1,3 +1,4 @@
+import { Path } from "@/hooks/useTypeSafeRouter";
 import { cn } from "@/lib";
 import Link from "next/link";
 
@@ -30,3 +31,5 @@ export default function Home() {
     </div>
   );
 }
+
+Home.redirectIfAuthenticated = "/dashboard" satisfies Path;

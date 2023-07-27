@@ -1,4 +1,7 @@
+import { DashboardHeader } from "@/components/dashboard-header";
+import { FeedbackList } from "@/components/feedback-list";
 import { ProjectSwitcher } from "@/components/project-switcher";
+import { UserNav } from "@/components/user-nav";
 import { cn, useFeedbacks, useProjects } from "@/lib";
 
 export default function Dashboard() {
@@ -8,21 +11,20 @@ export default function Dashboard() {
     setSelectedProject,
   } = useProjects();
 
-  const { data: feedbacks = [] } = useFeedbacks({
-    projectId: selectedProject?.id,
-  });
-
   return (
     <div className={cn("max-w-5xl mx-auto", "flex flex-col")}>
-      <div className="border-b">
-        <div className="flex items-center p-4">
-          <ProjectSwitcher
-            projects={projects}
-            selectedProject={selectedProject}
-            setSelectedProject={setSelectedProject}
-          />
-        </div>
-      </div>
+      <DashboardHeader>
+        <ProjectSwitcher
+          projects={projects}
+          selectedProject={selectedProject}
+          setSelectedProject={setSelectedProject}
+        />
+        <UserNav />
+      </DashboardHeader>
+
+      {selectedProject?.id && (
+        <FeedbackList projectId={selectedProject.id} className="py-8" />
+      )}
     </div>
   );
 }

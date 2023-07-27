@@ -32,12 +32,15 @@ export type GetProjectsResponse = Project[];
 export type Feedback = {
   id: string;
   content: string;
-  meta?: object;
+  origin: string;
+  device: string;
+  meta?: Record<string, any>;
   createdAt: string;
   projectId: string;
   project: Project;
 };
 export type GetFeedbacksParams = {
   projectId?: string;
+  search?: string;
 };
 export type GetFeedbacksResponse = Feedback[];

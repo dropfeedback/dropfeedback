@@ -1,39 +1,30 @@
+import { useMe } from "@/lib";
 import React, {
   FC,
   PropsWithChildren,
   createContext,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from "react";
 
-export type IAuth = {
-  accessToken: string;
-  refreshToken: string;
-};
-
 export type IAuthContext = {
-  auth: IAuth;
+  isAuthenticated: boolean;
+  isLoading: boolean;
 };
 
 const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
 export const AuthProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
-  const [auth, setAuth] = useState<IAuth>({
-    accessToken: "",
-    refreshToken: "",
-  });
-
-  const setAuthHandler = useCallback((auth: IAuth) => {
-    setAuth(auth);
-  }, []);
+  const { data, isLoading } = useMe();
 
   const value = useMemo(() => {
     return {
-      auth,
-      setAuth: setAuthHandler,
+      isAuthenticated: !!data,
+      isLoading,
     };
-  }, [auth, setAuthHandler]);
+  }, [data, isLoading]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
