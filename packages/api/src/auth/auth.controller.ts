@@ -101,11 +101,15 @@ export class AuthController {
 
     res.cookie('accessToken', tokens.accessToken, {
       httpOnly: true,
+      sameSite: 'lax',
+      secure: true,
       expires: new Date(Date.now() + accessTokenExpires),
     });
 
     res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
+      sameSite: 'lax',
+      secure: true,
       expires: new Date(Date.now() + refreshTokenExpires),
     });
   }
