@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import * as validators from "./validators";
 import toast from "react-hot-toast";
 
-const BASE_URL = "http://localhost:3001";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export const axiosInstance = axios.create({
   withCredentials: true,
