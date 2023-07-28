@@ -1,18 +1,19 @@
 {
   "private": true,
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
+    "build": "turbo run build --filter=!./apps/demo*",
+    "dev": "turbo run dev --filter=!./apps/demo*",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "turbo test",
     "docker": "docker compose down && docker compose up -d",
     "build-widget": "turbo run build-widget --filter=@feedbacky/widget",
     "db:generate": "turbo run db:generate --filter=@feedbacky/db",
-    "db:push": "turbo run db:push --filter=@feedbacky/db"
+    "db:push": "turbo run db:push --filter=@feedbacky/db",
+    "db:seed": "turbo run db:seed --filter=@feedbacky/db"
   },
   "devDependencies": {
-    "@turbo/gen": "^1.9.7",
+    "@turbo/gen": "^1.10.12",
     "dotenv-cli": "^7.2.1",
     "prettier": "^3.0.0",
     "turbo": "latest"

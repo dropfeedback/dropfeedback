@@ -8,13 +8,22 @@
     "dev": "tsc --watch",
     "studio": "prisma studio",
     "test": "npm run db:generate",
+    "db:seed": "npm run db:generate && prisma db seed",
     "db:generate": "prisma generate",
-    "db:push": "prisma db push --skip-generate"
+    "db:push": "prisma db push --skip-generate --skip-seed"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
-    "@prisma/client": "^5.0.0"
+    "@prisma/client": "^5.0.0",
+    "bcrypt": "^5.1.0"
   },
   "devDependencies": {
-    "prisma": "^5.0.0"
+    "@types/bcrypt": "^5.0.0",
+    "@types/node": "^20.4.5",
+    "prisma": "^5.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
   }
 }
