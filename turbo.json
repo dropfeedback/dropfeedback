@@ -3,6 +3,7 @@
   "globalDotEnv": [".env.local", ".env"],
   "pipeline": {
     "dev": {
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", ".svelte-kit/**"],
       "cache": false,
       "persistent": true
     },
@@ -24,6 +25,9 @@
       "cache": false
     },
     "db:push": {
+      "cache": false
+    },
+    "db:seed": {
       "cache": false
     }
   }

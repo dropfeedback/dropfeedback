@@ -15,7 +15,7 @@ CREATE TABLE "projects" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" VARCHAR(255) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "userId" UUID,
+    "userId" UUID NOT NULL,
 
     CONSTRAINT "projects_pkey" PRIMARY KEY ("id")
 );
@@ -37,7 +37,7 @@ CREATE TABLE "feedbacks" (
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- AddForeignKey
-ALTER TABLE "projects" ADD CONSTRAINT "projects_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "projects" ADD CONSTRAINT "projects_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "feedbacks" ADD CONSTRAINT "feedbacks_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
