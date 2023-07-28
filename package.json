@@ -8,9 +8,10 @@
     "test": "turbo test",
     "docker": "docker compose down && docker compose up -d",
     "build-widget": "turbo run build-widget --filter=@feedbacky/widget",
-    "db:generate": "turbo run db:generate --filter=@feedbacky/db",
-    "db:push": "turbo run db:push --filter=@feedbacky/db",
-    "db:seed": "turbo run db:seed --filter=@feedbacky/db"
+    "db:generate": "turbo run db:generate --filter=@feedbacky/api",
+    "db:push": "turbo run db:push --filter=@feedbacky/api",
+    "db:seed": "turbo run db:seed --filter=@feedbacky/api",
+    "api:start": "turbo run start:prod --filter=@feedbacky/api"
   },
   "devDependencies": {
     "@turbo/gen": "^1.10.12",

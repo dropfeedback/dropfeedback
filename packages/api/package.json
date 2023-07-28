@@ -6,8 +6,11 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "prebuild": "npm run db:generate",
+    "predev": "npm run db:generate",
+    "prestart:dev": "npm run db:generate",
     "build": "nest build",
-    "start": "nest start",
+    "start": "nest start",  
     "dev": "nest start --watch",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -17,10 +20,16 @@
     "test": "dotenv -e .env.test -- jest -i --no-cache",
     "pretest:watch": "npm run pretest",
     "test:watch": "dotenv -e .env.test -- jest -i --watch",
-    "test:cov": "dotenv -e .env.test -- jest -i --coverage"
+    "test:cov": "dotenv -e .env.test -- jest -i --coverage",
+    "db:seed": "npm run db:generate && prisma db seed",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push --skip-generate --skip-seed"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
-    "@feedbacky/db": "*",
+    "@prisma/client": "^5.0.0",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^10.0.0",
@@ -39,10 +48,11 @@
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
-    "ua-parser-js": "^1.0.35"
+    "ua-parser-js": "^1.0.35",
+    "@nestjs/cli": "^10.0.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^10.0.0",
+    "prisma": "^5.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.1.0",
     "@swc/cli": "^0.1.62",

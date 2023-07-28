@@ -5,7 +5,6 @@ import { AuthService } from 'src/auth/auth.service';
 import { AppModule } from 'src/app.module';
 import { clearPostgres } from 'src/test/helpers/clear-db';
 import { JwtPayload, decode } from 'jsonwebtoken';
-import { Project } from '@feedbacky/db';
 
 describe('FeedbacksService', () => {
   let service: FeedbacksService;
@@ -65,6 +64,8 @@ describe('FeedbacksService', () => {
           projectId: project.id,
           content: 'test feedback',
         },
+        device: 'test device',
+        origin: 'test origin',
       });
 
       expect(feedback).toBeTruthy();
@@ -77,6 +78,8 @@ describe('FeedbacksService', () => {
           projectId: project.id,
           content: 'test feedback',
         },
+        device: 'test device',
+        origin: 'test origin',
       });
 
       const feedbacks = await service.getAllByProjectId({
