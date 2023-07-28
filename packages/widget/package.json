@@ -31,6 +31,7 @@
 		"svelte": "^4.0.0"
 	},
 	"devDependencies": {
+		"jsdom": "^22.1.0",
 		"@storybook/addon-essentials": "^7.1.0",
 		"@storybook/addon-interactions": "^7.1.0",
 		"@storybook/addon-links": "^7.1.0",

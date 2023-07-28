@@ -1,1 +1,1 @@
-export * from '@feedbacky/db';
+export * from '@prisma/client';

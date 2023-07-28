@@ -7,7 +7,7 @@ const throwEnvError = (key: string) => {
 
 export const config = () => {
   return {
-    port: parseInt(process.env.PORT_API || '3001', 10),
+    port: parseInt(process.env.PORT || '3001', 10),
     DATABASE_URL: throwEnvError('DATABASE_URL'),
     ACCESS_TOKEN_SECRET: throwEnvError('ACCESS_TOKEN_SECRET'),
     REFRESH_TOKEN_SECRET: throwEnvError('REFRESH_TOKEN_SECRET'),

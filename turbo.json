@@ -29,6 +29,9 @@
     },
     "db:seed": {
       "cache": false
+    },
+    "start:prod": {
+      "cache": false
     }
   }
 }
