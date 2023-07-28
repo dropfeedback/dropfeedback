@@ -69,7 +69,11 @@ export const FeedbackList = ({ projectId, className }: Props) => {
             <Separator className="my-4" />
 
             <div
-              className={cn("px-4 pb-4", "flex items-center justify-between")}
+              className={cn(
+                "px-4 pb-4",
+                "flex items-start justify-between",
+                "gap-4",
+              )}
             >
               <div>
                 <div
