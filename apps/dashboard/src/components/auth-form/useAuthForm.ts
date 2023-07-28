@@ -14,6 +14,7 @@ export const useAuthForm = (props: Props) => {
 
   const apiMethod = props.type === "signup" ? api.signup : api.signin;
   const { mutate, ...mutationResult } = useMutation(apiMethod, {
+    retry: false,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
     },
