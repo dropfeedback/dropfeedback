@@ -64,6 +64,7 @@ export const useMe = () => {
     queryKey: ["me"],
     queryFn: () => api.me(),
     retry: false,
+    refetchOnWindowFocus: false,
   });
 
   return result;
