@@ -70,6 +70,12 @@ use [Turborepo filters](https://turbo.build/repo/docs/core-concepts/monorepos/fi
 npm run dev -- --filter=@feedbacky/api --filter=@feedbacky/dashboard
 ```
 
+By default following ports are used:
+
+- [api](./packages/api): http://localhost:3001
+- [dashboard](./apps/dashboard): http://localhost:3000
+- [widget](./packages/widget): http://localhost:5173
+
 ## Running tests
 
 To run tests, you can use following command:
@@ -86,6 +92,16 @@ Running this command will automatically create a new database, generate Prisma (
 > brew install coreutils && alias timeout=gtimeout
 > chmod +x scripts/*
 > ```
+
+## Online Demo
+
+- api: https://feedbacky-production.up.railway.app
+- dashboard: https://feedbacky-dashboard.vercel.app
+  - login with following credentials:
+    - email: demo@demo.com
+    - password: 123456
+- widget: https://feedbacky-widget.vercel.app/feedbacky-widget.js
+- demo-html: https://feedbacky-demo-html.vercel.app
 
 # Tech
 
