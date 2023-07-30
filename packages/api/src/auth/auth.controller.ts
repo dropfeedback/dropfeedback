@@ -65,8 +65,16 @@ export class AuthController {
     @GetCurrentUser() user: JwtPayload,
     @Res({ passthrough: true }) res: Response,
   ) {
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+    });
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+    });
 
     return this.authService.logout(user.sub);
   }
@@ -101,14 +109,14 @@ export class AuthController {
 
     res.cookie('accessToken', tokens.accessToken, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       secure: true,
       expires: new Date(Date.now() + accessTokenExpires),
     });
 
     res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       secure: true,
       expires: new Date(Date.now() + refreshTokenExpires),
     });
