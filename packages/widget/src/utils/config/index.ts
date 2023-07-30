@@ -1,3 +1,3 @@
 export const config = {
-	API_URL: 'http://localhost:3001'
+	API_URL: 'https://feedbacky-production.up.railway.app'
 } as const;

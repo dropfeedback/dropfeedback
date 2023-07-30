@@ -17,7 +17,6 @@ This Turborepo includes the following packages and apps:
 #### Packages
 
 - [api](./packages/feedbacky): an [Nest.js](https://nestjs.com/) server that provides an API for the client
-- [db](./packages/db): a [Prisma](https://www.prisma.io/) ORM wrapper that provides an interface to the database.
 - [widget](./packages/widget): a [Svelte](https://kit.svelte.dev/) app that provides a widget to be embedded in the client's website.
 
 #### Apps
@@ -47,7 +46,6 @@ First we need to set environment variables. You can do this by creating a `.env`
 > 🚨 following `.env` files are required to run the project:
 
 - [api/.env](./packages/api/.env)
-- [db/.env](./packages/db/.env)
 
 To work with [api](./packages/api) and [dashboard](./apps/dashboard) locally, you need setup a local database. You can do this by running following commands:
 
@@ -71,8 +69,6 @@ use [Turborepo filters](https://turbo.build/repo/docs/core-concepts/monorepos/fi
 ```bash
 npm run dev -- --filter=@feedbacky/api --filter=@feedbacky/dashboard
 ```
-
-> [@feedbacky/api](./packages/api/) should sync with [@feedbacky/db](./packages/db/). This already handled by [Turborepo](https://turbo.build/) in the [turbo.json](./packages/api/turbo.json) file.
 
 ## Running tests
 

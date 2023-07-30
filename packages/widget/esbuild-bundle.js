@@ -6,8 +6,7 @@ esbuild
 	.build({
 		entryPoints: ['./src/lib/index.js'],
 		bundle: true,
-		// outfile: 'dist/feedbacky-widget.js',
-		outfile: '../../apps/demo/src/feedbacky-widget.js',
+		outfile: 'dist/feedbacky-widget.js',
 		minify: true,
 		minifyIdentifiers: true,
 		minifySyntax: true,
