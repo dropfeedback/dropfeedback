@@ -103,14 +103,13 @@ Running this command will automatically create a new database, generate Prisma (
 - widget: https://feedbacky-widget.vercel.app/feedbacky-widget.js
 - demo-html: https://feedbacky-demo-html.vercel.app
 
-# Tech
-
-## Stack
+# Tech Stack
 
 - [Nest.js](https://nestjs.com/)
   - Used to build the API server. Auhtentication is handled by [Passport.js](http://www.passportjs.org/) and [JWT](https://jwt.io/) with refresh tokens. [Swagger](https://swagger.io/) is used to document the API. [Jest](https://jestjs.io/) is used for testing.
 - [Prisma](https://www.prisma.io/)
   - Used to interact with the database. [PostgreSQL](https://www.postgresql.org/) is used as the database.
+    ![db-diagram](./packages/api/prisma/db-diagram.png)
 - [Svelte](https://kit.svelte.dev/)
   - Used to build the widget. 16KB gzipped.
 - [Next.js](https://nextjs.org/)
