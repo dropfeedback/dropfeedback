@@ -19,6 +19,7 @@
     "noFallthroughCasesInSwitch": false,
     "allowJs": true,
     "resolveJsonModule": true,
+    "moduleResolution": "node",
     "paths": {
       "src/*": ["./src/*"]
     }
