@@ -18,6 +18,7 @@
 	let loading = false;
 
 	const handleOnSubmit = async () => {
+		errors = '';
 		loading = true;
 
 		try {

@@ -7,6 +7,10 @@ describe('Widget', () => {
 	const showModalMock = vi.fn();
 	const closeMock = vi.fn();
 
+	const commonProps = {
+		'project-id': '1'
+	};
+
 	beforeAll(() => {
 		// https://github.com/jsdom/jsdom/issues/3294
 		HTMLDialogElement.prototype.show = showMock;
@@ -21,7 +25,9 @@ describe('Widget', () => {
 	});
 
 	it('should open - close dialog', async () => {
-		const { getByText } = render(Widget);
+		const { getByText } = render(Widget, {
+			props: commonProps
+		});
 
 		const button = getByText(/feedbacky/i);
 		button.click();
@@ -32,12 +38,14 @@ describe('Widget', () => {
 		expect(closeMock).toHaveBeenCalled();
 	});
 
-	it('should close dialog after submit', async () => {
+	it('should show success after submit', async () => {
 		const spySendFeedback = vi
 			.spyOn(api, 'sendFeedback')
 			.mockImplementationOnce(() => Promise.resolve({}));
 
-		const { getByText, getByPlaceholderText } = render(Widget);
+		const { getByText, getByPlaceholderText } = render(Widget, {
+			props: commonProps
+		});
 
 		const button = getByText(/feedbacky/i);
 		button.click();
@@ -51,7 +59,7 @@ describe('Widget', () => {
 
 		await waitFor(() => {
 			expect(spySendFeedback).toHaveBeenCalled();
-			expect(closeMock).toHaveBeenCalled();
+			expect(getByText(/we have got/i)).toBeInTheDocument();
 		});
 	});
 
@@ -62,7 +70,9 @@ describe('Widget', () => {
 			})
 		);
 
-		const { getByText, getByPlaceholderText, queryByTitle } = render(Widget);
+		const { getByText, getByPlaceholderText, queryByTitle } = render(Widget, {
+			props: commonProps
+		});
 
 		const button = getByText(/feedbacky/i);
 		button.click();

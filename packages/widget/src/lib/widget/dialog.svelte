@@ -1,9 +1,19 @@
 <script lang="ts">
 	export let dialog: HTMLDialogElement;
+	export let onClose: () => void = () => null;
 </script>
 
 <dialog id="feedback-form-dialog" {...$$restProps} bind:this={dialog}>
-	<button aria-label="Close" class="close" on:click={() => dialog.close()}> X </button>
+	<button
+		aria-label="Close"
+		class="close"
+		on:click={() => {
+			dialog.close();
+			onClose();
+		}}
+	>
+		X
+	</button>
 	<slot />
 </dialog>
 
