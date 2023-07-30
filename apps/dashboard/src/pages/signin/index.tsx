@@ -2,8 +2,15 @@ import { cn } from "@/lib";
 import { AuthForm } from "@/components/auth-form";
 import { PATHS, Path } from "@/hooks/useTypeSafeRouter";
 import Link from "next/link";
+import { useAuth } from "@/context/auth-context/auth-context";
 
 export default function Signin() {
+  const { isAuthenticated } = useAuth();
+
+  if (isAuthenticated) {
+    return null;
+  }
+
   return (
     <div
       className={cn(
