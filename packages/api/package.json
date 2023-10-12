@@ -23,7 +23,7 @@
     "test:cov": "dotenv -e .env.test -- jest -i --coverage",
     "db:seed": "npm run db:generate && prisma db seed",
     "db:generate": "prisma generate",
-    "db:push": "prisma db push --skip-generate --skip-seed"
+    "db:push": "prisma db push --skip-generate"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
