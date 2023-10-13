@@ -1,0 +1,24 @@
+{
+  "name": "widget-react",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsup src/index.ts --watch --dts",
+    "build": "tsup src/index.ts --dts"
+  },
+  "description": "",
+  "main": "dist/index.js",
+  "keywords": [],
+  "author": "Salih",
+  "license": "ISC",
+  "module": "dist/esm/index.js",
+  "typings": "dist/index.d.ts",
+  "devDependencies": {
+    "@types/react": "^18.2.28",
+    "@types/react-dom": "^18.2.13",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tsup": "^7.2.0",
+    "typescript": "^5.2.2"
+  }
+}
