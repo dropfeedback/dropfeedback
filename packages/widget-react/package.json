@@ -3,14 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "tsup src/index.ts --watch --dts",
-    "build": "tsup src/index.ts --dts"
+    "dev": "tsup --watch --format esm,cjs,iife --legacy-output --dts",
+    "build": "tsup --format esm,cjs,iife --minify --legacy-output --dts"
   },
   "description": "",
-  "main": "dist/index.js",
   "keywords": [],
   "author": "Salih",
   "license": "ISC",
+  "main": "dist/index.js",
   "module": "dist/esm/index.js",
   "typings": "dist/index.d.ts",
   "devDependencies": {
