@@ -3,14 +3,14 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 
-import { Button } from "widget-react";
+import { Feedbacky } from "@feedbacky/widget-react";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <>
-      <Button>Lolo</Button>
+      <Feedbacky projectId="31cfa3c8-79aa-4b32-9da0-7e87e1addbfd" />
       <div>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
