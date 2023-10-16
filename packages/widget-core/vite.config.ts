@@ -8,16 +8,16 @@ const bundleComponents = process.env.BUNDLE_COMPONENTS ?? true;
 export default defineConfig({
   root: './packages/lib/',
   build: {
-    outDir: '../../dist/lib',
+    outDir: '../../dist',
     emptyOutDir: true,
     lib: {
       entry: './index.ts',
       formats: bundleComponents ? ['es', 'esm', 'umd'] as any : ['es'],
       name: "feedbacky",
       fileName: (format) => ({
-        es: `feedbacky.js`,
-        esm: `feedbacky.min.js`,
-        umd: `feedbacky.umd.js`,
+        es: `index.js`,
+        esm: `index.min.js`,
+        umd: `index.umd.js`,
       })[format]
     },
     rollupOptions: {
