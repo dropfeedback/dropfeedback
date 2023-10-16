@@ -1,5 +1,5 @@
 import React from "react";
-import { useFeedbacky } from "./useFeedbacky";
+import "@feedbacky/widget-core";
 
 export interface FeedbackyProps {
   projectId: string;
@@ -16,9 +16,5 @@ declare global {
 }
 
 export const Feedbacky = ({ projectId }: FeedbackyProps) => {
-  useFeedbacky();
-
-  console.log("Feedbacky widget loaded", projectId);
-
   return <feedbacky-widget project-id={projectId}></feedbacky-widget>;
 };
