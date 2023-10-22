@@ -1,14 +1,13 @@
 <script lang="ts">
-	import { getContext } from "svelte";
+	import { getContext, type ComponentType } from "svelte";
 	import IdeaIcon from "./icons/idea.wc.svelte";
 	import IssueIcon from "./icons/issue.wc.svelte";
 	import OtherIcon from "./icons/other.wc.svelte";
-	import type { Writable } from "svelte/store";
-	import type { Steps } from "../types";
+	import type { ConfigContext, Categories } from "../types";
 
-	const { currentStep } = getContext<{ currentStep: Writable<Steps> }>("config");
+	const { currentStep, selectedCategory } = getContext<ConfigContext>("config");
 
-	const BUTTONS = [
+	const BUTTONS: { label: string; value: Categories; icon: ComponentType }[] = [
 		{
 			label: "Issue",
 			value: "issue",
@@ -33,6 +32,7 @@
 			class="category-button"
 			on:click={() => {
 				$currentStep = "form";
+				$selectedCategory = button.value;
 			}}
 		>
 			<svelte:component this={button.icon} />

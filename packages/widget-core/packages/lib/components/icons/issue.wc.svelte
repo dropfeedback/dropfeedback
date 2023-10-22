@@ -1,4 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 48 48">
+<script>
+	export let size = 48;
+	$: sizePx = `${size}px`;
+</script>
+
+<svg
+	xmlns="http://www.w3.org/2000/svg"
+	style:width={sizePx}
+	style:height={sizePx}
+	fill="none"
+	viewBox="0 0 48 48"
+>
 	<g clip-path="url(#clip0)"
 		><path
 			fill="#FFBC11"
