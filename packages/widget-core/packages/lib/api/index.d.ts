@@ -1,2 +1,2 @@
-import type { IFeedback } from '../types';
-export declare const sendFeedback: (feedback: IFeedback) => Promise<any>;
+import type { IFeedback } from "../types";
+export declare const sendFeedback: (feedback: IFeedback) => Promise<unknown>;
