@@ -71,6 +71,10 @@
 	:host,
 	:global(.feedbacky-widget) {
 		--fw-brand-color: #ed7138;
+	}
+
+	:host,
+	:global(*) {
 		box-sizing: border-box;
 	}
 
@@ -80,14 +84,17 @@
 	}
 
 	.popper {
+		display: flex;
+		flex-direction: column;
 		transition: all 0.1s linear;
 		animation: slideLeftPopper 0.2s linear;
 		padding-right: 16px;
 		padding-left: 16px;
 		box-shadow: 0 18px 50px -10px rgba(0, 0, 0, 0.2);
 		background: white;
-		min-width: 300px;
+		min-width: 320px;
 		border-radius: 8px;
+		min-height: 200px;
 	}
 
 	.arrow,

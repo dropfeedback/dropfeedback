@@ -43,6 +43,7 @@
 
 <style>
 	.container {
+		flex: 1;
 		display: flex;
 		gap: 8px;
 	}
@@ -60,7 +61,6 @@
 		cursor: pointer;
 		transition: all 0.1s ease-in-out;
 		width: 100%;
-		height: 110px;
 	}
 
 	.category-button:hover {
