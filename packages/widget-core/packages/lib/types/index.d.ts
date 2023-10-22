@@ -11,3 +11,5 @@ export type WidgetProps = {
   projectId?: string;
   meta?: object | null;
 };
+
+export type Steps = "category" | "form" | "success";
