@@ -71,7 +71,6 @@
 		font-size: 20px;
 		font-weight: 700;
 		margin: 0px;
-		line-height: 1;
 		text-align: center;
 	}
 
@@ -109,8 +108,8 @@
 
 	.brand {
 		text-align: center;
-		padding-top: 8px;
-		padding-bottom: 8px;
+		padding-top: 12px;
+		padding-bottom: 12px;
 		font-size: 10px;
 		color: #a0aec0;
 	}
