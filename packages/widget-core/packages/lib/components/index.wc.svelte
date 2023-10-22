@@ -8,7 +8,7 @@
 	import CategoryStep from "./category-step.wc.svelte";
 	import FormStep from "./form-step.wc.svelte";
 	import SuccessStep from "./success-step.wc.svelte";
-	import type { WidgetProps, Steps } from "../types";
+	import type { WidgetProps, Steps, Categories } from "../types";
 
 	let widgetProps: WidgetProps = {
 		projectId: $$restProps?.["project-id"],
@@ -16,11 +16,13 @@
 	};
 	let showPopper = writable(false);
 	let currentStep = writable<Steps>("category");
+	let selectedCategory = writable<Categories>(null);
 
 	setContext("widgetProps", widgetProps);
 	setContext("config", {
 		currentStep,
-		showPopper
+		showPopper,
+		selectedCategory
 	});
 
 	if (!widgetProps?.projectId) {

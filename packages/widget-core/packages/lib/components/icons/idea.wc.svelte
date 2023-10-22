@@ -1,4 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 48 48"
+<script>
+	export let size = 48;
+	$: sizePx = `${size}px`;
+</script>
+
+<svg
+	style:width={sizePx}
+	style:height={sizePx}
+	xmlns="http://www.w3.org/2000/svg"
+	fill="none"
+	viewBox="0 0 48 48"
 	><path
 		fill="url(#paint0_radial)"
 		d="M30 34.52v.98H18v-.98c0-3.878-1.423-7.621-4-10.52l-.431-.485A14.219 14.219 0 0110 14.093C10 6.36 16.268 0 24 0s14 6.36 14 14.093c0 3.46-1.27 6.836-3.569 9.422L34 24a15.836 15.836 0 00-4 10.52z"
