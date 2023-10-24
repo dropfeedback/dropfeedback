@@ -10,7 +10,7 @@ export type IFeedback = IFeedbackForm & {
 };
 
 export type WidgetProps = {
-	projectId?: string;
+	projectId: string;
 	meta?: object | null;
 };
 

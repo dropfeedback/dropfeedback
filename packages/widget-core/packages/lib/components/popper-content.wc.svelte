@@ -108,8 +108,8 @@
 
 	.brand {
 		text-align: center;
-		padding-top: 12px;
-		padding-bottom: 12px;
+		padding-top: 8px;
+		padding-bottom: 8px;
 		font-size: 10px;
 		color: #a0aec0;
 	}
