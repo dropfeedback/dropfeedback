@@ -51,13 +51,15 @@
 
 	{#if $showPopper}
 		<div class="popper" use:popperContent={extraOpts}>
-			<PopperContent>
-				{#if $currentStep === "category"}
+			{#if $currentStep === "category"}
+				<PopperContent>
 					<CategoryStep />
-				{:else if $currentStep === "form"}
+				</PopperContent>
+			{:else if $currentStep === "form"}
+				<PopperContent>
 					<FormStep />
-				{/if}
-			</PopperContent>
+				</PopperContent>
+			{/if}
 			{#if $currentStep === "success"}
 				<SuccessStep />
 			{/if}
