@@ -21,7 +21,7 @@ export default function Signin() {
       <AuthForm type="signin" />
 
       <div className="mt-4">
-        <Link href={PATHS.SignIn} className="text-blue-500 hover:underline">
+        <Link href={PATHS.SignUp} className="text-blue-500 hover:underline">
           Create an account
         </Link>
       </div>
