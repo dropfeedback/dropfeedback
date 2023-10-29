@@ -54,6 +54,7 @@ docker compose up -d
 npm run db:generate
 npm run db:push
 npm run db:seed
+npm run build
 npm run dev
 ```
 
