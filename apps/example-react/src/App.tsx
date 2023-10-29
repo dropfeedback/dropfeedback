@@ -10,7 +10,7 @@ function App() {
 
   return (
     <>
-      <Feedbacky projectId="31cfa3c8-79aa-4b32-9da0-7e87e1addbfd" />
+      <Feedbacky projectId="2d9df029-387b-4095-92b1-25a87958a850" />
       <div>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
