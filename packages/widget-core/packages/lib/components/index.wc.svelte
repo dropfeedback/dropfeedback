@@ -8,6 +8,7 @@
 	import CategoryStep from "./category-step.wc.svelte";
 	import FormStep from "./form-step.wc.svelte";
 	import SuccessStep from "./success-step.wc.svelte";
+	import CssVar from "./css-var.wc.svelte";
 	import type { WidgetProps, Steps, Categories } from "../types";
 
 	let widgetProps: WidgetProps = {
@@ -46,33 +47,35 @@
 </script>
 
 {#if widgetProps?.projectId}
-	<button
-		use:popperRef
-		on:click={() => {
-			$showPopper = !$showPopper;
-		}}
-		class="trigger-button"
-	>
-		feedbacky
-	</button>
+	<CssVar>
+		<button
+			use:popperRef
+			on:click={() => {
+				$showPopper = !$showPopper;
+			}}
+			class="trigger-button"
+		>
+			feedbacky
+		</button>
 
-	{#if $showPopper}
-		<div class="popper" use:popperContent={extraOpts}>
-			{#if $currentStep === "category"}
-				<PopperContent>
-					<CategoryStep />
-				</PopperContent>
-			{:else if $currentStep === "form"}
-				<PopperContent>
-					<FormStep />
-				</PopperContent>
-			{/if}
-			{#if $currentStep === "success"}
-				<SuccessStep />
-			{/if}
-			<div class="arrow" data-popper-arrow data-popper-placement="right" />
+		<div use:popperContent={extraOpts}>
+			<div class="popper" class:popper-opened={$showPopper}>
+				{#if $currentStep === "category"}
+					<PopperContent>
+						<CategoryStep />
+					</PopperContent>
+				{:else if $currentStep === "form"}
+					<PopperContent>
+						<FormStep />
+					</PopperContent>
+				{/if}
+				{#if $currentStep === "success"}
+					<SuccessStep />
+				{/if}
+				<div class="arrow" data-popper-arrow data-popper-placement="right" />
+			</div>
 		</div>
-	{/if}
+	</CssVar>
 {/if}
 
 <style global>
