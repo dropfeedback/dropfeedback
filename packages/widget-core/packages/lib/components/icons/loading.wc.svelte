@@ -13,7 +13,7 @@
 
 <style>
 	.icon-loading {
-		animation: spin 1s linear;
+		animation: spin 1s linear infinite;
 	}
 
 	@keyframes spin {
