@@ -65,6 +65,7 @@
 		justify-content: center;
 		align-items: center;
 		gap: 4px;
+		color: var(--color-text);
 	}
 
 	.text {
@@ -72,6 +73,7 @@
 		font-weight: 700;
 		margin: 0px;
 		text-align: center;
+		color: var(--color-text);
 	}
 
 	.close-button {
@@ -80,14 +82,14 @@
 		right: 0px;
 		padding: 0px;
 		cursor: pointer;
-		color: #a0aec0;
+		color: var(--color-text-tertiary);
 		width: 24px;
 		height: 24px;
-		transition: all 0.1s ease-in-out;
+		transition: all 0.2s var(--motion-ease-in-out);
 	}
 
 	.close-button:hover {
-		color: #718096;
+		color: var(--color-text-secondary);
 	}
 
 	.back-button {
@@ -96,14 +98,14 @@
 		left: 0px;
 		padding: 0px;
 		cursor: pointer;
-		color: #a0aec0;
+		color: var(--color-text-tertiary);
 		width: 24px;
 		height: 24px;
-		transition: all 0.1s ease-in-out;
+		transition: all 0.2s var(--motion-ease-in-out);
 	}
 
 	.back-button:hover {
-		color: #718096;
+		color: var(--color-text-secondary);
 	}
 
 	.brand {
@@ -111,10 +113,10 @@
 		padding-top: 8px;
 		padding-bottom: 8px;
 		font-size: 10px;
-		color: #a0aec0;
+		color: var(--color-text-tertiary);
 	}
 
 	.brand-name {
-		color: #718096;
+		color: var(--color-text-secondary);
 	}
 </style>

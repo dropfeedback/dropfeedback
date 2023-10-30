@@ -54,16 +54,16 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 8px;
-		background-color: #f7fafc;
-		color: #4a5568;
+		background-color: var(--color-fill-tertiary);
+		color: var(--color-text);
 		font-size: 14px;
 		font-weight: 600;
 		cursor: pointer;
-		transition: all 0.1s ease-in-out;
+		transition: all 0.2s var(--motion-ease-in-out);
 		width: 100%;
 	}
 
 	.category-button:hover {
-		background-color: #edf2f7;
+		background-color: var(--color-fill-secondary);
 	}
 </style>
