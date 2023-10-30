@@ -69,46 +69,71 @@
 	}
 
 	.textarea {
-		border: 2px solid rgb(226, 232, 240);
-		border-radius: 8px;
-		padding: 8px;
+		border: 1px solid var(--color-border);
+		border-radius: var(--border-radius);
+		padding: 4px 8px;
 		flex: 1;
-		font-family: inherit;
 		font-weight: 500;
-		word-break: break-word;
 		font-size: 14px;
-		color: rgb(45, 55, 72);
+		color: var(--color-text);
+		background-color: var(--color-bg-container);
+		transition: all 0.2s;
 		resize: none;
+		outline: none;
+	}
+
+	.textarea:hover {
+		border-color: var(--color-primary-hover);
+	}
+
+	.textarea:active,
+	.textarea:focus {
+		border-color: var(--color-primary);
+	}
+
+	.textarea::placeholder {
+		color: var(--color-text-quaternary);
 	}
 
 	.submit-button {
 		width: 100%;
-		background-color: rgb(0, 93, 255);
-		border-radius: 7px;
-		color: rgb(255, 255, 255);
+		background-color: var(--color-primary);
+		border-radius: var(--border-radius);
+		border: 1px solid transparent;
+		color: #fff;
 		padding-top: 8px;
 		padding-bottom: 8px;
 		font-family: inherit;
-		transition: all 0.3s ease;
+		transition: all 0.2s var(--motion-ease-in-out);
 		overflow: hidden;
-		font-weight: 500;
 		cursor: pointer;
-		position: relative;
-		opacity: 1;
 		font-weight: 600;
-		font-size: 0.875rem;
+		font-size: 14px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 	}
 
+	.submit-button:active {
+		background-color: var(--color-primary-active);
+	}
+
 	.submit-button[disabled] {
-		background-color: rgb(237, 242, 247);
-		color: rgb(160, 174, 192);
+		cursor: default;
+		border-color: var(--color-border);
+		background-color: var(--color-fill-tertiary);
+		color: var(--color-text-quaternary);
+	}
+
+	.submit-button:not([disabled]):focus-visible {
+		outline: 4px solid var(--color-primary-border);
+		outline-offset: 1px;
+		transition: outline-offset 0s, outline 0s;
 	}
 
 	.loading-button {
-		background-color: rgb(237, 242, 247);
-		color: rgb(160, 174, 192);
+		border-color: var(--color-border);
+		background-color: var(--color-fill-tertiary);
+		color: var(--color-text-quaternary);
 	}
 </style>

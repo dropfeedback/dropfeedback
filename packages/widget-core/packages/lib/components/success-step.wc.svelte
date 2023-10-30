@@ -60,14 +60,27 @@
 
 	.text {
 		font-weight: 600;
+		color: var(--color-text);
 	}
 
 	.button {
-		background: rgb(237, 242, 247);
+		background: var(--color-bg-container);
 		font-size: 14px;
 		padding: 4px 12px;
-		color: rgb(74, 85, 104);
-		border-radius: 16px;
+		border: 1px solid var(--color-border);
+		color: var(--color-text);
+		border-radius: var(--border-radius);
+		transition: all 0.2s var(--motion-ease-in-out);
 		cursor: pointer;
+	}
+
+	.button:hover {
+		border-color: var(--color-primary);
+		color: var(--color-primary);
+	}
+
+	.button:active {
+		color: var(--color-primary-active);
+		border-color: var(--color-primary-active);
 	}
 </style>
