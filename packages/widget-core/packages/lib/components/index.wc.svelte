@@ -78,35 +78,33 @@
 	</CssVar>
 {/if}
 
-<style global>
-	/* host for shadow-dom  */
-	:host,
-	:global(.feedbacky-widget) {
-		--fw-brand-color: #ed7138;
-	}
-
+<style>
 	:host,
 	:global(*) {
+		font-family: inherit;
 		box-sizing: border-box;
-	}
-
-	.success-title {
-		text-align: center;
-		color: green;
 	}
 
 	.popper {
 		display: flex;
 		flex-direction: column;
 		transition: all 0.1s linear;
-		animation: slideLeftPopper 0.2s linear;
 		padding-right: 16px;
 		padding-left: 16px;
-		box-shadow: 0 18px 50px -10px rgba(0, 0, 0, 0.2);
-		background: white;
+		box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12),
+			0 9px 28px 8px rgba(0, 0, 0, 0.05);
+		background-color: var(--color-bg-container);
 		min-width: 320px;
 		border-radius: 8px;
 		min-height: 200px;
+	}
+
+	.popper-opened {
+		opacity: 1;
+	}
+
+	.popper:not(.popper-opened) {
+		opacity: 0;
 	}
 
 	.arrow,
@@ -114,12 +112,13 @@
 		position: absolute;
 		width: 8px;
 		height: 8px;
-		background: white;
+		background-color: var(--color-bg-container);
 	}
 
 	.arrow {
 		right: -4px;
 		visibility: hidden;
+		box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
 	}
 
 	.arrow::before {
@@ -129,50 +128,36 @@
 	}
 
 	.trigger-button {
-		right: -2px;
+		right: 0px;
 		top: 50%;
 		position: fixed;
 		transform: rotate(-90deg) translate(50%, -50%);
 		transform-origin: 100% 50%;
 		padding: 6px 16px 6px 16px;
-		box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 		white-space: nowrap;
 		z-index: 99999;
-		border-radius: 8px 8px 0 0;
-		background-color: #ed7138;
+		border-radius: 6px 6px 0 0;
+		background-color: var(--color-primary);
 		color: #fff;
 		font-size: 14px;
 		font-weight: 500;
 		cursor: pointer;
-		transition: all 0.1s linear;
+		transition: all 0.2s var(--motion-ease-in-out);
 		user-select: none;
-		animation: slideLeftTrigger 0.2s linear;
 	}
 
-	.trigger-button:hover {
-		right: 0px;
+	.trigger-button:active {
+		background-color: var(--color-primary-active);
 	}
 
-	@keyframes slideLeftTrigger {
-		0% {
-			margin-right: -100px;
-		}
-		100% {
-			margin-right: 0;
-		}
-	}
-
-	@keyframes slideLeftPopper {
-		0% {
-			margin-right: -800px;
-		}
-		100% {
-			margin-right: 0px;
-		}
+	.trigger-button:not([disabled]):focus-visible {
+		outline: 4px solid var(--color-primary-border);
+		outline-offset: 1px;
+		transition: outline-offset 0s, outline 0s;
 	}
 
 	/* Reset button */
-	button {
+	:global(button) {
 		border: none;
 		margin: 0;
 		padding: 0;
@@ -187,7 +172,7 @@
 	}
 
 	/* Remove excess padding and border in Firefox 4+ */
-	button::-moz-focus-inner {
+	:global(button::-moz-focus-inner) {
 		border: 0;
 		padding: 0;
 	}
