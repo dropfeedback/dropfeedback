@@ -92,6 +92,12 @@
 		color: var(--color-text-secondary);
 	}
 
+	.close-button:focus-visible {
+		outline: 4px solid var(--color-primary-border);
+		outline-offset: 1px;
+		transition: outline-offset 0s, outline 0s;
+	}
+
 	.back-button {
 		position: absolute;
 		top: 14px;
@@ -106,6 +112,12 @@
 
 	.back-button:hover {
 		color: var(--color-text-secondary);
+	}
+
+	.back-button:focus-visible {
+		outline: 4px solid var(--color-primary-border);
+		outline-offset: 1px;
+		transition: outline-offset 0s, outline 0s;
 	}
 
 	.brand {

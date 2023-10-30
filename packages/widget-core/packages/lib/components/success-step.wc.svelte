@@ -83,4 +83,10 @@
 		color: var(--color-primary-active);
 		border-color: var(--color-primary-active);
 	}
+
+	.button:focus-visible {
+		outline: 4px solid var(--color-primary-border);
+		outline-offset: 1px;
+		transition: outline-offset 0s, outline 0s;
+	}
 </style>

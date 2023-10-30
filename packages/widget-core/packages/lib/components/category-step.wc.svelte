@@ -66,4 +66,10 @@
 	.category-button:hover {
 		background-color: var(--color-fill-secondary);
 	}
+
+	.category-button:focus-visible {
+		outline: 4px solid var(--color-primary-border);
+		outline-offset: 1px;
+		transition: outline-offset 0s, outline 0s;
+	}
 </style>
