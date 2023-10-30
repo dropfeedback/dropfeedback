@@ -12,8 +12,15 @@
 
 	let widgetProps: WidgetProps = {
 		projectId: $$restProps?.["project-id"],
-		meta: $$restProps?.["meta"] ? JSON.parse($$restProps["meta"]) : null
+		meta: $$restProps?.["meta"] ? JSON.parse($$restProps["meta"]) : null,
+		theme: {
+			scheme: $$restProps?.["theme-scheme"],
+			primaryColor: $$restProps?.["theme-primary"],
+			backgroundColor: $$restProps?.["theme-background-color"],
+			textColor: $$restProps?.["theme-text-color"]
+		}
 	};
+
 	let showPopper = writable(false);
 	let currentStep = writable<Steps>("category");
 	let selectedCategory = writable<Categories>(null);
