@@ -8,7 +8,7 @@
 		Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte
 		apps.
 	</p>
-	<feedbacky-widget project-id="24320d3d-c5f2-44e1-83a1-13e1cb61fe1d" theme-scheme="light" />
+	<feedbacky-widget project-id="24320d3d-c5f2-44e1-83a1-13e1cb61fe1d" theme-scheme="light" position="right"/>
 </main>
 
 <style>

@@ -13,6 +13,7 @@ export type WidgetProps = {
 	projectId: string;
 	meta?: object | null;
 	theme?: ThemeProps;
+	position?: "left" | "right";
 };
 
 export type ThemeProps = {
