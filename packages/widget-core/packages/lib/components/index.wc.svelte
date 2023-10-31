@@ -16,7 +16,7 @@
 		meta: $$restProps?.["meta"] ? JSON.parse($$restProps["meta"]) : null,
 		theme: {
 			scheme: $$restProps?.["theme-scheme"],
-			primaryColor: $$restProps?.["theme-primary"],
+			primaryColor: $$restProps?.["theme-primary-color"],
 			backgroundColor: $$restProps?.["theme-background-color"],
 			textColor: $$restProps?.["theme-text-color"]
 		},
