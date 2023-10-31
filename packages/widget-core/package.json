@@ -7,7 +7,7 @@
 	"main": "dist/index.umd.js",
 	"scripts": {
 		"start": "npm run dev -s",
-		"dev": "vite --config vite.demo.config.ts",
+		"dev": "vite --config vite.config.ts build --watch & vite --config vite.demo.config.ts --open",
 		"build": "vite build",
 		"build:demo": "vite build --config vite.demo.config.ts",
 		"preview": "vite preview --config vite.demo.config.ts",
