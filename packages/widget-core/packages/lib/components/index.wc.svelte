@@ -86,13 +86,23 @@
 		console.error("feedbacky: Missing projectId");
 	}
 
-	const [popperRef, popperContent] = createPopperActions({
+	const [popperRef, popperContent, getInstance] = createPopperActions({
 		placement: position === "right" ? "left" : "right",
 		strategy: "fixed"
 	});
 	const extraOpts = {
 		modifiers: [{ name: "offset", options: { offset: [0, 12] } }]
 	};
+
+	async function refreshTooltip() {
+		await getInstance()?.update();
+	}
+
+	$: widgetProps.subscribe((props) => {
+		if (props.position !== position) {
+			refreshTooltip();
+		}
+	});
 
 	const escapeListener = (event: KeyboardEvent) => {
 		if (!$showPopper) {
@@ -209,7 +219,7 @@
 		font-size: 14px;
 		font-weight: 500;
 		cursor: pointer;
-		transition: all 0.2s var(--motion-ease-in-out);
+		transition: background-color 0.2s var(--motion-ease-in-out);
 		user-select: none;
 	}
 
