@@ -54,7 +54,7 @@
 	export let textColor: WidgetProps["textColor"] = undefined;
 	export let position: WidgetProps["position"] = "right";
 
-	let widgetProps = writable<WidgetProps>({
+	const widgetProps = writable<WidgetProps>({
 		projectId,
 		scheme,
 		primaryColor,
@@ -62,9 +62,9 @@
 		textColor,
 		position
 	});
-	let showPopper = writable(false);
-	let currentStep = writable<Steps>("category");
-	let selectedCategory = writable<Categories>(null);
+	const showPopper = writable(false);
+	const currentStep = writable<Steps>("category");
+	const selectedCategory = writable<Categories>(null);
 
 	const widgetPropsContext = setContext("widgetProps", widgetProps);
 	setContext("config", {
