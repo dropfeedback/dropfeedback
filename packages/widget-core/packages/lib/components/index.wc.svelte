@@ -19,7 +19,8 @@
 			primaryColor: $$restProps?.["theme-primary"],
 			backgroundColor: $$restProps?.["theme-background-color"],
 			textColor: $$restProps?.["theme-text-color"]
-		}
+		},
+		position: $$restProps?.["position"]
 	};
 
 	let showPopper = writable(false);
@@ -37,8 +38,9 @@
 		console.error("feedbacky: Missing project-id");
 	}
 
+	const position = widgetProps?.position ?? "right";
 	const [popperRef, popperContent] = createPopperActions({
-		placement: "left",
+		placement: position === "right" ? "left" : "right",
 		strategy: "fixed"
 	});
 	const extraOpts = {
@@ -66,11 +68,13 @@
 				$showPopper = !$showPopper;
 			}}
 			class="trigger-button"
+			class:trigger-button-right={position === "right"}
+			class:trigger-button-left={position === "left"}
 		>
 			feedbacky
 		</button>
 
-		<div use:popperContent={extraOpts}>
+		<div id="popper" use:popperContent={extraOpts}>
 			<div class="popper" class:popper-opened={$showPopper}>
 				{#if $currentStep === "category"}
 					<PopperContent>
@@ -84,7 +88,7 @@
 				{#if $currentStep === "success"}
 					<SuccessStep />
 				{/if}
-				<div class="arrow" data-popper-arrow data-popper-placement="right" />
+				<div class="arrow" data-popper-arrow data-popper-placement={position} />
 			</div>
 		</div>
 	</CssVar>
@@ -128,9 +132,16 @@
 	}
 
 	.arrow {
-		right: -4px;
 		visibility: hidden;
 		box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
+	}
+
+	.arrow[data-popper-placement^="right"] {
+		right: -4px;
+	}
+
+	.arrow[data-popper-placement^="left"] {
+		left: -4px;
 	}
 
 	.arrow::before {
@@ -140,11 +151,8 @@
 	}
 
 	.trigger-button {
-		right: 0px;
 		top: 50%;
 		position: fixed;
-		transform: rotate(-90deg) translate(50%, -50%);
-		transform-origin: 100% 50%;
 		padding: 6px 16px 6px 16px;
 		white-space: nowrap;
 		z-index: 99999;
@@ -166,6 +174,18 @@
 		outline: 4px solid var(--color-primary-border);
 		outline-offset: 1px;
 		transition: outline-offset 0s, outline 0s;
+	}
+
+	.trigger-button-right {
+		right: 0px;
+		transform: rotate(-90deg) translate(50%, -50%);
+		transform-origin: 100% 50%;
+	}
+
+	.trigger-button-left {
+		left: 0px;
+		transform: rotate(90deg) translate(-50%, -50%);
+		transform-origin: 0% 50%;
 	}
 
 	/* Reset button */
