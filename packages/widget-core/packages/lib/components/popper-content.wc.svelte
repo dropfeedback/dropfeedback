@@ -85,11 +85,23 @@
 		color: var(--color-text-tertiary);
 		width: 24px;
 		height: 24px;
+		border-radius: var(--border-radius);
 		transition: all 0.2s var(--motion-ease-in-out);
 	}
 
 	.close-button:hover {
 		color: var(--color-text-secondary);
+		background-color: var(--color-fill-tertiary);
+	}
+
+	.close-button:active {
+		background-color: var(--color-fill-secondary);
+	}
+
+	.close-button:focus-visible {
+		outline: 4px solid var(--color-primary-border);
+		outline-offset: 1px;
+		transition: outline-offset 0s, outline 0s;
 	}
 
 	.back-button {
@@ -101,11 +113,23 @@
 		color: var(--color-text-tertiary);
 		width: 24px;
 		height: 24px;
+		border-radius: var(--border-radius);
 		transition: all 0.2s var(--motion-ease-in-out);
 	}
 
 	.back-button:hover {
 		color: var(--color-text-secondary);
+		background-color: var(--color-fill-tertiary);
+	}
+
+	.back-button:active {
+		background-color: var(--color-fill-secondary);
+	}
+
+	.back-button:focus-visible {
+		outline: 4px solid var(--color-primary-border);
+		outline-offset: 1px;
+		transition: outline-offset 0s, outline 0s;
 	}
 
 	.brand {
