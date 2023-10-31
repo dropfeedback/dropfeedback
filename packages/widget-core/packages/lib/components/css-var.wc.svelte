@@ -1,39 +1,43 @@
 <script lang="ts">
-	import { getContext } from "svelte";
+	import { afterUpdate, getContext } from "svelte";
+	import type { Writable } from "svelte/store";
 	import { generateColorPalettes, generateNeutralColorPalettes } from "../theme/colors";
 	import { cssObjectToString } from "../utils/cssObjectToString";
 	import seedToken from "../theme/seed";
 	import type { WidgetProps } from "../types";
+	import type { ColorMap, ColorNeutralMapToken } from "../types/theme";
 
-	const { theme } = getContext<WidgetProps>("widgetProps");
-	const { colorPrimary, colorBgBase, colorTextBase, borderRadius, motionEaseInOut } = seedToken;
+	const widgetPropsContext = getContext<Writable<WidgetProps>>("widgetProps");
 
-	// Default values for theme
-	const themeScheme = theme?.scheme ?? "light";
-	const themePrimaryColor = theme?.primaryColor ?? colorPrimary;
-	const themeBackgroundColor = theme?.backgroundColor ?? colorBgBase;
-	const themeTextColor = theme?.textColor ?? colorTextBase;
+	let primaryColors: ColorMap;
+	let neutralColors: ColorNeutralMapToken;
+	let styles: Record<string, string>;
+	let stringStyles: string;
 
-	const primaryColors = generateColorPalettes(themePrimaryColor, themeScheme);
-	const neutralColors = generateNeutralColorPalettes(
-		themeBackgroundColor,
-		themeTextColor,
-		themeScheme
-	);
+	afterUpdate(() => {
+		const { colorPrimary, colorBgBase, colorTextBase, borderRadius, motionEaseInOut } = seedToken;
+		const {
+			scheme = "light",
+			primaryColor = colorPrimary,
+			backgroundColor = colorBgBase,
+			textColor = colorTextBase
+		} = $widgetPropsContext;
 
-	const styles = {
-		...neutralColors,
+		primaryColors = generateColorPalettes(primaryColor, scheme);
+		neutralColors = generateNeutralColorPalettes(backgroundColor, textColor, scheme);
+		styles = {
+			...neutralColors,
 
-		colorPrimaryBorder: primaryColors[3],
-		colorPrimaryHover: primaryColors[5],
-		colorPrimary: primaryColors[6],
-		colorPrimaryActive: primaryColors[7],
+			colorPrimaryBorder: primaryColors[3],
+			colorPrimaryHover: primaryColors[5],
+			colorPrimary: primaryColors[6],
+			colorPrimaryActive: primaryColors[7],
 
-		borderRadius,
-		motionEaseInOut
-	};
-
-	const stringStyles = cssObjectToString(styles);
+			borderRadius,
+			motionEaseInOut
+		};
+		stringStyles = cssObjectToString(styles);
+	});
 </script>
 
 <aside style={stringStyles}>

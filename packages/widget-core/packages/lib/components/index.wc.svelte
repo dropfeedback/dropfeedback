@@ -1,4 +1,40 @@
-<svelte:options customElement="feedbacky-widget" />
+<svelte:options
+	customElement={{
+		tag: "feedbacky-widget",
+		props: {
+			projectId: {
+				reflect: true,
+				type: "String",
+				attribute: "project-id"
+			},
+			scheme: {
+				reflect: true,
+				type: "String",
+				attribute: "theme-scheme"
+			},
+			primaryColor: {
+				reflect: true,
+				type: "String",
+				attribute: "theme-primary-color"
+			},
+			backgroundColor: {
+				reflect: true,
+				type: "String",
+				attribute: "theme-background-color"
+			},
+			textColor: {
+				reflect: true,
+				type: "String",
+				attribute: "theme-text-color"
+			},
+			position: {
+				reflect: true,
+				type: "String",
+				attribute: "position"
+			}
+		}
+	}}
+/>
 
 <script lang="ts">
 	import { setContext } from "svelte";
@@ -11,34 +47,45 @@
 	import CssVar from "./css-var.wc.svelte";
 	import type { WidgetProps, Steps, Categories } from "../types";
 
-	let widgetProps: WidgetProps = {
-		projectId: $$restProps?.["project-id"],
-		meta: $$restProps?.["meta"] ? JSON.parse($$restProps["meta"]) : null,
-		theme: {
-			scheme: $$restProps?.["theme-scheme"],
-			primaryColor: $$restProps?.["theme-primary-color"],
-			backgroundColor: $$restProps?.["theme-background-color"],
-			textColor: $$restProps?.["theme-text-color"]
-		},
-		position: $$restProps?.["position"]
-	};
+	export let projectId: WidgetProps["projectId"];
+	export let scheme: WidgetProps["scheme"] = "light";
+	export let primaryColor: WidgetProps["primaryColor"] = undefined;
+	export let backgroundColor: WidgetProps["backgroundColor"] = undefined;
+	export let textColor: WidgetProps["textColor"] = undefined;
+	export let position: WidgetProps["position"] = "right";
 
+	let widgetProps = writable<WidgetProps>({
+		projectId,
+		scheme,
+		primaryColor,
+		backgroundColor,
+		textColor,
+		position
+	});
 	let showPopper = writable(false);
 	let currentStep = writable<Steps>("category");
 	let selectedCategory = writable<Categories>(null);
 
-	setContext("widgetProps", widgetProps);
+	const widgetPropsContext = setContext("widgetProps", widgetProps);
 	setContext("config", {
 		currentStep,
 		showPopper,
 		selectedCategory
 	});
 
-	if (!widgetProps?.projectId) {
-		console.error("feedbacky: Missing project-id");
+	$: widgetPropsContext.set({
+		projectId,
+		scheme,
+		primaryColor,
+		backgroundColor,
+		textColor,
+		position
+	});
+
+	if (projectId === undefined) {
+		console.error("feedbacky: Missing projectId");
 	}
 
-	const position = widgetProps?.position ?? "right";
 	const [popperRef, popperContent] = createPopperActions({
 		placement: position === "right" ? "left" : "right",
 		strategy: "fixed"
@@ -60,7 +107,7 @@
 
 <svelte:window on:keydown={escapeListener} />
 
-{#if widgetProps?.projectId}
+{#if projectId !== undefined}
 	<CssVar>
 		<button
 			use:popperRef
