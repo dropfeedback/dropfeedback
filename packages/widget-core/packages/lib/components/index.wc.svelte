@@ -44,7 +44,19 @@
 	const extraOpts = {
 		modifiers: [{ name: "offset", options: { offset: [0, 12] } }]
 	};
+
+	const escapeListener = (event: KeyboardEvent) => {
+		if (!$showPopper) {
+			return;
+		}
+
+		if (event.key === "Escape") {
+			$showPopper = false;
+		}
+	};
 </script>
+
+<svelte:window on:keydown={escapeListener} />
 
 {#if widgetProps?.projectId}
 	<CssVar>
