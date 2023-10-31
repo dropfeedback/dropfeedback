@@ -3,7 +3,7 @@
   "globalDotEnv": [".env.local", ".env"],
   "pipeline": {
     "dev": {
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**", ".svelte-kit/**"],
+      "outputs": ["dist/**"],
       "cache": false,
       "persistent": true
     },
