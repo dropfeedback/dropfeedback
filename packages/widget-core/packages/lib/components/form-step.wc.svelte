@@ -11,6 +11,7 @@
 	let content = "";
 	let error = "";
 	let loading = false;
+	let duration: number;
 
 	$: if ($selectedCategory === "issue") {
 		placeholder = "I noticed that...";
@@ -23,6 +24,7 @@
 	const submit = async () => {
 		error = "";
 		loading = true;
+		duration = Date.now();
 
 		try {
 			await sendFeedback({
@@ -31,6 +33,11 @@
 				meta: meta || {},
 				projectId
 			});
+
+			const requestDuration = Date.now() - duration;
+			if (requestDuration < 1000) {
+				await new Promise((resolve) => setTimeout(resolve, 1000 - requestDuration));
+			}
 
 			$currentStep = "success";
 			content = "";
