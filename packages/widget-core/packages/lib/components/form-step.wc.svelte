@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { getContext } from "svelte";
+	import type { Writable } from "svelte/store";
 	import LoadingIcon from "./icons/loading.wc.svelte";
 	import { sendFeedback } from "../api";
-	import type { ConfigContext, WidgetProps } from "../types";
+	import type { ConfigContext, WidgetContext } from "../types";
 
 	const { currentStep, selectedCategory } = getContext<ConfigContext>("config");
-	const { meta, projectId } = getContext<WidgetProps>("widgetProps");
+	const widgetPropsContext = getContext<Writable<WidgetContext>>("widgetProps");
+
+	const { projectId } = $widgetPropsContext;
 
 	let placeholder: string = "What's on your mind?";
 	let content = "";
@@ -30,7 +33,7 @@
 			await sendFeedback({
 				// category: $selectedCategory,
 				content,
-				meta: meta || {},
+				meta: {},
 				projectId
 			});
 
