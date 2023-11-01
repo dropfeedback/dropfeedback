@@ -9,14 +9,17 @@ export type IFeedback = IFeedbackForm & {
 	meta: object | null;
 };
 
-export type WidgetProps = {
+export type WidgetContext = {
 	projectId: string;
-	meta?: object | null;
-	position?: "left" | "right";
-	scheme?: "light" | "dark";
-	primaryColor?: string;
-	backgroundColor?: string;
-	textColor?: string;
+	position: "left" | "right";
+	theme: ThemeProps;
+};
+
+export type ThemeProps = {
+	scheme: "light" | "dark";
+	primaryColor: string;
+	backgroundColor: string;
+	textColor: string;
 };
 
 export type Steps = "category" | "form" | "success";

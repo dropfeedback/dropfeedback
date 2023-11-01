@@ -45,22 +45,27 @@
 	import FormStep from "./form-step.wc.svelte";
 	import SuccessStep from "./success-step.wc.svelte";
 	import CssVar from "./css-var.wc.svelte";
-	import type { WidgetProps, Steps, Categories } from "../types";
+	import seedToken from "../theme/seed";
+	import type { Steps, Categories, WidgetContext } from "../types";
 
-	export let projectId: WidgetProps["projectId"];
-	export let scheme: WidgetProps["scheme"] = "light";
-	export let primaryColor: WidgetProps["primaryColor"] = undefined;
-	export let backgroundColor: WidgetProps["backgroundColor"] = undefined;
-	export let textColor: WidgetProps["textColor"] = undefined;
-	export let position: WidgetProps["position"] = "right";
+	const { colorPrimary, colorBgBase, colorTextBase } = seedToken;
 
-	const widgetProps = writable<WidgetProps>({
+	export let projectId: string;
+	export let position: "right" | "left" = "right";
+	export let scheme: "dark" | "light" = "light";
+	export let primaryColor: string = colorPrimary;
+	export let backgroundColor: string = colorBgBase;
+	export let textColor: string = colorTextBase;
+
+	const widgetProps = writable<WidgetContext>({
 		projectId,
-		scheme,
-		primaryColor,
-		backgroundColor,
-		textColor,
-		position
+		position,
+		theme: {
+			scheme,
+			primaryColor,
+			backgroundColor,
+			textColor
+		}
 	});
 	const showPopper = writable(false);
 	const currentStep = writable<Steps>("category");
@@ -75,11 +80,13 @@
 
 	$: widgetPropsContext.set({
 		projectId,
-		scheme,
-		primaryColor,
-		backgroundColor,
-		textColor,
-		position
+		position,
+		theme: {
+			scheme,
+			primaryColor,
+			backgroundColor,
+			textColor
+		}
 	});
 
 	if (projectId === undefined) {

@@ -4,10 +4,12 @@
 	import { generateColorPalettes, generateNeutralColorPalettes } from "../theme/colors";
 	import { cssObjectToString } from "../utils/cssObjectToString";
 	import seedToken from "../theme/seed";
-	import type { WidgetProps } from "../types";
+	import type { WidgetContext } from "../types";
 	import type { ColorMap, ColorNeutralMapToken } from "../types/theme";
 
-	const widgetPropsContext = getContext<Writable<WidgetProps>>("widgetProps");
+	const { borderRadius, motionEaseInOut } = seedToken;
+
+	const widgetPropsContext = getContext<Writable<WidgetContext>>("widgetProps");
 
 	let primaryColors: ColorMap;
 	let neutralColors: ColorNeutralMapToken;
@@ -15,13 +17,8 @@
 	let stringStyles: string;
 
 	afterUpdate(() => {
-		const { colorPrimary, colorBgBase, colorTextBase, borderRadius, motionEaseInOut } = seedToken;
-		const {
-			scheme = "light",
-			primaryColor = colorPrimary,
-			backgroundColor = colorBgBase,
-			textColor = colorTextBase
-		} = $widgetPropsContext;
+		const { theme } = $widgetPropsContext;
+		const { scheme, primaryColor, backgroundColor, textColor } = theme;
 
 		primaryColors = generateColorPalettes(primaryColor, scheme);
 		neutralColors = generateNeutralColorPalettes(backgroundColor, textColor, scheme);
