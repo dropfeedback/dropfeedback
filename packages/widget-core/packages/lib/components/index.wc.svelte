@@ -1,4 +1,40 @@
-<svelte:options customElement="feedbacky-widget" />
+<svelte:options
+	customElement={{
+		tag: "feedbacky-widget",
+		props: {
+			projectId: {
+				reflect: true,
+				type: "String",
+				attribute: "project-id"
+			},
+			scheme: {
+				reflect: true,
+				type: "String",
+				attribute: "theme-scheme"
+			},
+			primaryColor: {
+				reflect: true,
+				type: "String",
+				attribute: "theme-primary-color"
+			},
+			backgroundColor: {
+				reflect: true,
+				type: "String",
+				attribute: "theme-background-color"
+			},
+			textColor: {
+				reflect: true,
+				type: "String",
+				attribute: "theme-text-color"
+			},
+			position: {
+				reflect: true,
+				type: "String",
+				attribute: "position"
+			}
+		}
+	}}
+/>
 
 <script lang="ts">
 	import { setContext } from "svelte";
@@ -9,43 +45,73 @@
 	import FormStep from "./form-step.wc.svelte";
 	import SuccessStep from "./success-step.wc.svelte";
 	import CssVar from "./css-var.wc.svelte";
-	import type { WidgetProps, Steps, Categories } from "../types";
+	import seedToken from "../theme/seed";
+	import type { Steps, Categories, WidgetContext } from "../types";
 
-	let widgetProps: WidgetProps = {
-		projectId: $$restProps?.["project-id"],
-		meta: $$restProps?.["meta"] ? JSON.parse($$restProps["meta"]) : null,
+	const { colorPrimary, colorBgBase, colorTextBase } = seedToken;
+
+	export let projectId: string;
+	export let position: "right" | "left" = "right";
+	export let scheme: "dark" | "light" = "light";
+	export let primaryColor: string = colorPrimary;
+	export let backgroundColor: string = colorBgBase;
+	export let textColor: string = colorTextBase;
+
+	const widgetProps = writable<WidgetContext>({
+		projectId,
+		position,
 		theme: {
-			scheme: $$restProps?.["theme-scheme"],
-			primaryColor: $$restProps?.["theme-primary-color"],
-			backgroundColor: $$restProps?.["theme-background-color"],
-			textColor: $$restProps?.["theme-text-color"]
-		},
-		position: $$restProps?.["position"]
-	};
+			scheme,
+			primaryColor,
+			backgroundColor,
+			textColor
+		}
+	});
+	const showPopper = writable(false);
+	const currentStep = writable<Steps>("category");
+	const selectedCategory = writable<Categories>(null);
 
-	let showPopper = writable(false);
-	let currentStep = writable<Steps>("category");
-	let selectedCategory = writable<Categories>(null);
-
-	setContext("widgetProps", widgetProps);
+	const widgetPropsContext = setContext("widgetProps", widgetProps);
 	setContext("config", {
 		currentStep,
 		showPopper,
 		selectedCategory
 	});
 
-	if (!widgetProps?.projectId) {
-		console.error("feedbacky: Missing project-id");
+	$: widgetPropsContext.set({
+		projectId,
+		position,
+		theme: {
+			scheme,
+			primaryColor,
+			backgroundColor,
+			textColor
+		}
+	});
+
+	if (projectId === undefined) {
+		console.error("feedbacky: Missing projectId");
 	}
 
-	const position = widgetProps?.position ?? "right";
-	const [popperRef, popperContent] = createPopperActions({
+	const [popperRef, popperContent, getInstance] = createPopperActions({
 		placement: position === "right" ? "left" : "right",
 		strategy: "fixed"
 	});
 	const extraOpts = {
 		modifiers: [{ name: "offset", options: { offset: [0, 12] } }]
 	};
+
+	async function refreshTooltip() {
+		await getInstance()?.update();
+	}
+
+	function updatePopperWhenPositionIsChanged(_: HTMLElement, position: string) {
+		return {
+			update() {
+				refreshTooltip();
+			}
+		};
+	}
 
 	const escapeListener = (event: KeyboardEvent) => {
 		if (!$showPopper) {
@@ -60,7 +126,7 @@
 
 <svelte:window on:keydown={escapeListener} />
 
-{#if widgetProps?.projectId}
+{#if projectId !== undefined}
 	<CssVar>
 		<button
 			use:popperRef
@@ -74,7 +140,7 @@
 			feedbacky
 		</button>
 
-		<div id="popper" use:popperContent={extraOpts}>
+		<div id="popper" use:popperContent={extraOpts} use:updatePopperWhenPositionIsChanged={position}>
 			<div class="popper" class:popper-opened={$showPopper}>
 				{#if $currentStep === "category"}
 					<PopperContent>
@@ -104,7 +170,6 @@
 	.popper {
 		display: flex;
 		flex-direction: column;
-		transition: all 0.1s linear;
 		padding-right: 16px;
 		padding-left: 16px;
 		box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12),
@@ -162,7 +227,7 @@
 		font-size: 14px;
 		font-weight: 500;
 		cursor: pointer;
-		transition: all 0.2s var(--motion-ease-in-out);
+		transition: background-color 0.2s var(--motion-ease-in-out);
 		user-select: none;
 	}
 
