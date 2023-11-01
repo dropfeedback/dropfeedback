@@ -105,11 +105,13 @@
 		await getInstance()?.update();
 	}
 
-	$: widgetProps.subscribe((props) => {
-		if (props.position !== position) {
-			refreshTooltip();
-		}
-	});
+	function updatePopperWhenPositionIsChanged(_: HTMLElement, position: string) {
+		return {
+			update() {
+				refreshTooltip();
+			}
+		};
+	}
 
 	const escapeListener = (event: KeyboardEvent) => {
 		if (!$showPopper) {
@@ -138,7 +140,7 @@
 			feedbacky
 		</button>
 
-		<div id="popper" use:popperContent={extraOpts}>
+		<div id="popper" use:popperContent={extraOpts} use:updatePopperWhenPositionIsChanged={position}>
 			<div class="popper" class:popper-opened={$showPopper}>
 				{#if $currentStep === "category"}
 					<PopperContent>
@@ -168,7 +170,6 @@
 	.popper {
 		display: flex;
 		flex-direction: column;
-		transition: all 0.1s linear;
 		padding-right: 16px;
 		padding-left: 16px;
 		box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12),
