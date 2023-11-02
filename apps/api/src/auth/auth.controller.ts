@@ -10,12 +10,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthDto } from './dto';
+import { AuthLocalDto } from './dto';
 import { JwtPayload, JwtPayloadWithRefreshToken, Tokens } from './types';
-import { RefreshTokenGuard } from 'src/common/guards';
+import { GithubGuard, RefreshTokenGuard } from 'src/common/guards';
 import { GetCurrentUser, Public } from 'src/common/decorators';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 
 @ApiTags('auth')
@@ -30,14 +30,14 @@ export class AuthController {
   @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.OK)
   async me(@GetCurrentUser() user: JwtPayload) {
-    return this.authService.me(user.sub);
+    return this.authService.findUserById(user.sub);
   }
 
   @Post('/local/signup')
   @Public()
   @HttpCode(HttpStatus.CREATED)
   async signupLocal(
-    @Body() dto: AuthDto,
+    @Body() dto: AuthLocalDto,
     @Res({ passthrough: true }) res: Response,
   ) {
     const tokens = await this.authService.signupLocal(dto);
@@ -48,7 +48,7 @@ export class AuthController {
   @Public()
   @HttpCode(HttpStatus.OK)
   async signinLocal(
-    @Body() dto: AuthDto,
+    @Body() dto: AuthLocalDto,
     @Res({ passthrough: true }) res: Response,
   ) {
     const tokens = await this.authService.signinLocal(dto);
@@ -92,6 +92,22 @@ export class AuthController {
     this.setCookies(res, tokens);
 
     return tokens;
+  }
+
+  @Get('/github/login')
+  @Public()
+  @UseGuards(GithubGuard)
+  @HttpCode(HttpStatus.OK)
+  async githubLogin() {
+    return { message: 'Redirecting to github.com' };
+  }
+
+  @Get('/github/callback')
+  @Public()
+  @UseGuards(GithubGuard)
+  async githubCallback(@Req() req: Request) {
+    console.log('/github/callback', req.user);
+    return { message: 'Redirecting to app' };
   }
 
   setCookies(res: Response, tokens: Tokens) {

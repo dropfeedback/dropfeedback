@@ -3,42 +3,47 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { AuthDto } from './dto';
+import { AuthLocalDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { Tokens } from './types';
+import { JwtPayload, Tokens } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { GithubBio } from 'src/types';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-    private config: ConfigService,
   ) {}
 
-  async me(id: string) {
+  async findUserById(id: string) {
     return this.prisma.user.findUnique({
       where: { id },
       select: { id: true, email: true },
     });
   }
 
-  async signupLocal(dto: AuthDto): Promise<Tokens> {
+  async signupLocal(dto: AuthLocalDto): Promise<Tokens> {
     try {
+      await this.throwIfAuthProviderIsNotValid(dto.email, 'local');
+
       const hashedPassword = await this.hashData(dto.password);
 
       const newUser = await this.prisma.user.create({
         data: {
           email: dto.email,
           hash: hashedPassword,
+          authProvider: 'local',
         },
       });
 
       const tokens = await this.signToken({
         id: newUser.id,
         email: newUser.email,
+        provider: newUser.authProvider,
       });
 
       await this.updateRefreshToken({
@@ -56,7 +61,7 @@ export class AuthService {
     }
   }
 
-  async signinLocal(dto: AuthDto): Promise<Tokens> {
+  async signinLocal(dto: AuthLocalDto): Promise<Tokens> {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
@@ -69,6 +74,7 @@ export class AuthService {
     const tokens = await this.signToken({
       id: user.id,
       email: user.email,
+      provider: user.authProvider,
     });
 
     await this.updateRefreshToken({
@@ -77,6 +83,32 @@ export class AuthService {
     });
 
     return tokens;
+  }
+
+  async signInGithub(githubBio: GithubBio): Promise<Tokens> {
+    const { email } = githubBio;
+
+    await this.throwIfAuthProviderIsNotValid(email, 'github');
+
+    const updatedUser = await this.prisma.user.upsert({
+      where: { email, authProvider: 'github' },
+      update: { email, updatedAt: new Date() },
+      create: {
+        email,
+        authProvider: 'github',
+      },
+    });
+
+    const tokens = await this.signToken({
+      id: updatedUser.id,
+      email: updatedUser.email,
+      provider: updatedUser.authProvider,
+    });
+
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    };
   }
 
   async logout(userId: string) {
@@ -93,6 +125,23 @@ export class AuthService {
     } catch (error) {
     } finally {
       return true;
+    }
+  }
+
+  async throwIfAuthProviderIsNotValid(
+    email: string,
+    provider: User['authProvider'],
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (user.authProvider !== provider) {
+      throw new ConflictException({
+        message: 'User already exists',
+        email,
+        provider: user.authProvider,
+      });
     }
   }
 
@@ -119,12 +168,12 @@ export class AuthService {
       refreshToken,
       user.hashedRefreshToken,
     );
-
     if (!isRefreshTokenMatches) throw new ForbiddenException('Invalid token');
 
     const tokens = await this.signToken({
       id: user.id,
       email: user.email,
+      provider: user.authProvider,
     });
 
     await this.updateRefreshToken({
@@ -154,22 +203,20 @@ export class AuthService {
     });
   }
 
-  async signToken({ id, email }: { id: string; email: string }) {
+  async signToken({
+    id,
+    email,
+    provider,
+  }: {
+    id: string;
+    email: string;
+    provider: User['authProvider'];
+  }) {
+    const payload: JwtPayload = { sub: id, email, provider };
+
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(
-        { sub: id, email },
-        {
-          expiresIn: this.config.get<number>('ACCESS_TOKEN_EXPIRES_IN'),
-          secret: this.config.get<string>('ACCESS_TOKEN_SECRET'),
-        },
-      ),
-      this.jwtService.signAsync(
-        { sub: id, email },
-        {
-          expiresIn: this.config.get<number>('REFRESH_TOKEN_EXPIRES_IN'),
-          secret: this.config.get<string>('REFRESH_TOKEN_SECRET'),
-        },
-      ),
+      this.jwtService.signAsync(payload),
+      this.jwtService.signAsync(payload),
     ]);
 
     return {

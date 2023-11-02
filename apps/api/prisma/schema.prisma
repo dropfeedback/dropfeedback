@@ -11,12 +11,13 @@ datasource db {
 }
 
 model User {
-  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email              String   @unique
-  hash               String
+  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email              String       @unique
+  hash               String?
   hashedRefreshToken String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @default(now()) @updatedAt
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @default(now()) @updatedAt
+  authProvider       AuthProvider
 
   projects Project[]
 
@@ -47,4 +48,9 @@ model Feedback {
   projectId String  @db.Uuid
 
   @@map("feedbacks")
+}
+
+enum AuthProvider {
+  local
+  github
 }

@@ -11,6 +11,7 @@ async function main() {
     update: {},
     create: {
       email: 'demo@demo.com',
+      authProvider: 'local',
       hash: await bcrypt.hash('123456', 10),
     },
   });
