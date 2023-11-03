@@ -163,7 +163,9 @@
 <style>
 	:host,
 	:global(*) {
-		font-family: inherit;
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+			"Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+			"Noto Color Emoji";
 		box-sizing: border-box;
 	}
 
@@ -182,10 +184,12 @@
 
 	.popper-opened {
 		opacity: 1;
+		visibility: visible;
 	}
 
 	.popper:not(.popper-opened) {
 		opacity: 0;
+		visibility: hidden;
 	}
 
 	.arrow,
@@ -197,6 +201,7 @@
 	}
 
 	.arrow {
+		text-align: left;
 		visibility: hidden;
 		box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
 	}
@@ -229,6 +234,11 @@
 		cursor: pointer;
 		transition: background-color 0.2s var(--motion-ease-in-out);
 		user-select: none;
+		margin-top: -14.25px;
+	}
+
+	.trigger-button:hover {
+		background-color: var(--color-primary-hover);
 	}
 
 	.trigger-button:active {
