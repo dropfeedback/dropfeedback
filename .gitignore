@@ -35,3 +35,5 @@ yarn-error.log*
 # vercel
 .vercel
 dist
+
+apps/api/src/metadata.ts
