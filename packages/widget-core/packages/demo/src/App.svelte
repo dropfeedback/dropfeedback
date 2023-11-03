@@ -72,6 +72,3 @@
 		{position}
 	/>
 </main>
-
-<style>
-</style>
