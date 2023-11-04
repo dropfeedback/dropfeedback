@@ -18,11 +18,16 @@ export class ProjectsService {
     private config: ConfigService,
   ) {}
   async getAllByUser({ id }: { id: string }) {
-    const projects = await this.prisma.project.findMany({
-      where: { userId: id },
+    const projectMembers = await this.prisma.projectMember.findMany({
+      where: { userId: id, state: ProjectMemberState.active },
+      include: { project: true },
     });
 
-    return projects;
+    return projectMembers.map((pm) => ({
+      id: pm.project.id,
+      name: pm.project.name,
+      role: pm.role,
+    }));
   }
 
   async createProject({ userId, dto }: { userId: string; dto: ProjectDto }) {
