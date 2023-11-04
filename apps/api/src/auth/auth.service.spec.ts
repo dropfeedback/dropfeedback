@@ -6,10 +6,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
 import { Tokens } from './types';
 import { clearPostgres } from '../test/helpers/clear-db';
+import { faker } from '@faker-js/faker';
 
 const user = {
-  email: 'auth-service@gmail.com',
-  password: 'super-secret-password',
+  email: faker.internet.email(),
+  password: faker.internet.password(),
 };
 
 describe('Auth Flow', () => {
