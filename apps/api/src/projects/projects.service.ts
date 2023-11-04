@@ -18,8 +18,27 @@ export class ProjectsService {
   }
 
   async createProject({ userId, dto }: { userId: string; dto: ProjectDto }) {
-    try {
-      const newProject = await this.prisma.project.create({
+  async members({ projectId }: { projectId: string }) {
+    const members = await this.prisma.projectMember.findMany({
+      where: {
+        projectId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+          },
+        },
+      },
+    });
+    return members.map((m) => ({
+      id: m.user.id,
+      email: m.user.email,
+      state: m.state,
+      role: m.role,
+    }));
+  }
         data: {
           name: dto.name,
           user: { connect: { id: userId } },
