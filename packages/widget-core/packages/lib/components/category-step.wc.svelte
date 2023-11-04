@@ -53,6 +53,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		gap: 8px;
 		border-radius: 8px;
 		background-color: var(--color-fill-tertiary);
 		color: var(--color-text);
