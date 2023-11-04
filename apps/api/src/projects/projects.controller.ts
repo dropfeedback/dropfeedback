@@ -11,6 +11,7 @@ import { JwtPayload } from 'src/auth/types';
 import { GetCurrentUser } from 'src/common/decorators';
 import { ProjectDto } from './dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { GetMembersDto } from './dto/get-members.dto';
 
 @ApiTags('projects')
 @Controller('projects')
@@ -30,6 +31,7 @@ export class ProjectsController {
   createProject(@GetCurrentUser() user: JwtPayload, @Body() dto: ProjectDto) {
     return this.projectService.createProject({ userId: user.sub, dto });
   }
+
   @Get('/:projectId/members')
   @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.OK)
