@@ -30,4 +30,25 @@ export class ProjectsController {
   createProject(@GetCurrentUser() user: JwtPayload, @Body() dto: ProjectDto) {
     return this.projectService.createProject({ userId: user.sub, dto });
   }
+  @Get('/:projectId/members')
+  @ApiBearerAuth('access-token')
+  @HttpCode(HttpStatus.OK)
+  async getMembers(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() dto: GetMembersDto,
+  ) {
+    const hasAccess = await this.projectService.hasAccess({
+      acceptedRoles: ['arkadaslar', 'owner', 'manager'],
+      projectId: dto.projectId,
+      userId: user.sub,
+    });
+
+    if (!hasAccess) {
+      throw new ForbiddenException(
+        'You are not allowed to access this resource',
+      );
+    }
+
+    return this.projectService.members({ projectId: dto.projectId });
+  }
 }
