@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
@@ -12,6 +14,8 @@ import { GetCurrentUser } from 'src/common/decorators';
 import { ProjectDto } from './dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GetMembersDto } from './dto/get-members.dto';
+import { AddMemberBodyDto } from './dto/add-member-body.dto';
+import { AddMemberParamDto } from './dto/add-member-param.dto';
 
 @ApiTags('projects')
 @Controller('projects')
@@ -52,5 +56,31 @@ export class ProjectsController {
     }
 
     return this.projectService.members({ projectId: dto.projectId });
+  }
+
+  @Post('/:projectId/member')
+  @ApiBearerAuth('access-token')
+  @HttpCode(HttpStatus.OK)
+  async addMember(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() paramDto: AddMemberParamDto,
+    @Body() bodyDto: AddMemberBodyDto,
+  ) {
+    const hasAccess = await this.projectService.hasAccess({
+      acceptedRoles: ['arkadaslar', 'owner', 'manager'],
+      projectId: paramDto.projectId,
+      userId: user.sub,
+    });
+
+    if (!hasAccess)
+      throw new ForbiddenException(
+        'You are not allowed to access this resource',
+      );
+
+    return this.projectService.addMember({
+      projectId: paramDto.projectId,
+      email: bodyDto.email,
+      role: bodyDto.role,
+    });
   }
 }
