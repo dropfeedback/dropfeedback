@@ -14,10 +14,11 @@
     "api:start": "turbo run start:prod --filter=@feedbacky/api"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.2.0",
     "@turbo/gen": "^1.10.12",
     "dotenv-cli": "^7.2.1",
-    "prettier": "^3.0.0",
     "eslint": "^8.28.0",
+    "prettier": "^3.0.0",
     "turbo": "latest"
   },
   "name": "feedbacky",
