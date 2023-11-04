@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { Tokens } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { SignUpWithInviteDto } from './dto/signup-with-invite.dto';
 
 @Injectable()
 export class AuthService {
@@ -61,13 +62,71 @@ export class AuthService {
     }
   }
 
-      throw new ForbiddenException('Credentials incorrect');
+  async signupWithInviteLocal(dto: SignUpWithInviteDto): Promise<Tokens> {
+    const safeDecode = this.jwtService.decode(dto.mailToken) as {
+      projectMemberId: string;
+    };
+    if (!safeDecode?.projectMemberId) {
+      throw new ForbiddenException('Invalid token');
     }
+
+    const projectMember = await this.prisma.projectMember.findFirst({
+      where: {
+        id: safeDecode.projectMemberId,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!projectMember) {
+      throw new ForbiddenException('Invalid token');
+    }
+
+    if (projectMember.user.email !== dto.email) {
+      throw new ForbiddenException('Invite email and signup email not match');
+    }
+
+    try {
+      await this.jwtService.verify(dto.mailToken, {
+        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${
+          projectMember.user.id
+        }`,
+      });
+    } catch {
+      throw new ForbiddenException('Invalid token');
+    }
+
+    const hashedPassword = await this.hashData(dto.password);
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: projectMember.user.id },
+      data: { hash: hashedPassword, isTemporary: false },
+    });
+
+    await this.prisma.projectMember.update({
+      where: { id: projectMember.id },
+      data: { state: ProjectMemberState.active },
+    });
+
+    const tokens = await this.signToken({
+      id: updatedUser.id,
+      email: updatedUser.email,
+    });
+
+    await this.updateRefreshToken({
+      id: updatedUser.id,
+      refreshToken: tokens.refreshToken,
+    });
+
+    //TODO: account activated mail
+
+    return tokens;
   }
 
   async signinLocal(dto: AuthDto): Promise<Tokens> {
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { email: dto.email, isTemporary: false },
     });
     if (!user) throw new ForbiddenException('Invalid credentials');
 
