@@ -96,6 +96,23 @@ export class ProjectsService {
 
     //TODO: send you are added project mail here with mail and mail token
   }
+
+  async removeMember({
+    operatorId,
+    projectId,
+    memberId,
+  }: {
+    operatorId: string;
+    projectId: string;
+    memberId: string;
+  }) {
+    await this.checkAuthorized({ operatorId, projectId, memberId });
+    //TODO: your account removed from project mail will send here
+    return this.prisma.projectMember.delete({
+      where: { userId_projectId: { projectId, userId: memberId } },
+    });
+  }
+
   async hasAccess({
     acceptedRoles,
     projectId,
