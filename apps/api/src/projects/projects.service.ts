@@ -31,6 +31,19 @@ export class ProjectsService {
   }
 
   async createProject({ userId, dto }: { userId: string; dto: ProjectDto }) {
+    return this.prisma.project.create({
+      data: {
+        name: dto.name,
+        projectMembers: {
+          create: {
+            userId,
+            role: ProjectMemberRole.owner,
+          },
+        },
+      },
+    });
+  }
+
   async members({ projectId }: { projectId: string }) {
     const members = await this.prisma.projectMember.findMany({
       where: {
