@@ -25,17 +25,28 @@ export class ProjectsService {
           user: { connect: { id: userId } },
         },
       });
-      return newProject;
-    } catch (error) {
-      if (error.code === 'P2025') {
-        throw new BadRequestException('User not found');
-      }
+  async hasAccess({
+    acceptedRoles,
+    projectId,
+    userId,
+  }: {
+    acceptedRoles: ProjectMemberRole[];
+    projectId: string;
+    userId: string;
+  }) {
+    const projectMember = await this.prisma.projectMember.findUnique({
+      where: {
+        userId_projectId: {
+          projectId,
+          userId,
+        },
+      },
+    });
 
-      if (error.code === 'P2002') {
-        throw new ConflictException('Project name already exists');
-      }
+    if (!projectMember) throw new NotFoundException('User not found');
 
-      throw new BadRequestException('Something went wrong');
+    return acceptedRoles.includes(projectMember.role);
+  }
     }
   }
 }
