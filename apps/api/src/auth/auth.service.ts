@@ -177,4 +177,13 @@ export class AuthService {
       refreshToken,
     };
   }
+
+  async acceptInvite({ projectMemberId }: { projectMemberId: string }) {
+    return this.prisma.projectMember.update({
+      where: { id: projectMemberId },
+      data: {
+        state: ProjectMemberState.active,
+      },
+    });
+  }
 }
