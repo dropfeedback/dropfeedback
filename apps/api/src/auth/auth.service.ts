@@ -1,6 +1,7 @@
 import {
   ConflictException,
   ForbiddenException,
+  NotAcceptableException,
   Injectable,
 } from '@nestjs/common';
 import { AuthDto } from './dto';
@@ -26,9 +27,13 @@ export class AuthService {
   }
 
   async signupLocal(dto: AuthDto): Promise<Tokens> {
-    try {
-      const hashedPassword = await this.hashData(dto.password);
+    const hashedPassword = await this.hashData(dto.password);
 
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+
+    if (!user) {
       const newUser = await this.prisma.user.create({
         data: {
           email: dto.email,
@@ -47,10 +52,14 @@ export class AuthService {
       });
 
       return tokens;
-    } catch (error) {
-      if (error.code === 'P2002') {
-        throw new ConflictException('User already exists');
-      }
+    } else if (user && user.isTemporary) {
+      throw new NotAcceptableException(
+        'You have invitation to join a project, please check your email',
+      );
+    } else {
+      throw new ConflictException('User already exists');
+    }
+  }
 
       throw new ForbiddenException('Credentials incorrect');
     }
