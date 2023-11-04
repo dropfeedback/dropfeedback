@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, ProjectMemberRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -18,9 +18,10 @@ async function main() {
   const projectDemo = await prisma.project.create({
     data: {
       name: 'Demo Project',
-      user: {
-        connect: {
-          id: userDemo.id,
+      projectMembers: {
+        create: {
+          userId: userDemo.id,
+          role: ProjectMemberRole.manager,
         },
       },
     },
@@ -38,11 +39,7 @@ async function main() {
       data: {
         ...data,
         ...meta,
-        project: {
-          connect: {
-            id: projectDemo.id,
-          },
-        },
+        projectId: projectDemo.id,
       },
     });
   }
