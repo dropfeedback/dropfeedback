@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -23,6 +22,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ProjectMemberState } from '@prisma/client';
 import { AcceptInviteBodyDto } from './dto/accept-invite-body.dto';
 import { SignUpWithInviteDto } from './dto/signup-with-invite.dto';
+import { SendInviteEmailsBodyDto } from './dto/send-invite-emails.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -152,6 +152,13 @@ export class AuthController {
     await this.authService.acceptInvite({
       projectMemberId: projectMember.id,
     });
+  }
+
+  @Post('/send-invite-emails')
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  async sendInviteEmails(@Body() dto: SendInviteEmailsBodyDto) {
+    return this.authService.sendInviteEmails(dto.email);
   }
 
   setCookies(res: Response, tokens: Tokens) {
