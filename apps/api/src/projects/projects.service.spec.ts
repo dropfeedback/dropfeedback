@@ -6,6 +6,8 @@ import { clearPostgres } from 'src/test/helpers/clear-db';
 import { AuthService } from 'src/auth/auth.service';
 import { decode } from 'jsonwebtoken';
 import { JwtPayload } from 'src/auth/types';
+import { ProjectMemberRole } from '@prisma/client';
+import { faker } from '@faker-js/faker';
 
 describe('ProjectsService', () => {
   let service: ProjectsService;
@@ -13,8 +15,8 @@ describe('ProjectsService', () => {
   let moduleRef: TestingModule;
 
   const user = {
-    email: 'project-service@gmail.com',
-    password: 'super-secret-password',
+    email: faker.internet.email(),
+    password: faker.internet.password(),
     id: '',
   };
 
@@ -46,21 +48,24 @@ describe('ProjectsService', () => {
       user.id = sub;
     });
 
-    it('should create project', async () => {
-      const projectName = 'test project';
+    it('should create project and return with role', async () => {
+      const projectName = faker.lorem.words(2);
 
-      const project = await service.createProject({
+      const createdProject = await service.createProject({
         userId: user.id,
         dto: { name: projectName },
       });
 
-      expect(project).toBeTruthy();
-      expect(project.id).toBeTruthy();
-      expect(project.name).toBe(projectName);
+      expect(createdProject).toBeTruthy();
+      expect(createdProject.id).toBeTruthy();
+      expect(createdProject.name).toBe(projectName);
 
       const projects = await service.getAllByUser({ id: user.id });
-      const projectNames = projects.map((project) => project.name);
-      expect(projectNames).toContain(projectName);
+      const project = projects.find((p) => p.id === createdProject.id);
+      expect(project).toBeTruthy();
+
+      expect(project.name).toContain(projectName);
+      expect(project.role).toBe(ProjectMemberRole.owner);
     });
   });
 });

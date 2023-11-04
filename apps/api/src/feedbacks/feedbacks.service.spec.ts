@@ -5,6 +5,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { AppModule } from 'src/app.module';
 import { clearPostgres } from 'src/test/helpers/clear-db';
 import { JwtPayload, decode } from 'jsonwebtoken';
+import { faker } from '@faker-js/faker';
 
 describe('FeedbacksService', () => {
   let service: FeedbacksService;
@@ -13,8 +14,8 @@ describe('FeedbacksService', () => {
   let moduleRef: TestingModule;
 
   let user = {
-    email: 'project-service@gmail.com',
-    password: 'super-secret-password',
+    email: faker.internet.email(),
+    password: faker.internet.password(),
     id: '',
   };
 
