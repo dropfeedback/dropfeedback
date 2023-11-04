@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   HttpCode,
@@ -13,6 +14,7 @@ import { JwtPayload } from 'src/auth/types';
 import { GetCurrentUser } from 'src/common/decorators';
 import { ProjectDto } from './dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { DeleteMemberDto } from './dto/delete-member.dto';
 import { GetMembersDto } from './dto/get-members.dto';
 import { AddMemberBodyDto } from './dto/add-member-body.dto';
 import { AddMemberParamDto } from './dto/add-member-param.dto';
@@ -81,6 +83,31 @@ export class ProjectsController {
       projectId: paramDto.projectId,
       email: bodyDto.email,
       role: bodyDto.role,
+    });
+  }
+
+  @Delete('/:projectId/member/:memberId')
+  @ApiBearerAuth('access-token')
+  @HttpCode(HttpStatus.OK)
+  async removeMember(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() dto: DeleteMemberDto,
+  ) {
+    const hasAccess = await this.projectService.hasAccess({
+      acceptedRoles: ['arkadaslar', 'owner', 'manager'],
+      projectId: dto.projectId,
+      userId: user.sub,
+    });
+
+    if (!hasAccess)
+      throw new ForbiddenException(
+        'You are not allowed to access this resource',
+      );
+
+    await this.projectService.removeMember({
+      projectId: dto.projectId,
+      operatorId: user.sub,
+      memberId: dto.memberId,
     });
   }
 }
