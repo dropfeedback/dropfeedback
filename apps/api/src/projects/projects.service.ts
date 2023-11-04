@@ -118,6 +118,42 @@ export class ProjectsService {
 
     return acceptedRoles.includes(projectMember.role);
   }
+
+  async checkAuthorized({
+    projectId,
+    operatorId,
+    memberId,
+  }: {
+    operatorId: string;
+    projectId: string;
+    memberId: string;
+  }) {
+    const [operator, projectMember] = await Promise.all([
+      this.prisma.projectMember.findUnique({
+        where: { userId_projectId: { projectId, userId: operatorId } },
+        select: { role: true },
+      }),
+      this.prisma.projectMember.findUnique({
+        where: { userId_projectId: { projectId, userId: memberId } },
+        select: { role: true },
+      }),
+    ]);
+
+    if (!operator || !projectMember)
+      throw new BadRequestException(
+        'Operator or member does not exist in this project',
+      );
+
+    switch (projectMember.role) {
+      case ProjectMemberRole.arkadaslar:
+      case ProjectMemberRole.owner:
+        throw new BadRequestException('You can not remove owner');
+      case ProjectMemberRole.manager:
+        if (
+          operator.role !== ProjectMemberRole.owner &&
+          operator.role !== ProjectMemberRole.arkadaslar
+        )
+          throw new BadRequestException('Only owner can remove manager');
     }
   }
 }
