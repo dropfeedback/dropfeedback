@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -17,6 +18,10 @@ import { GetCurrentUser, Public } from 'src/common/decorators';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { ProjectMemberState } from '@prisma/client';
+import { AcceptInviteBodyDto } from './dto/accept-invite-body.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -24,6 +29,8 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private config: ConfigService,
+    private jwtService: JwtService,
+    private prisma: PrismaService,
   ) {}
 
   @Get('/me')
@@ -92,6 +99,47 @@ export class AuthController {
     this.setCookies(res, tokens);
 
     return tokens;
+  }
+
+  @Post('/accept-invite')
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  async acceptInvite(@Body() dto: AcceptInviteBodyDto) {
+    const safeDecode = this.jwtService.decode(dto.acceptInviteToken) as {
+      projectMemberId: string;
+    };
+    if (!safeDecode?.projectMemberId) {
+      throw new ForbiddenException('Invalid token');
+    }
+
+    const projectMember = await this.prisma.projectMember.findUnique({
+      where: {
+        id: safeDecode.projectMemberId,
+      },
+      include: { user: true },
+    });
+
+    if (!projectMember) {
+      throw new ForbiddenException('Invalid token');
+    }
+
+    if (projectMember.state === ProjectMemberState.active) {
+      throw new ForbiddenException('User already accepted invite');
+    }
+
+    try {
+      await this.jwtService.verify(dto.acceptInviteToken, {
+        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${
+          projectMember.user.id
+        }`,
+      });
+    } catch {
+      throw new ForbiddenException('Invalid token');
+    }
+
+    await this.authService.acceptInvite({
+      projectMemberId: projectMember.id,
+    });
   }
 
   setCookies(res: Response, tokens: Tokens) {
