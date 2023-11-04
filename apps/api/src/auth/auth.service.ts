@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { Tokens } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { ProjectMemberState, User } from '@prisma/client';
 import { SignUpWithInviteDto } from './dto/signup-with-invite.dto';
 
 @Injectable()
@@ -253,5 +254,38 @@ export class AuthService {
         state: ProjectMemberState.active,
       },
     });
+  }
+
+  async sendInviteEmails(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        projectMember: { where: { state: ProjectMemberState.pending } },
+      },
+    });
+
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+
+    if (user.projectMember.length === 0) {
+      throw new ForbiddenException('User not invited to any project');
+    }
+
+    //TODO: we can set limit to send invite emails
+
+    for (const projectMember of user.projectMember) {
+      const mailToken = await this.jwtService.signAsync(
+        { projectMemberId: projectMember.id },
+        {
+          expiresIn: this.config.get<number>('EMAIL_TOKEN_EXPIRES_IN'),
+          secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${user.id}`,
+        },
+      );
+
+      console.log('email sended');
+
+      //TODO: send invite mail for each project member
+    }
   }
 }
