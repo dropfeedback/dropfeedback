@@ -22,6 +22,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProjectMemberState } from '@prisma/client';
 import { AcceptInviteBodyDto } from './dto/accept-invite-body.dto';
+import { SignUpWithInviteDto } from './dto/signup-with-invite.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -48,6 +49,17 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const tokens = await this.authService.signupLocal(dto);
+    this.setCookies(res, tokens);
+  }
+
+  @Post('/local/signup-with-invite')
+  @Public()
+  @HttpCode(HttpStatus.CREATED)
+  async signupWithInviteLocal(
+    @Body() dto: SignUpWithInviteDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const tokens = await this.authService.signupWithInviteLocal(dto);
     this.setCookies(res, tokens);
   }
 
