@@ -2,13 +2,21 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProjectDto } from './dto';
+import { ProjectMemberRole, ProjectMemberState } from '@prisma/client';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ProjectsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+    private config: ConfigService,
+  ) {}
   async getAllByUser({ id }: { id: string }) {
     const projects = await this.prisma.project.findMany({
       where: { userId: id },
@@ -39,11 +47,55 @@ export class ProjectsService {
       role: m.role,
     }));
   }
+
+  async addMember({
+    projectId,
+    email,
+    role,
+  }: {
+    projectId: string;
+    email: string;
+    role: 'manager' | 'member';
+  }) {
+    let user = await this.prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      // create temporary user
+      user = await this.prisma.user.create({
         data: {
-          name: dto.name,
-          user: { connect: { id: userId } },
+          email,
+          isTemporary: true,
         },
       });
+    }
+
+    const projectMember = await this.prisma.projectMember.findUnique({
+      where: { userId_projectId: { projectId, userId: user.id } },
+    });
+    if (projectMember) {
+      throw new ConflictException('User already in project');
+    }
+
+    const createdProjectMember = await this.prisma.projectMember.create({
+      data: {
+        projectId,
+        userId: user.id,
+        role,
+        state: ProjectMemberState.pending,
+      },
+    });
+
+    const mailToken = await this.jwtService.signAsync(
+      { projectMemberId: createdProjectMember.id },
+      {
+        expiresIn: this.config.get<number>('EMAIL_TOKEN_EXPIRES_IN'),
+        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${user.id}`,
+      },
+    );
+    return mailToken;
+
+    //TODO: send you are added project mail here with mail and mail token
+  }
   async hasAccess({
     acceptedRoles,
     projectId,
