@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsString, MinLength } from 'class-validator';
 import { Project } from 'src/prisma';
 
 export class ProjectDto
