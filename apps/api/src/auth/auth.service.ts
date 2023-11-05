@@ -1,17 +1,16 @@
 import {
   ConflictException,
   ForbiddenException,
-  NotAcceptableException,
   Injectable,
   BadRequestException,
 } from '@nestjs/common';
 import { AuthDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { JwtPayload, Tokens } from './types';
+import { JwtPayload } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { ProjectMemberState, UserProviderType } from '@prisma/client';
+import { MemberInviteState, UserProviderType } from '@prisma/client';
 import { TokenPayload as GoogleTokenPayload } from 'google-auth-library';
 
 @Injectable()
@@ -190,46 +189,33 @@ export class AuthService {
     });
   }
 
-  async acceptInvite({ projectMemberId }: { projectMemberId: string }) {
-    return this.prisma.projectMember.update({
-      where: { id: projectMemberId },
-      data: {
-        state: ProjectMemberState.active,
-      },
-    });
-  }
-
-  async sendInviteEmails(email: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-      include: {
-        projectMember: { where: { state: ProjectMemberState.pending } },
-      },
-    });
-
-    if (!user) {
-      throw new ForbiddenException('User not found');
-    }
-
-    if (user.projectMember.length === 0) {
-      throw new ForbiddenException('User not invited to any project');
-    }
-
-    //TODO: we can set limit to send invite emails
-
-    for (const projectMember of user.projectMember) {
-      const mailToken = await this.jwtService.signAsync(
-        { projectMemberId: projectMember.id },
-        {
-          expiresIn: this.config.get<number>('EMAIL_TOKEN_EXPIRES_IN'),
-          secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${user.id}`,
+  async acceptInvite({
+    projectId,
+    email,
+  }: {
+    projectId: string;
+    email: string;
+  }) {
+    const memberInvite = await this.prisma.memberInvite.findUnique({
+      where: {
+        email_projectId: { email, projectId },
+        state: {
+          not: MemberInviteState.Accepted,
         },
-      );
+      },
+    });
 
-      console.log('email sended');
-
-      //TODO: send invite mail for each project member
+    if (!memberInvite) {
+      throw new ForbiddenException('Invite not found');
     }
+
+    return this.prisma.projectMember.create({
+      data: {
+        projectId,
+        userId: memberInvite.userId,
+        role: memberInvite.role,
+      },
+    });
   }
 
   async googleLogin(payload: GoogleTokenPayload) {
