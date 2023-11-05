@@ -6,7 +6,11 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProjectDto } from './dto';
-import { ProjectMemberRole, ProjectMemberState } from '@prisma/client';
+import {
+  ProjectMemberRole,
+  ProjectMemberState,
+  UserProviderType,
+} from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
@@ -82,7 +86,11 @@ export class ProjectsService {
       user = await this.prisma.user.create({
         data: {
           email,
-          isTemporary: true,
+          UserProvider: {
+            create: {
+              type: UserProviderType.Internal,
+            },
+          },
         },
       });
     }
