@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -16,14 +15,13 @@ import { JwtPayload, JwtPayloadWithRefreshToken, Tokens } from './types';
 import { RefreshTokenGuard } from 'src/common/guards';
 import { GetCurrentUser, Public } from 'src/common/decorators';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ProjectMemberState } from '@prisma/client';
+import { MemberInviteState } from '@prisma/client';
 import { OAuth2Client } from 'google-auth-library';
 import { AcceptInviteBodyDto } from './dto/accept-invite-body.dto';
-import { SendInviteEmailsBodyDto } from './dto/send-invite-emails.dto';
 import { GoogleLoginDto } from './dto/google-login.dto';
 
 @ApiTags('auth')
@@ -126,47 +124,38 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async acceptInvite(@Body() dto: AcceptInviteBodyDto) {
     const safeDecode = this.jwtService.decode(dto.acceptInviteToken) as {
-      projectMemberId: string;
+      email: string;
+      projectId: string;
     };
-    if (!safeDecode?.projectMemberId) {
+    if (!safeDecode?.email || !safeDecode?.projectId) {
       throw new ForbiddenException('Invalid token');
-    }
-
-    const projectMember = await this.prisma.projectMember.findUnique({
-      where: {
-        id: safeDecode.projectMemberId,
-      },
-      include: { user: true },
-    });
-
-    if (!projectMember) {
-      throw new ForbiddenException('Invalid token');
-    }
-
-    if (projectMember.state === ProjectMemberState.active) {
-      throw new ForbiddenException('User already accepted invite');
     }
 
     try {
       await this.jwtService.verify(dto.acceptInviteToken, {
         secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${
-          projectMember.user.id
+          safeDecode.email
         }`,
       });
     } catch {
       throw new ForbiddenException('Invalid token');
     }
 
-    await this.authService.acceptInvite({
-      projectMemberId: projectMember.id,
+    const memberInvite = await this.prisma.memberInvite.findFirst({
+      where: {
+        projectId: safeDecode.projectId,
+        email: safeDecode.email,
+      },
     });
-  }
 
-  @Post('/send-invite-emails')
-  @Public()
-  @HttpCode(HttpStatus.OK)
-  async sendInviteEmails(@Body() dto: SendInviteEmailsBodyDto) {
-    return this.authService.sendInviteEmails(dto.email);
+    if (memberInvite.state !== MemberInviteState.Pending) {
+      throw new ForbiddenException('You already accepted or rejected invite');
+    }
+
+    await this.authService.acceptInvite({
+      email: safeDecode.email,
+      projectId: safeDecode.projectId,
+    });
   }
 
   setCookies(res: Response, tokens: Tokens) {
