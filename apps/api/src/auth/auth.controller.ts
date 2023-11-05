@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -15,18 +16,21 @@ import { JwtPayload, JwtPayloadWithRefreshToken, Tokens } from './types';
 import { RefreshTokenGuard } from 'src/common/guards';
 import { GetCurrentUser, Public } from 'src/common/decorators';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProjectMemberState } from '@prisma/client';
+import { OAuth2Client } from 'google-auth-library';
 import { AcceptInviteBodyDto } from './dto/accept-invite-body.dto';
-import { SignUpWithInviteDto } from './dto/signup-with-invite.dto';
 import { SendInviteEmailsBodyDto } from './dto/send-invite-emails.dto';
+import { GoogleLoginDto } from './dto/google-login.dto';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
+  googleClient = new OAuth2Client();
+
   constructor(
     private authService: AuthService,
     private config: ConfigService,
@@ -48,19 +52,14 @@ export class AuthController {
     @Body() dto: AuthDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const tokens = await this.authService.signupLocal(dto);
-    this.setCookies(res, tokens);
-  }
+    const data = await this.authService.signupLocal(dto);
 
-  @Post('/local/signup-with-invite')
-  @Public()
-  @HttpCode(HttpStatus.CREATED)
-  async signupWithInviteLocal(
-    @Body() dto: SignUpWithInviteDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const tokens = await this.authService.signupWithInviteLocal(dto);
-    this.setCookies(res, tokens);
+    await this.authService.updateRefreshTokenFromDB({
+      id: data.id,
+      refreshToken: data.tokens.refreshToken,
+    });
+
+    this.setCookies(res, data.tokens);
   }
 
   @Post('/local/signin')
@@ -70,8 +69,14 @@ export class AuthController {
     @Body() dto: AuthDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const tokens = await this.authService.signinLocal(dto);
-    this.setCookies(res, tokens);
+    const data = await this.authService.signinLocal(dto);
+
+    await this.authService.updateRefreshTokenFromDB({
+      id: data.id,
+      refreshToken: data.tokens.refreshToken,
+    });
+
+    this.setCookies(res, data.tokens);
   }
 
   @Post('/logout')
@@ -103,14 +108,17 @@ export class AuthController {
     @GetCurrentUser() user: JwtPayloadWithRefreshToken,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const tokens = await this.authService.refreshTokens({
+    const data = await this.authService.refreshTokens({
       id: user.sub,
       refreshToken: user.refreshToken,
     });
 
-    this.setCookies(res, tokens);
+    await this.authService.updateRefreshTokenFromDB({
+      id: data.id,
+      refreshToken: data.tokens.refreshToken,
+    });
 
-    return tokens;
+    this.setCookies(res, data.tokens);
   }
 
   @Post('/accept-invite')
@@ -183,5 +191,31 @@ export class AuthController {
       secure: true,
       expires: new Date(Date.now() + refreshTokenExpires),
     });
+  }
+
+  @Post('/google/login')
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  async googleLogin(
+    @Body() dto: GoogleLoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const ticket = await this.googleClient.verifyIdToken({
+      idToken: dto.idToken,
+      audience: this.config.get<string>('GOOGLE_CLIENT_ID'),
+    });
+    const payload = ticket.getPayload();
+    if (!payload?.email) {
+      throw new ForbiddenException("User doesn't have email");
+    }
+
+    const data = await this.authService.googleLogin(payload);
+
+    await this.authService.updateRefreshTokenFromDB({
+      id: data.id,
+      refreshToken: data.tokens.refreshToken,
+    });
+
+    this.setCookies(res, data.tokens);
   }
 }

@@ -3,15 +3,16 @@ import {
   ForbiddenException,
   NotAcceptableException,
   Injectable,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { Tokens } from './types';
+import { JwtPayload, Tokens } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { ProjectMemberState, User } from '@prisma/client';
-import { SignUpWithInviteDto } from './dto/signup-with-invite.dto';
+import { ProjectMemberState, UserProviderType } from '@prisma/client';
+import { TokenPayload as GoogleTokenPayload } from 'google-auth-library';
 
 @Injectable()
 export class AuthService {
@@ -28,124 +29,93 @@ export class AuthService {
     });
   }
 
-  async signupLocal(dto: AuthDto): Promise<Tokens> {
+  async signupLocal(dto: AuthDto) {
     const hashedPassword = await this.hashData(dto.password);
 
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
+      include: {
+        UserProvider: true,
+      },
     });
 
-    if (!user) {
-      const newUser = await this.prisma.user.create({
+    if (user) {
+      const hasInternalProvider = !!user?.UserProvider?.some(
+        (provider) => provider.type === UserProviderType.Internal,
+      );
+      if (hasInternalProvider) {
+        throw new ConflictException('User already exists');
+      }
+
+      await this.prisma.userProvider.create({
         data: {
-          email: dto.email,
+          type: UserProviderType.Internal,
           hash: hashedPassword,
+          userId: user.id,
         },
       });
 
       const tokens = await this.signToken({
-        id: newUser.id,
-        email: newUser.email,
-      });
-
-      await this.updateRefreshToken({
-        id: newUser.id,
-        refreshToken: tokens.refreshToken,
-      });
-
-      return tokens;
-    } else if (user && user.isTemporary) {
-      throw new NotAcceptableException(
-        'You have invitation to join a project, please check your email',
-      );
+        email: user.email,
+        sub: user.id,
+        provider: UserProviderType.Internal,
+      } satisfies JwtPayload);
+      return { tokens, id: user.id };
     } else {
-      throw new ConflictException('User already exists');
-    }
-  }
-
-  async signupWithInviteLocal(dto: SignUpWithInviteDto): Promise<Tokens> {
-    const safeDecode = this.jwtService.decode(dto.mailToken) as {
-      projectMemberId: string;
-    };
-    if (!safeDecode?.projectMemberId) {
-      throw new ForbiddenException('Invalid token');
-    }
-
-    const projectMember = await this.prisma.projectMember.findFirst({
-      where: {
-        id: safeDecode.projectMemberId,
-      },
-      include: {
-        user: true,
-      },
-    });
-
-    if (!projectMember) {
-      throw new ForbiddenException('Invalid token');
-    }
-
-    if (projectMember.user.email !== dto.email) {
-      throw new ForbiddenException('Invite email and signup email not match');
-    }
-
-    try {
-      await this.jwtService.verify(dto.mailToken, {
-        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${
-          projectMember.user.id
-        }`,
+      const newUser = await this.prisma.user.create({
+        data: {
+          email: dto.email,
+          UserProvider: {
+            create: {
+              type: UserProviderType.Internal,
+              hash: hashedPassword,
+            },
+          },
+        },
       });
-    } catch {
-      throw new ForbiddenException('Invalid token');
+
+      const tokens = await this.signToken({
+        email: newUser.email,
+        sub: newUser.id,
+        provider: UserProviderType.Internal,
+      } satisfies JwtPayload);
+      return { tokens, id: newUser.id };
     }
-
-    const hashedPassword = await this.hashData(dto.password);
-
-    const updatedUser = await this.prisma.user.update({
-      where: { id: projectMember.user.id },
-      data: { hash: hashedPassword, isTemporary: false },
-    });
-
-    await this.prisma.projectMember.update({
-      where: { id: projectMember.id },
-      data: { state: ProjectMemberState.active },
-    });
-
-    const tokens = await this.signToken({
-      id: updatedUser.id,
-      email: updatedUser.email,
-    });
-
-    await this.updateRefreshToken({
-      id: updatedUser.id,
-      refreshToken: tokens.refreshToken,
-    });
-
-    //TODO: account activated mail
-
-    return tokens;
   }
 
-  async signinLocal(dto: AuthDto): Promise<Tokens> {
+  async signinLocal(dto: AuthDto) {
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email, isTemporary: false },
+      where: { email: dto.email },
+      include: {
+        UserProvider: true,
+      },
     });
-    if (!user) throw new ForbiddenException('Invalid credentials');
 
-    const isPasswordMatches = await bcrypt.compare(dto.password, user.hash);
+    if (!user) {
+      throw new BadRequestException('Invalid credentials');
+    }
 
-    if (!isPasswordMatches) throw new ForbiddenException('Invalid credentials');
+    const internalProvider = user?.UserProvider?.find(
+      (provider) => provider.type === UserProviderType.Internal,
+    );
+    if (!internalProvider) {
+      throw new BadRequestException('Invalid credentials');
+    }
+
+    const isPasswordMatches = await bcrypt.compare(
+      dto.password,
+      internalProvider?.hash || '',
+    );
+    if (!isPasswordMatches)
+      throw new BadRequestException('Invalid credentials');
 
     const tokens = await this.signToken({
-      id: user.id,
+      sub: user.id,
       email: user.email,
+      provider: UserProviderType.Internal,
     });
 
-    await this.updateRefreshToken({
-      id: user.id,
-      refreshToken: tokens.refreshToken,
-    });
-
-    return tokens;
+    return { tokens, id: user.id };
   }
 
   async logout(userId: string) {
@@ -171,7 +141,7 @@ export class AuthService {
   }: {
     id: string;
     refreshToken: string;
-  }): Promise<Tokens> {
+  }) {
     if (!refreshToken) throw new ForbiddenException('Invalid token');
 
     const user = await this.prisma.user.findUnique({
@@ -188,27 +158,24 @@ export class AuthService {
       refreshToken,
       user.hashedRefreshToken,
     );
-
     if (!isRefreshTokenMatches) throw new ForbiddenException('Invalid token');
 
+    const decodedToken = this.jwtService.decode(refreshToken) as JwtPayload;
+
     const tokens = await this.signToken({
-      id: user.id,
+      sub: user.id,
       email: user.email,
+      provider: decodedToken.provider,
     });
 
-    await this.updateRefreshToken({
-      id: user.id,
-      refreshToken: tokens.refreshToken,
-    });
-
-    return tokens;
+    return { tokens, id: user.id };
   }
 
   hashData(data: string) {
     return bcrypt.hash(data, 10);
   }
 
-  async updateRefreshToken({
+  async updateRefreshTokenFromDB({
     id,
     refreshToken,
   }: {
@@ -221,30 +188,6 @@ export class AuthService {
       where: { id },
       data: { hashedRefreshToken },
     });
-  }
-
-  async signToken({ id, email }: { id: string; email: string }) {
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(
-        { sub: id, email },
-        {
-          expiresIn: this.config.get<number>('ACCESS_TOKEN_EXPIRES_IN'),
-          secret: this.config.get<string>('ACCESS_TOKEN_SECRET'),
-        },
-      ),
-      this.jwtService.signAsync(
-        { sub: id, email },
-        {
-          expiresIn: this.config.get<number>('REFRESH_TOKEN_EXPIRES_IN'),
-          secret: this.config.get<string>('REFRESH_TOKEN_SECRET'),
-        },
-      ),
-    ]);
-
-    return {
-      accessToken,
-      refreshToken,
-    };
   }
 
   async acceptInvite({ projectMemberId }: { projectMemberId: string }) {
@@ -287,5 +230,74 @@ export class AuthService {
 
       //TODO: send invite mail for each project member
     }
+  }
+
+  async googleLogin(payload: GoogleTokenPayload) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: payload.email },
+      include: {
+        UserProvider: true,
+      },
+    });
+
+    const tokenPayload: JwtPayload = {
+      email: user?.email,
+      sub: user?.id,
+      provider: UserProviderType.Google,
+    };
+
+    if (!user) {
+      const newUser = await this.prisma.user.create({
+        data: {
+          email: payload.email,
+          UserProvider: {
+            create: {
+              type: UserProviderType.Google,
+            },
+          },
+        },
+      });
+
+      tokenPayload.sub = newUser.id;
+      tokenPayload.email = newUser.email;
+    }
+
+    const hasGoogleProvider = !!user?.UserProvider?.some(
+      (provider) => provider.type === UserProviderType.Google,
+    );
+    if (user && hasGoogleProvider) {
+      await this.prisma.userProvider.create({
+        data: {
+          type: UserProviderType.Google,
+          userId: user.id,
+        },
+      });
+    }
+
+    const tokens = await this.signToken(tokenPayload);
+    return { tokens, id: tokenPayload.sub };
+  }
+  async signToken({ sub, email, provider }: JwtPayload) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(
+        { sub, email, provider },
+        {
+          expiresIn: this.config.get<number>('ACCESS_TOKEN_EXPIRES_IN'),
+          secret: this.config.get<string>('ACCESS_TOKEN_SECRET'),
+        },
+      ),
+      this.jwtService.signAsync(
+        { sub, email, provider },
+        {
+          expiresIn: this.config.get<number>('REFRESH_TOKEN_EXPIRES_IN'),
+          secret: this.config.get<string>('REFRESH_TOKEN_SECRET'),
+        },
+      ),
+    ]);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }
