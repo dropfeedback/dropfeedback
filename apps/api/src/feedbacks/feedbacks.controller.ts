@@ -7,7 +7,6 @@ import {
   HttpStatus,
   Post,
   Query,
-  Req,
 } from '@nestjs/common';
 import { FeedbacksService } from './feedbacks.service';
 import { Device, GetCurrentUser, Origin, Public } from 'src/common/decorators';
