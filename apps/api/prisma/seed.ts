@@ -1,4 +1,8 @@
-import { PrismaClient, ProjectMemberRole } from '@prisma/client';
+import {
+  PrismaClient,
+  ProjectMemberRole,
+  UserProviderType,
+} from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -11,7 +15,12 @@ async function main() {
     update: {},
     create: {
       email: 'demo@demo.com',
-      hash: await bcrypt.hash('123456', 10),
+      UserProvider: {
+        create: {
+          type: UserProviderType.Internal,
+          hash: await bcrypt.hash('demo', 10),
+        },
+      },
     },
   });
 
