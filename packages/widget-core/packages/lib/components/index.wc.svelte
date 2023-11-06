@@ -37,7 +37,7 @@
 />
 
 <script lang="ts">
-	import { setContext } from "svelte";
+	import { onMount, setContext } from "svelte";
 	import { writable } from "svelte/store";
 	import { fade } from "svelte/transition";
 	import { createPopperActions } from "svelte-popperjs";
@@ -58,9 +58,17 @@
 	export let backgroundColor: string = colorBgBase;
 	export let textColor: string = colorTextBase;
 
+	const meta = Object.entries($$restProps)
+		.filter(([key]) => key.startsWith("meta-"))
+		.reduce((acc, [key, value]) => {
+			acc[key.replace("meta-", "")] = value;
+			return acc;
+		}, {} as Record<string, string>);
+
 	const widgetProps = writable<WidgetContext>({
 		projectId,
 		position,
+		meta,
 		theme: {
 			scheme,
 			primaryColor,
@@ -82,6 +90,7 @@
 	$: widgetPropsContext.set({
 		projectId,
 		position,
+		meta,
 		theme: {
 			scheme,
 			primaryColor,
@@ -95,12 +104,32 @@
 	}
 
 	const [popperRef, popperContent, getInstance] = createPopperActions({
-		placement: position === "right" ? "left" : "right",
+		placement: "auto",
 		strategy: "fixed"
 	});
 	const extraOpts = {
 		modifiers: [{ name: "offset", options: { offset: [0, 12] } }]
 	};
+
+	const customButton = document.querySelector("[data-feedback-button]") as HTMLButtonElement;
+
+	onMount(() => {
+		if (!customButton) {
+			return;
+		}
+
+		popperRef(customButton);
+		getInstance()?.setOptions({
+			placement: "bottom"
+		});
+
+		const togglePopper = () => {
+			$showPopper = !$showPopper;
+		};
+		customButton.addEventListener("click", togglePopper);
+
+		return () => customButton.removeEventListener("click", togglePopper);
+	});
 
 	async function refreshTooltip() {
 		await getInstance()?.update();
@@ -129,39 +158,41 @@
 
 {#if projectId !== undefined}
 	<CssVar>
-		<button
-			use:popperRef
-			on:click={() => {
-				$showPopper = !$showPopper;
-			}}
-			class="trigger-button"
-			class:trigger-button-right={position === "right"}
-			class:trigger-button-left={position === "left"}
-		>
-			feedbacky
-		</button>
-
+		{#if !customButton}
+			<button
+				use:popperRef
+				on:click={() => {
+					$showPopper = !$showPopper;
+				}}
+				class="trigger-button"
+				class:trigger-button-right={position === "right"}
+				class:trigger-button-left={position === "left"}
+			>
+				feedbacky
+			</button>
+		{/if}
 		{#if $showPopper}
 			<div
 				id="popper"
-				class="popper"
 				use:popperContent={extraOpts}
 				use:updatePopperWhenPositionIsChanged={position}
 				transition:fade={{ duration: 100 }}
 			>
-				{#if $currentStep === "category"}
-					<PopperContent>
-						<CategoryStep />
-					</PopperContent>
-				{:else if $currentStep === "form"}
-					<PopperContent>
-						<FormStep />
-					</PopperContent>
-				{/if}
-				{#if $currentStep === "success"}
-					<SuccessStep />
-				{/if}
-				<div class="arrow" data-popper-arrow data-popper-placement={position} />
+				<div class="popper" class:popper-opened={$showPopper}>
+					{#if $currentStep === "category"}
+						<PopperContent>
+							<CategoryStep />
+						</PopperContent>
+					{:else if $currentStep === "form"}
+						<PopperContent>
+							<FormStep />
+						</PopperContent>
+					{/if}
+					{#if $currentStep === "success"}
+						<SuccessStep />
+					{/if}
+					<div class="arrow" data-popper-arrow />
+				</div>
 			</div>
 		{/if}
 	</CssVar>
@@ -204,11 +235,16 @@
 		box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
 	}
 
-	.arrow[data-popper-placement^="right"] {
+	:global(#popper[data-popper-placement^="bottom"] .arrow) {
+		top: -4px;
+	}
+	:global(#popper[data-popper-placement^="top"] .arrow) {
+		bottom: -4px;
+	}
+	:global(#popper[data-popper-placement^="left"] .arrow) {
 		right: -4px;
 	}
-
-	.arrow[data-popper-placement^="left"] {
+	:global(#popper[data-popper-placement^="right"] .arrow) {
 		left: -4px;
 	}
 

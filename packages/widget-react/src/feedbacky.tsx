@@ -12,6 +12,7 @@ export interface FeedbackyProps {
     textColor?: string;
   };
   position?: "left" | "right";
+  meta?: Record<string, any>;
 }
 
 declare global {
@@ -29,7 +30,20 @@ declare global {
   }
 }
 
-export const Feedbacky = ({ projectId, position, theme }: FeedbackyProps) => {
+export const Feedbacky = ({
+  projectId,
+  position,
+  theme,
+  meta = {},
+}: FeedbackyProps) => {
+  const metaProps = Object.keys(meta).reduce(
+    (acc, key) => {
+      acc[`meta-${key}`] = meta[key];
+      return acc;
+    },
+    {} as Record<string, any>,
+  );
+
   return (
     <feedbacky-widget
       project-id={projectId}
@@ -38,6 +52,7 @@ export const Feedbacky = ({ projectId, position, theme }: FeedbackyProps) => {
       theme-primary-color={theme?.primaryColor}
       theme-background-color={theme?.backgroundColor}
       theme-text-color={theme?.textColor}
+      {...metaProps}
     />
   );
 };
