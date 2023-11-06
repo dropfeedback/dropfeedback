@@ -57,9 +57,17 @@
 	export let backgroundColor: string = colorBgBase;
 	export let textColor: string = colorTextBase;
 
+	const meta = Object.entries($$restProps)
+		.filter(([key]) => key.startsWith("meta-"))
+		.reduce((acc, [key, value]) => {
+			acc[key.replace("meta-", "")] = value;
+			return acc;
+		}, {} as Record<string, string>);
+
 	const widgetProps = writable<WidgetContext>({
 		projectId,
 		position,
+		meta,
 		theme: {
 			scheme,
 			primaryColor,
@@ -81,6 +89,7 @@
 	$: widgetPropsContext.set({
 		projectId,
 		position,
+		meta,
 		theme: {
 			scheme,
 			primaryColor,

@@ -69,6 +69,8 @@
 		theme-primary-color={primaryColor}
 		theme-text-color={textColor}
 		theme-background-color={backgroundColor}
+		meta-customerId="123"
+		meta-role="manager"
 		{position}
 	/>
 </main>
