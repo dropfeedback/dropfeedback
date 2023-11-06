@@ -39,7 +39,7 @@ fieldset {
 	position: fixed;
 	top: 50%;
 	margin-top: -70px;
-	cursor: none;
+	z-index: -1;
 }
 
 .arrow-right {
@@ -53,4 +53,10 @@ fieldset {
 
 .arrow-dark {
 	filter: invert(0.87);
+}
+
+@media (max-width: 768px) {
+	.arrow {
+		display: none;
+	}
 }

@@ -39,6 +39,7 @@
 <script lang="ts">
 	import { onMount, setContext } from "svelte";
 	import { writable } from "svelte/store";
+	import { fade } from "svelte/transition";
 	import { createPopperActions } from "svelte-popperjs";
 	import PopperContent from "./popper-content.wc.svelte";
 	import CategoryStep from "./category-step.wc.svelte";
@@ -170,23 +171,30 @@
 				feedbacky
 			</button>
 		{/if}
-		<div id="popper" use:popperContent={extraOpts} use:updatePopperWhenPositionIsChanged={position}>
-			<div class="popper" class:popper-opened={$showPopper}>
-				{#if $currentStep === "category"}
-					<PopperContent>
-						<CategoryStep />
-					</PopperContent>
-				{:else if $currentStep === "form"}
-					<PopperContent>
-						<FormStep />
-					</PopperContent>
-				{/if}
-				{#if $currentStep === "success"}
-					<SuccessStep />
-				{/if}
-				<div class="arrow" data-popper-arrow />
+		{#if $showPopper}
+			<div
+				id="popper"
+				use:popperContent={extraOpts}
+				use:updatePopperWhenPositionIsChanged={position}
+				transition:fade={{ duration: 100 }}
+			>
+				<div class="popper" class:popper-opened={$showPopper}>
+					{#if $currentStep === "category"}
+						<PopperContent>
+							<CategoryStep />
+						</PopperContent>
+					{:else if $currentStep === "form"}
+						<PopperContent>
+							<FormStep />
+						</PopperContent>
+					{/if}
+					{#if $currentStep === "success"}
+						<SuccessStep />
+					{/if}
+					<div class="arrow" data-popper-arrow />
+				</div>
 			</div>
-		</div>
+		{/if}
 	</CssVar>
 {/if}
 
@@ -210,16 +218,7 @@
 		min-width: 320px;
 		border-radius: 8px;
 		min-height: 200px;
-	}
-
-	.popper-opened {
-		opacity: 1;
-		visibility: visible;
-	}
-
-	.popper:not(.popper-opened) {
-		opacity: 0;
-		visibility: hidden;
+		z-index: 99999;
 	}
 
 	.arrow,
