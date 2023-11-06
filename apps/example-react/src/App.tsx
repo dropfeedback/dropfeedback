@@ -128,6 +128,10 @@ function App() {
           textColor,
           backgroundColor,
         }}
+        meta={{
+          customerId: "123",
+          role: "admin",
+        }}
       />
     </main>
   );
