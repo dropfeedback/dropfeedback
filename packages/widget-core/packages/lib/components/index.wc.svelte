@@ -39,6 +39,7 @@
 <script lang="ts">
 	import { setContext } from "svelte";
 	import { writable } from "svelte/store";
+	import { fade } from "svelte/transition";
 	import { createPopperActions } from "svelte-popperjs";
 	import PopperContent from "./popper-content.wc.svelte";
 	import CategoryStep from "./category-step.wc.svelte";
@@ -140,8 +141,14 @@
 			feedbacky
 		</button>
 
-		<div id="popper" use:popperContent={extraOpts} use:updatePopperWhenPositionIsChanged={position}>
-			<div class="popper" class:popper-opened={$showPopper}>
+		{#if $showPopper}
+			<div
+				id="popper"
+				class="popper"
+				use:popperContent={extraOpts}
+				use:updatePopperWhenPositionIsChanged={position}
+				transition:fade={{ duration: 100 }}
+			>
 				{#if $currentStep === "category"}
 					<PopperContent>
 						<CategoryStep />
@@ -156,7 +163,7 @@
 				{/if}
 				<div class="arrow" data-popper-arrow data-popper-placement={position} />
 			</div>
-		</div>
+		{/if}
 	</CssVar>
 {/if}
 
@@ -180,16 +187,7 @@
 		min-width: 320px;
 		border-radius: 8px;
 		min-height: 200px;
-	}
-
-	.popper-opened {
-		opacity: 1;
-		visibility: visible;
-	}
-
-	.popper:not(.popper-opened) {
-		opacity: 0;
-		visibility: hidden;
+		z-index: 99999;
 	}
 
 	.arrow,
