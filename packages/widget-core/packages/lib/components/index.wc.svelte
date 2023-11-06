@@ -103,15 +103,15 @@
 		console.error("feedbacky: Missing projectId");
 	}
 
+	const customButton = document.querySelector("[data-feedback-button]") as HTMLButtonElement;
+
 	const [popperRef, popperContent, getInstance] = createPopperActions({
-		placement: "auto",
+		placement: customButton ? "bottom" : "auto",
 		strategy: "fixed"
 	});
 	const extraOpts = {
 		modifiers: [{ name: "offset", options: { offset: [0, 12] } }]
 	};
-
-	const customButton = document.querySelector("[data-feedback-button]") as HTMLButtonElement;
 
 	onMount(() => {
 		if (!customButton) {
@@ -119,9 +119,6 @@
 		}
 
 		popperRef(customButton);
-		getInstance()?.setOptions({
-			placement: "bottom"
-		});
 
 		const togglePopper = () => {
 			$showPopper = !$showPopper;
@@ -174,25 +171,24 @@
 		{#if $showPopper}
 			<div
 				id="popper"
+				class="popper"
 				use:popperContent={extraOpts}
 				use:updatePopperWhenPositionIsChanged={position}
 				transition:fade={{ duration: 100 }}
 			>
-				<div class="popper" class:popper-opened={$showPopper}>
-					{#if $currentStep === "category"}
-						<PopperContent>
-							<CategoryStep />
-						</PopperContent>
-					{:else if $currentStep === "form"}
-						<PopperContent>
-							<FormStep />
-						</PopperContent>
-					{/if}
-					{#if $currentStep === "success"}
-						<SuccessStep />
-					{/if}
-					<div class="arrow" data-popper-arrow />
-				</div>
+				{#if $currentStep === "category"}
+					<PopperContent>
+						<CategoryStep />
+					</PopperContent>
+				{:else if $currentStep === "form"}
+					<PopperContent>
+						<FormStep />
+					</PopperContent>
+				{/if}
+				{#if $currentStep === "success"}
+					<SuccessStep />
+				{/if}
+				<div class="arrow" data-popper-arrow />
 			</div>
 		{/if}
 	</CssVar>
