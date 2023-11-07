@@ -1,5 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
-import { Button } from "~/components/ui/button";
+import { ThemeSwitcher } from "~/components/theme-switcher";
 
 export const meta: MetaFunction = () => {
   return [
@@ -10,8 +10,8 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <div>
-      <Button>Init</Button>
+    <div className="flex justify-center">
+      <ThemeSwitcher />
     </div>
   );
 }
