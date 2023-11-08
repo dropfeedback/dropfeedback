@@ -13,6 +13,7 @@ import {
 } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class ProjectsService {
@@ -20,6 +21,7 @@ export class ProjectsService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private config: ConfigService,
+    private mailService: MailService,
   ) {}
   async getAllByUser({ id }: { id: string }) {
     const projectMembers = await this.prisma.projectMember.findMany({
@@ -114,9 +116,12 @@ export class ProjectsService {
         secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${email}`,
       },
     );
-    return mailToken;
 
-    //TODO: send you are added project mail here with mail and mail token
+    await this.mailService.sendVerificationEmail({
+      email,
+      token: mailToken,
+      projectName: projectId,
+    });
   }
 
   async removeMember({

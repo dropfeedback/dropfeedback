@@ -11,11 +11,11 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto';
-import { JwtPayload, JwtPayloadWithRefreshToken, Tokens } from './types';
+import type { JwtPayload, JwtPayloadWithRefreshToken, Tokens } from './types';
 import { RefreshTokenGuard } from 'src/common/guards';
 import { GetCurrentUser, Public } from 'src/common/decorators';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';

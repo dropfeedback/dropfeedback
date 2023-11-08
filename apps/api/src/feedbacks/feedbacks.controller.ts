@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { FeedbacksService } from './feedbacks.service';
 import { Device, GetCurrentUser, Origin, Public } from 'src/common/decorators';
-import { JwtPayload } from 'src/auth/types';
+import type { JwtPayload } from 'src/auth/types';
 import { FeedbackDto } from './dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 

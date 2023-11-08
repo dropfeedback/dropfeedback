@@ -16,6 +16,7 @@
   "devDependencies": {
     "@faker-js/faker": "^8.2.0",
     "@turbo/gen": "^1.10.12",
+    "@types/react": "^18.2.36",
     "dotenv-cli": "^7.2.1",
     "eslint": "^8.28.0",
     "prettier": "^3.0.0",
@@ -26,5 +27,11 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@nestjs-modules/mailer": "^1.9.1",
+    "@react-email/components": "^0.0.11",
+    "@react-email/render": "^0.0.9",
+    "googleapis": "^128.0.0"
+  }
 }
