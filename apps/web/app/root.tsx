@@ -36,7 +36,9 @@ export default function App() {
           enableSystem
           disableTransitionOnChange
         >
-          <Outlet />
+          <div className="relative min-h-screen">
+            <Outlet />
+          </div>
         </ThemeProvider>
         <ScrollRestoration />
         <Scripts />
