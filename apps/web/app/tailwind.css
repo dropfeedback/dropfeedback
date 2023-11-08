@@ -71,6 +71,15 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-sm text-foreground;
+    @apply bg-background text-sm;
   }
+}
+
+.active-tab::before {
+  @apply absolute block h-0;
+  left: 9px;
+  right: 9px;
+  bottom: -9px;
+  border-bottom: 2px solid;
+  content: "";
 }

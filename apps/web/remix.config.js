@@ -14,7 +14,10 @@ export default {
       route("dashboard", "routes/dashboard/layout.tsx", () => {
         route("", "routes/dashboard/route.tsx", { index: true });
         route(":projectId", "routes/dashboard/project/layout.tsx", () => {
-          route("", "routes/dashboard/project/route.tsx", { index: true });
+          route("", "routes/dashboard/project/overview.tsx", { index: true });
+          route("feedbacks", "routes/dashboard/project/feedbacks.tsx" );
+          route("team", "routes/dashboard/project/team.tsx" );
+          route("integrations", "routes/dashboard/project/integrations.tsx" );
         });
       });
     });
