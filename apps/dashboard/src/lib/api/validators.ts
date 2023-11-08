@@ -16,6 +16,11 @@ export type AuthResponse = {
   refreshToken: string;
 };
 
+export const AuthGoogleSchema = z.object({
+  idToken: z.string(),
+});
+export type AuthGooglePayload = z.infer<typeof AuthGoogleSchema>;
+
 export const ProjectSchema = z.object({
   name: z.string().min(3),
 });

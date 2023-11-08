@@ -13,16 +13,28 @@ datasource db {
 model User {
   id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email              String   @unique
-  emailVerified      Boolean  @default(false)
-  isTemporary        Boolean  @default(false)
-  hash               String?
   hashedRefreshToken String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @default(now()) @updatedAt
 
+  UserProvider  UserProvider[]
   projectMember ProjectMember[]
 
   @@map("users")
+}
+
+model UserProvider {
+  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String           @db.Uuid
+  type          UserProviderType
+  // It's only for internal users
+  hash          String?
+  // It's only for internal users
+  emailVerified Boolean          @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_providers")
 }
 
 model Project {
@@ -76,4 +88,9 @@ enum ProjectMemberRole {
 enum ProjectMemberState {
   active
   pending
+}
+
+enum UserProviderType {
+  Google   @map("google")
+  Internal @map("internal")
 }
