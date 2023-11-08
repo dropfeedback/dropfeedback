@@ -1,10 +1,13 @@
 import { Outlet } from "@remix-run/react";
+import { Header } from "./header";
 
-export default function DashboardLayout() {
+export default function Layout() {
   return (
-    <div>
-      DashboardLayout
-      <Outlet />
-    </div>
+    <>
+      <Header />
+      <div className="min-h-[calc(100vh-4rem)] bg-accent p-6">
+        <Outlet />
+      </div>
+    </>
   );
 }
