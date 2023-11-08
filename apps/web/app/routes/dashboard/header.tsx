@@ -19,13 +19,17 @@ export function Header() {
   return (
     <nav className="flex h-16 items-center border-b border-b-zinc-200 px-6 shadow-sm">
       <div className="flex-auto">
-        <div className="flex items-center gap-2">
-          <ChatBubbleIcon className="h-6 w-6 " />
-          <span className="text-lg font-bold">needback</span>
-        </div>
+        <Link to="/dashboard">
+          <div className="flex items-center gap-2">
+            <ChatBubbleIcon className="h-6 w-6 " />
+            <span className="text-lg font-bold">needback</span>
+          </div>
+        </Link>
       </div>
       <div className="flex items-center justify-end gap-2">
-        <Button variant="outline">Feedback</Button>
+        <Button variant="outline" className="font-normal text-muted-foreground">
+          Feedback
+        </Button>
         <Button asChild variant="link">
           <Link to="/docs">Docs</Link>
         </Button>
