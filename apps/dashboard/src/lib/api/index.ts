@@ -6,6 +6,9 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export const axiosInstance = axios.create({
   withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 const createProject = async (payload: validators.ProjectPayload) => {
@@ -67,6 +70,16 @@ const refreshTokens = async () => {
   return data;
 };
 
+const googleLogin = async (payload: validators.AuthGooglePayload) => {
+  const { data } = await axiosInstance.post(
+    `${BASE_URL}/auth/google/login`,
+    payload,
+  );
+
+  return data;
+};
+
+// refresh tokens if 401
 axiosInstance.interceptors.response.use(
   (response) => {
     return response;
@@ -110,6 +123,7 @@ export const api = {
   signin,
   logout,
   refreshTokens,
+  googleLogin,
 };
 
 export type ApiError = AxiosError<{
