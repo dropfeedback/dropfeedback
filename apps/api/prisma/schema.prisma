@@ -19,6 +19,7 @@ model User {
 
   UserProvider  UserProvider[]
   projectMember ProjectMember[]
+  MemberInvite  MemberInvite[]
 
   @@map("users")
 }
@@ -44,24 +45,42 @@ model Project {
 
   projectMembers ProjectMember[]
   feedbacks      Feedback[]
+  MemberInvite   MemberInvite[]
 
   @@map("projects")
 }
 
 model ProjectMember {
-  id        String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  role      ProjectMemberRole  @default(member)
-  state     ProjectMemberState @default(active)
-  userId    String             @db.Uuid
-  projectId String             @db.Uuid
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @default(now()) @updatedAt
+  id        String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  role      ProjectMemberRole @default(member)
+  userId    String            @db.Uuid
+  projectId String            @db.Uuid
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @default(now()) @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([userId, projectId])
   @@map("project_members")
+}
+
+model MemberInvite {
+  id   String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  role MemberInviteRole @default(member)
+
+  projectId String            @db.Uuid
+  email     String
+  state     MemberInviteState @default(Pending)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @default(now()) @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  User    User?   @relation(fields: [userId], references: [id])
+  userId  String? @db.Uuid
+
+  @@unique([email, projectId])
+  @@map("member_invites")
 }
 
 model Feedback {
@@ -85,9 +104,15 @@ enum ProjectMemberRole {
   member
 }
 
-enum ProjectMemberState {
-  active
-  pending
+enum MemberInviteRole {
+  manager
+  member
+}
+
+enum MemberInviteState {
+  Pending  @map("pending")
+  Accepted @map("accepted")
+  Rejected @map("rejected")
 }
 
 enum UserProviderType {

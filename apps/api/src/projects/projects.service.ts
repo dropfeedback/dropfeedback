@@ -7,9 +7,9 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProjectDto } from './dto';
 import {
+  MemberInviteRole,
+  MemberInviteState,
   ProjectMemberRole,
-  ProjectMemberState,
-  UserProviderType,
 } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -23,7 +23,7 @@ export class ProjectsService {
   ) {}
   async getAllByUser({ id }: { id: string }) {
     const projectMembers = await this.prisma.projectMember.findMany({
-      where: { userId: id, state: ProjectMemberState.active },
+      where: { userId: id },
       include: { project: true },
     });
 
@@ -65,8 +65,22 @@ export class ProjectsService {
     return members.map((m) => ({
       id: m.user.id,
       email: m.user.email,
-      state: m.state,
       role: m.role,
+    }));
+  }
+
+  async invites({ projectId }: { projectId: string }) {
+    const memberInvites = await this.prisma.memberInvite.findMany({
+      where: {
+        projectId,
+      },
+    });
+
+    return memberInvites.map((m) => ({
+      id: m.id,
+      email: m.email,
+      role: m.role,
+      state: m.state,
     }));
   }
 
@@ -77,45 +91,27 @@ export class ProjectsService {
   }: {
     projectId: string;
     email: string;
-    role: 'manager' | 'member';
+    role: MemberInviteRole;
   }) {
-    let user = await this.prisma.user.findUnique({ where: { email } });
-
-    if (!user) {
-      // create temporary user
-      user = await this.prisma.user.create({
-        data: {
-          email,
-          UserProvider: {
-            create: {
-              type: UserProviderType.Internal,
-            },
-          },
-        },
-      });
-    }
-
-    const projectMember = await this.prisma.projectMember.findUnique({
-      where: { userId_projectId: { projectId, userId: user.id } },
-    });
-    if (projectMember) {
-      throw new ConflictException('User already in project');
-    }
-
-    const createdProjectMember = await this.prisma.projectMember.create({
-      data: {
-        projectId,
-        userId: user.id,
-        role,
-        state: ProjectMemberState.pending,
+    const memberInvite = await this.prisma.memberInvite.findUnique({
+      where: {
+        email_projectId: { email, projectId },
+        state: MemberInviteState.Pending,
       },
+    });
+    if (memberInvite) {
+      throw new ConflictException('Invite already sent');
+    }
+
+    await this.prisma.memberInvite.create({
+      data: { email, projectId, role },
     });
 
     const mailToken = await this.jwtService.signAsync(
-      { projectMemberId: createdProjectMember.id },
+      { email, projectId },
       {
         expiresIn: this.config.get<number>('EMAIL_TOKEN_EXPIRES_IN'),
-        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${user.id}`,
+        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${email}`,
       },
     );
     return mailToken;
@@ -136,6 +132,13 @@ export class ProjectsService {
     //TODO: your account removed from project mail will send here
     return this.prisma.projectMember.delete({
       where: { userId_projectId: { projectId, userId: memberId } },
+    });
+  }
+
+  async cancelInvite(memberInviteId: string) {
+    //TODO: your account removed from project mail will send here
+    return this.prisma.memberInvite.delete({
+      where: { id: memberInviteId },
     });
   }
 
