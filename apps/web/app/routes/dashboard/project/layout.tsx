@@ -1,10 +1,10 @@
 import { Outlet } from "@remix-run/react";
-import { Header } from "./header";
+import { ProjectHeader } from "~/components/project-header";
 
 export default function Layout() {
   return (
     <div>
-      <Header />
+      <ProjectHeader />
       <div className="p-6">
         <Outlet />
       </div>

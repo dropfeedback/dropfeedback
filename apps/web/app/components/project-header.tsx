@@ -28,7 +28,7 @@ const ROUTES = [
   },
 ];
 
-export function Header() {
+export function ProjectHeader() {
   const [isStickyActive, setIsStickyActive] = useState(false);
   const params = useParams<{ projectId: string }>();
   const location = useLocation();
