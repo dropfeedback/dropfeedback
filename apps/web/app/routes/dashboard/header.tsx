@@ -17,7 +17,7 @@ import { MenubarShortcut } from "~/components/ui/menubar";
 
 export function Header() {
   return (
-    <nav className="flex h-16 items-center border-b border-b-zinc-200 px-6 shadow-sm">
+    <nav className="flex h-16 items-center border-b border-b-muted px-6 shadow-sm">
       <div className="flex-auto">
         <Link to="/dashboard">
           <div className="flex items-center gap-2">
@@ -30,7 +30,11 @@ export function Header() {
         <Button variant="outline" className="font-normal text-muted-foreground">
           Feedback
         </Button>
-        <Button asChild variant="link">
+        <Button
+          asChild
+          variant="link"
+          className="font-normal text-muted-foreground hover:text-primary hover:no-underline"
+        >
           <Link to="/docs">Docs</Link>
         </Button>
         <DropdownMenu>
@@ -47,8 +51,8 @@ export function Header() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <div className="px-2 py-1.5">
-              <p className="font-medium">Salih</p>
-              <p className="text-muted-foreground">salihozdemir94@gmail.com</p>
+              <p className="font-medium text-primary">Salih</p>
+              <p>salihozdemir94@gmail.com</p>
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

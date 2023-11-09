@@ -35,15 +35,15 @@ export function Header() {
     }) ?? ROUTES[0];
 
   return (
-    <div className="sticky top-0 -ml-3 -mt-3 flex h-auto rounded-none border-b border-none border-b-zinc-200 bg-background px-6 py-2 shadow-sm">
+    <div className="sticky top-0 -ml-3 -mt-3 flex h-auto rounded-none border-b border-muted bg-background px-6 py-2 text-muted-foreground shadow-sm">
       {ROUTES.map((route) => (
         <Button
           key={route.title}
           variant="ghost"
           size="default"
           asChild
-          className={cn("relative", {
-            "active-tab": activeRoute.key === route.key,
+          className={cn("relative font-normal", {
+            "active-tab text-primary": activeRoute.key === route.key,
           })}
         >
           <Link to={route.path.replace(":projectId", params.projectId!)}>
