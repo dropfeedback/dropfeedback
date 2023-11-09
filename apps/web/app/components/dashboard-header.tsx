@@ -15,7 +15,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { MenubarShortcut } from "~/components/ui/menubar";
 
-export function Header() {
+export function DashboardHeader() {
   return (
     <nav className="flex h-16 items-center border-b border-b-muted px-6 shadow-sm">
       <div className="flex-auto">
