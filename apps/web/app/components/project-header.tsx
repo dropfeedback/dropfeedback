@@ -57,7 +57,7 @@ export function ProjectHeader() {
   return (
     <div
       className={
-        "sticky top-0 -mt-3 flex h-auto items-center rounded-none border-b border-muted bg-background px-6 py-2 text-muted-foreground shadow-sm"
+        "sticky top-0 -mt-3 flex h-auto items-center rounded-none border-b border-muted bg-background px-6 pb-2 pt-1 text-muted-foreground shadow-sm"
       }
     >
       {isStickyActive && (
