@@ -10,7 +10,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
-import { JwtPayload } from 'src/auth/types';
+import type { JwtPayload } from 'src/auth/types';
 import { GetCurrentUser } from 'src/common/decorators';
 import { ProjectDto } from './dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
