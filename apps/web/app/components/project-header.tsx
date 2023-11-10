@@ -55,11 +55,7 @@ export function ProjectHeader() {
     }) ?? ROUTES[0];
 
   return (
-    <div
-      className={
-        "sticky top-0 -mt-3 flex h-auto items-center rounded-none border-b border-muted bg-background px-6 pb-2 pt-1 text-muted-foreground shadow-sm"
-      }
-    >
+    <div className="sticky top-0 -mt-3 flex h-auto items-center rounded-none border-b bg-background px-6 py-2 text-muted-foreground shadow-border">
       {isStickyActive && (
         <motion.div
           initial={{ opacity: 0, y: -40 }}
