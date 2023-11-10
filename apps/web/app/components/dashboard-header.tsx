@@ -74,7 +74,7 @@ export function DashboardHeader() {
   }, [value]);
 
   return (
-    <nav className="flex h-16 items-center border-b border-b-muted px-6 shadow-sm">
+    <nav className="flex h-16 items-center border-b px-6 shadow-border">
       <div className="flex flex-1 items-center gap-4">
         <div className="flex items-center gap-2">
           <Link to="/dashboard">
@@ -139,7 +139,7 @@ export function DashboardHeader() {
                           setOpen(false);
                         }}
                       >
-                        <PlusCircledIcon className="mr-2 h-5 w-5" />
+                        <PlusCircledIcon className="mr-2 h-4 w-4" />
                         Create Project
                       </CommandItem>
                     </CommandGroup>

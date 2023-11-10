@@ -5,7 +5,7 @@ export default function Layout() {
   return (
     <div>
       <ProjectHeader />
-      <div className="p-6">
+      <div className="container py-6">
         <Outlet />
       </div>
     </div>
