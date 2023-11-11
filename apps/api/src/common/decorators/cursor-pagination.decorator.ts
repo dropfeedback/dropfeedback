@@ -1,10 +1,9 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
 import { CursorPagination } from '../types';
-var qs = require('qs');
 
 export const GetCursorPagination = createParamDecorator(
-  (data, ctx: ExecutionContext) => {
+  (data, ctx: ExecutionContext): CursorPagination => {
     const req: Request = ctx.switchToHttp().getRequest();
 
     const qursorFromQuery = req.query?.cursor as string | undefined;
