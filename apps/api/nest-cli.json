@@ -3,17 +3,13 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "builder": "swc",
-    "typeCheck": true,
-    "deleteOutDir": true,
-    "plugins": [
-      {
-        "name": "@nestjs/swagger",
-        "options": {
-          "classValidatorShim": true,
-          "introspectComments": true
-        }
+    "builder": {
+      "type": "swc",
+      "options": {
+        "extensions": [".js", ".ts", ".jsx", ".tsx"]
       }
-    ]
+    },
+    "typeCheck": true,
+    "deleteOutDir": true
   }
 }

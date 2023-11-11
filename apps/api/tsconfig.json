@@ -22,6 +22,7 @@
     "moduleResolution": "node",
     "paths": {
       "src/*": ["./src/*"]
-    }
+    },
+    "jsx": "react-jsx"
   }
 }

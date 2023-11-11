@@ -7,21 +7,17 @@ import {
   HttpStatus,
   Post,
   Query,
-  Req,
 } from '@nestjs/common';
 import { FeedbacksService } from './feedbacks.service';
 import { Device, GetCurrentUser, Origin, Public } from 'src/common/decorators';
-import { JwtPayload } from 'src/auth/types';
+import type { JwtPayload } from 'src/auth/types';
 import { FeedbackDto } from './dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('feedbacks')
 @Controller('feedbacks')
 export class FeedbacksController {
   constructor(private feedbackService: FeedbacksService) {}
 
   @Get('/')
-  @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.OK)
   getAllByProjectId(
     @GetCurrentUser() user: JwtPayload,
