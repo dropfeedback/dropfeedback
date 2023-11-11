@@ -2,7 +2,7 @@ import type { IFeedback } from "../types";
 
 export const sendFeedback = async (feedback: IFeedback) => {
 	try {
-		const response = await fetch("http://localhost:3001/feedbacks", {
+		const response = await fetch("http://localhost:8080/feedbacks", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"

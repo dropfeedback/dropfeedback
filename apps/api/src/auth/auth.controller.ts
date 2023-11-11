@@ -14,7 +14,7 @@ import { AuthDto } from './dto';
 import type { JwtPayload, JwtPayloadWithRefreshToken, Tokens } from './types';
 import { RefreshTokenGuard } from 'src/common/guards';
 import { GetCurrentUser, Public } from 'src/common/decorators';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+
 import type { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -24,7 +24,6 @@ import { OAuth2Client } from 'google-auth-library';
 import { AcceptInviteBodyDto } from './dto/accept-invite-body.dto';
 import { GoogleLoginDto } from './dto/google-login.dto';
 
-@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   googleClient = new OAuth2Client();
@@ -37,7 +36,6 @@ export class AuthController {
   ) {}
 
   @Get('/me')
-  @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.OK)
   async me(@GetCurrentUser() user: JwtPayload) {
     return this.authService.me(user.sub);
@@ -98,7 +96,6 @@ export class AuthController {
   }
 
   @Post('/refresh')
-  @ApiBearerAuth('refresh-token')
   @Public()
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
