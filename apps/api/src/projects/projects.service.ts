@@ -105,22 +105,14 @@ export class ProjectsService {
       throw new ConflictException('Invite already sent');
     }
 
-    await this.prisma.memberInvite.create({
+    const createdInvite = await this.prisma.memberInvite.create({
       data: { email, projectId, role },
+      include: { project: true },
     });
 
-    const mailToken = await this.jwtService.signAsync(
-      { email, projectId },
-      {
-        expiresIn: this.config.get<number>('EMAIL_TOKEN_EXPIRES_IN'),
-        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${email}`,
-      },
-    );
-
-    await this.mailService.sendVerificationEmail({
+    await this.mailService.sendInviteEmail({
       email,
-      token: mailToken,
-      projectName: projectId,
+      projectName: createdInvite.project.name,
     });
   }
 

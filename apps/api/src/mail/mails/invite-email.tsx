@@ -1,3 +1,6 @@
+//don't remove this import
+import React from 'react';
+
 import {
   Body,
   Button,
@@ -12,17 +15,10 @@ import {
   Tailwind,
   Text,
 } from '@react-email/components';
+import { config } from '../../config';
 
-//don't remove this import
-import React from 'react';
-
-export const VerificationEmail = ({
-  inviteUrl,
-  projectName,
-}: {
-  inviteUrl: string;
-  projectName: string;
-}) => {
+export const InviteEmail = ({ projectName }: { projectName: string }) => {
+  const inviteUrl = config().WEB_URL + '/invites';
   return (
     <Html>
       <Head />
