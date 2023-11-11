@@ -6,13 +6,14 @@ export type IFeedbackForm = {
 
 export type IFeedback = IFeedbackForm & {
 	projectId: string;
-	meta: object | null;
+	meta: Record<string, any>;
 };
 
 export type WidgetContext = {
 	projectId: string;
 	position: "left" | "right";
 	theme: ThemeProps;
+	meta: Record<string, any>;
 };
 
 export type ThemeProps = {

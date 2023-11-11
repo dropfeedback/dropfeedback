@@ -134,8 +134,8 @@
 
 	.brand {
 		text-align: center;
-		padding-top: 8px;
-		padding-bottom: 8px;
+		padding-top: 4px;
+		padding-bottom: 4px;
 		font-size: 10px;
 		color: var(--color-text-tertiary);
 	}

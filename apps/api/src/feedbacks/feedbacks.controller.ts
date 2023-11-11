@@ -16,17 +16,14 @@ import {
   Public,
 } from 'src/common/decorators';
 import { FeedbackDto } from './dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CursorPagination, OrderBy } from 'src/common/types';
 import { GetOderBy } from 'src/common/decorators/order-by.decorator';
 
-@ApiTags('feedbacks')
 @Controller('feedbacks')
 export class FeedbacksController {
   constructor(private feedbackService: FeedbacksService) {}
 
   @Get('/')
-  @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.OK)
   getAllByProjectId(
     @Query('projectId') projectId: string,

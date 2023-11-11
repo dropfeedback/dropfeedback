@@ -8,7 +8,7 @@
 	const { currentStep, selectedCategory } = getContext<ConfigContext>("config");
 	const widgetPropsContext = getContext<Writable<WidgetContext>>("widgetProps");
 
-	const { projectId } = $widgetPropsContext;
+	const { projectId, meta } = $widgetPropsContext;
 
 	let placeholder: string = "What's on your mind?";
 	let content = "";
@@ -33,8 +33,8 @@
 			await sendFeedback({
 				// category: $selectedCategory,
 				content,
-				meta: {},
-				projectId
+				projectId,
+				meta
 			});
 
 			const requestDuration = Date.now() - duration;

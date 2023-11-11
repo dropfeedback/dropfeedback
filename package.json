@@ -27,5 +27,10 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "character-parser": "^4.0.0",
+    "is-whitespace": "^0.3.0",
+    "preview-email": "^3.0.19"
+  }
 }
