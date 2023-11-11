@@ -37,8 +37,9 @@
 />
 
 <script lang="ts">
-	import { setContext } from "svelte";
+	import { onMount, setContext } from "svelte";
 	import { writable } from "svelte/store";
+	import { fade } from "svelte/transition";
 	import { createPopperActions } from "svelte-popperjs";
 	import PopperContent from "./popper-content.wc.svelte";
 	import CategoryStep from "./category-step.wc.svelte";
@@ -57,9 +58,17 @@
 	export let backgroundColor: string = colorBgBase;
 	export let textColor: string = colorTextBase;
 
+	const meta = Object.entries($$restProps)
+		.filter(([key]) => key.startsWith("meta-"))
+		.reduce((acc, [key, value]) => {
+			acc[key.replace("meta-", "")] = value;
+			return acc;
+		}, {} as Record<string, string>);
+
 	const widgetProps = writable<WidgetContext>({
 		projectId,
 		position,
+		meta,
 		theme: {
 			scheme,
 			primaryColor,
@@ -81,6 +90,7 @@
 	$: widgetPropsContext.set({
 		projectId,
 		position,
+		meta,
 		theme: {
 			scheme,
 			primaryColor,
@@ -93,13 +103,30 @@
 		console.error("feedbacky: Missing projectId");
 	}
 
+	const customButton = document.querySelector("[data-feedback-button]") as HTMLButtonElement;
+
 	const [popperRef, popperContent, getInstance] = createPopperActions({
-		placement: position === "right" ? "left" : "right",
+		placement: customButton ? "bottom" : "auto",
 		strategy: "fixed"
 	});
 	const extraOpts = {
 		modifiers: [{ name: "offset", options: { offset: [0, 12] } }]
 	};
+
+	onMount(() => {
+		if (!customButton) {
+			return;
+		}
+
+		popperRef(customButton);
+
+		const togglePopper = () => {
+			$showPopper = !$showPopper;
+		};
+		customButton.addEventListener("click", togglePopper);
+
+		return () => customButton.removeEventListener("click", togglePopper);
+	});
 
 	async function refreshTooltip() {
 		await getInstance()?.update();
@@ -128,20 +155,27 @@
 
 {#if projectId !== undefined}
 	<CssVar>
-		<button
-			use:popperRef
-			on:click={() => {
-				$showPopper = !$showPopper;
-			}}
-			class="trigger-button"
-			class:trigger-button-right={position === "right"}
-			class:trigger-button-left={position === "left"}
-		>
-			feedbacky
-		</button>
-
-		<div id="popper" use:popperContent={extraOpts} use:updatePopperWhenPositionIsChanged={position}>
-			<div class="popper" class:popper-opened={$showPopper}>
+		{#if !customButton}
+			<button
+				use:popperRef
+				on:click={() => {
+					$showPopper = !$showPopper;
+				}}
+				class="trigger-button"
+				class:trigger-button-right={position === "right"}
+				class:trigger-button-left={position === "left"}
+			>
+				feedbacky
+			</button>
+		{/if}
+		{#if $showPopper}
+			<div
+				id="popper"
+				class="popper"
+				use:popperContent={extraOpts}
+				use:updatePopperWhenPositionIsChanged={position}
+				transition:fade={{ duration: 100 }}
+			>
 				{#if $currentStep === "category"}
 					<PopperContent>
 						<CategoryStep />
@@ -154,16 +188,18 @@
 				{#if $currentStep === "success"}
 					<SuccessStep />
 				{/if}
-				<div class="arrow" data-popper-arrow data-popper-placement={position} />
+				<div class="arrow" data-popper-arrow />
 			</div>
-		</div>
+		{/if}
 	</CssVar>
 {/if}
 
 <style>
 	:host,
 	:global(*) {
-		font-family: inherit;
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+			"Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+			"Noto Color Emoji";
 		box-sizing: border-box;
 	}
 
@@ -178,14 +214,7 @@
 		min-width: 320px;
 		border-radius: 8px;
 		min-height: 200px;
-	}
-
-	.popper-opened {
-		opacity: 1;
-	}
-
-	.popper:not(.popper-opened) {
-		opacity: 0;
+		z-index: 99999;
 	}
 
 	.arrow,
@@ -197,15 +226,21 @@
 	}
 
 	.arrow {
+		text-align: left;
 		visibility: hidden;
 		box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
 	}
 
-	.arrow[data-popper-placement^="right"] {
+	:global(#popper[data-popper-placement^="bottom"] .arrow) {
+		top: -4px;
+	}
+	:global(#popper[data-popper-placement^="top"] .arrow) {
+		bottom: -4px;
+	}
+	:global(#popper[data-popper-placement^="left"] .arrow) {
 		right: -4px;
 	}
-
-	.arrow[data-popper-placement^="left"] {
+	:global(#popper[data-popper-placement^="right"] .arrow) {
 		left: -4px;
 	}
 
@@ -229,6 +264,11 @@
 		cursor: pointer;
 		transition: background-color 0.2s var(--motion-ease-in-out);
 		user-select: none;
+		margin-top: -14.25px;
+	}
+
+	.trigger-button:hover {
+		background-color: var(--color-primary-hover);
 	}
 
 	.trigger-button:active {
