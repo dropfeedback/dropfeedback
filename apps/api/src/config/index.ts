@@ -9,6 +9,7 @@ export const config = () => {
   return {
     port: parseInt(process.env.PORT || '8080', 10),
     APP_URL: throwEnvError('APP_URL'),
+    WEB_URL: throwEnvError('WEB_URL'),
     DATABASE_URL: throwEnvError('DATABASE_URL'),
     ACCESS_TOKEN_SECRET: throwEnvError('ACCESS_TOKEN_SECRET'),
     REFRESH_TOKEN_SECRET: throwEnvError('REFRESH_TOKEN_SECRET'),
