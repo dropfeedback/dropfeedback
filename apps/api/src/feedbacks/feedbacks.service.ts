@@ -9,9 +9,9 @@ export class FeedbacksService {
 
   async getAllByProjectId({
     projectId,
-    search,
-    pagination,
-    orderBy,
+    search = '',
+    pagination = {},
+    orderBy = {},
   }: {
     projectId: string;
     search?: string;
@@ -53,7 +53,7 @@ export class FeedbacksService {
     origin: string;
     device: string;
   }) {
-    const { projectId, ...data } = dto;
+    const { projectId, content, meta } = dto;
 
     return this.prisma.feedback.create({
       include: {
@@ -62,8 +62,9 @@ export class FeedbacksService {
       data: {
         origin,
         device,
-        ...data,
+        content,
         projectId,
+        meta: meta || {},
       },
     });
   }
