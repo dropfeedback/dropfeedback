@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { render } from '@react-email/render';
 import { google } from 'googleapis';
 import { Options } from 'nodemailer/lib/smtp-transport';
-import { VerificationEmail } from 'src/mail/mails/verification-email';
+import { InviteEmail } from 'src/mail/mails/invite-email';
 
 @Injectable()
 export class MailService {
@@ -56,30 +56,30 @@ export class MailService {
     email: string;
     html: string;
   }) {
-    await this.setTransport();
-    return this.mailerService.sendMail({
-      transporterName: 'gmail',
-      to: email,
-      from: this.config.get<string>('EMAIL'),
-      subject,
-      html,
-    });
+    try {
+      await this.setTransport();
+
+      await this.mailerService.sendMail({
+        transporterName: 'gmail',
+        to: email,
+        from: this.config.get<string>('EMAIL'),
+        subject,
+        html,
+      });
+    } catch (error) {
+      //TODO: add logger
+      console.log(error);
+    }
   }
 
-  async sendVerificationEmail({
+  async sendInviteEmail({
     email,
-    token,
     projectName,
   }: {
     email: string;
-    token: string;
     projectName: string;
   }) {
-    const inviteUrl = `${this.config.get<string>(
-      'CLIENT_URL',
-    )}/verify-email?token=${token}`;
-
-    const html = render(VerificationEmail({ inviteUrl, projectName }));
-    await this.sendMail({ subject: 'Verification email', email, html });
+    const html = render(InviteEmail({ projectName }));
+    this.sendMail({ subject: 'Verification email', email, html });
   }
 }
