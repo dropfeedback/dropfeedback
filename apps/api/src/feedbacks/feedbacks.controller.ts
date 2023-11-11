@@ -9,10 +9,16 @@ import {
   Query,
 } from '@nestjs/common';
 import { FeedbacksService } from './feedbacks.service';
-import { Device, GetCurrentUser, Origin, Public } from 'src/common/decorators';
-import type { JwtPayload } from 'src/auth/types';
+import {
+  Device,
+  GetCursorPagination,
+  Origin,
+  Public,
+} from 'src/common/decorators';
 import { FeedbackDto } from './dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CursorPagination, OrderBy } from 'src/common/types';
+import { GetOderBy } from 'src/common/decorators/order-by.decorator';
 
 @ApiTags('feedbacks')
 @Controller('feedbacks')
@@ -23,16 +29,18 @@ export class FeedbacksController {
   @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.OK)
   getAllByProjectId(
-    @GetCurrentUser() user: JwtPayload,
     @Query('projectId') projectId: string,
     @Query('search') search: string,
+    @GetCursorPagination() pagination: CursorPagination,
+    @GetOderBy() orderBy: OrderBy,
   ) {
     if (!projectId) throw new BadRequestException('Project id is required');
 
     return this.feedbackService.getAllByProjectId({
-      userId: user.sub,
       projectId,
       search,
+      pagination,
+      orderBy,
     });
   }
 
