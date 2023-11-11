@@ -16,7 +16,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "pretest": "sh ./scripts/run-integration.sh",
+    "pretest:ci": "sh ./scripts/run-integration.sh",
     "test": "dotenv -e .env.test -- jest -i --no-cache",
     "pretest:watch": "npm run pretest",
     "test:watch": "dotenv -e .env.test -- jest -i --watch",
