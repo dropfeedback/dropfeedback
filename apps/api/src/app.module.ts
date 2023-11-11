@@ -4,10 +4,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { config } from './config';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
-import { PrismaModule } from './prisma/prisma.module';
 import { AccessTokenGuard } from './common/guards';
 import { ProjectsModule } from './projects/projects.module';
 import { FeedbacksModule } from './feedbacks/feedbacks.module';
+import { MailModule } from './mail/mail.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -18,6 +19,10 @@ import { FeedbacksModule } from './feedbacks/feedbacks.module';
     AuthModule,
     ProjectsModule,
     FeedbacksModule,
+    MailModule,
+    MailerModule.forRoot({
+      transport: 'smtps://user@domain.com:pass@smtp.domain.com',
+    }),
   ],
   controllers: [AppController],
   providers: [

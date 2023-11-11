@@ -73,7 +73,7 @@ npm run dev -- --filter=@feedbacky/api --filter=@feedbacky/dashboard
 
 By default following ports are used:
 
-- [api](./packages/api): http://localhost:3001
+- [api](./packages/api): http://localhost:8080
 - [dashboard](./apps/dashboard): http://localhost:3000
 - [widget](./packages/widget): http://localhost:5173
 
@@ -107,7 +107,7 @@ Running this command will automatically create a new database, generate Prisma (
 # Tech Stack
 
 - [Nest.js](https://nestjs.com/)
-  - Used to build the API server. Auhtentication is handled by [Passport.js](http://www.passportjs.org/) and [JWT](https://jwt.io/) with refresh tokens. [Swagger](https://swagger.io/) is used to document the API. [Jest](https://jestjs.io/) is used for testing.
+  - Used to build the API server. Auhtentication is handled by [Passport.js](http://www.passportjs.org/) and [JWT](https://jwt.io/) with refresh tokens. [Jest](https://jestjs.io/) is used for testing.
 - [Prisma](https://www.prisma.io/)
   - Used to interact with the database. [PostgreSQL](https://www.postgresql.org/) is used as the database.
     ![db-diagram](./packages/api/prisma/db-diagram.png)

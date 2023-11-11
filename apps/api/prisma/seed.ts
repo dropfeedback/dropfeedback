@@ -1,4 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import {
+  PrismaClient,
+  ProjectMemberRole,
+  UserProviderType,
+} from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -11,16 +15,22 @@ async function main() {
     update: {},
     create: {
       email: 'demo@demo.com',
-      hash: await bcrypt.hash('123456', 10),
+      UserProvider: {
+        create: {
+          type: UserProviderType.Internal,
+          hash: await bcrypt.hash('demo', 10),
+        },
+      },
     },
   });
 
   const projectDemo = await prisma.project.create({
     data: {
       name: 'Demo Project',
-      user: {
-        connect: {
-          id: userDemo.id,
+      projectMembers: {
+        create: {
+          userId: userDemo.id,
+          role: ProjectMemberRole.manager,
         },
       },
     },
@@ -38,11 +48,7 @@ async function main() {
       data: {
         ...data,
         ...meta,
-        project: {
-          connect: {
-            id: projectDemo.id,
-          },
-        },
+        projectId: projectDemo.id,
       },
     });
   }

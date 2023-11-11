@@ -1,33 +1,41 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
   Post,
-  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto';
-import { JwtPayload, JwtPayloadWithRefreshToken, Tokens } from './types';
+import type { JwtPayload, JwtPayloadWithRefreshToken, Tokens } from './types';
 import { RefreshTokenGuard } from 'src/common/guards';
 import { GetCurrentUser, Public } from 'src/common/decorators';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
-import { ConfigService } from '@nestjs/config';
 
-@ApiTags('auth')
+import type { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { MemberInviteState } from '@prisma/client';
+import { OAuth2Client } from 'google-auth-library';
+import { AcceptInviteBodyDto } from './dto/accept-invite-body.dto';
+import { GoogleLoginDto } from './dto/google-login.dto';
+
 @Controller('auth')
 export class AuthController {
+  googleClient = new OAuth2Client();
+
   constructor(
     private authService: AuthService,
     private config: ConfigService,
+    private jwtService: JwtService,
+    private prisma: PrismaService,
   ) {}
 
   @Get('/me')
-  @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.OK)
   async me(@GetCurrentUser() user: JwtPayload) {
     return this.authService.me(user.sub);
@@ -40,8 +48,14 @@ export class AuthController {
     @Body() dto: AuthDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const tokens = await this.authService.signupLocal(dto);
-    this.setCookies(res, tokens);
+    const data = await this.authService.signupLocal(dto);
+
+    await this.authService.updateRefreshTokenFromDB({
+      id: data.id,
+      refreshToken: data.tokens.refreshToken,
+    });
+
+    this.setCookies(res, data.tokens);
   }
 
   @Post('/local/signin')
@@ -51,8 +65,14 @@ export class AuthController {
     @Body() dto: AuthDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const tokens = await this.authService.signinLocal(dto);
-    this.setCookies(res, tokens);
+    const data = await this.authService.signinLocal(dto);
+
+    await this.authService.updateRefreshTokenFromDB({
+      id: data.id,
+      refreshToken: data.tokens.refreshToken,
+    });
+
+    this.setCookies(res, data.tokens);
   }
 
   @Post('/logout')
@@ -76,7 +96,6 @@ export class AuthController {
   }
 
   @Post('/refresh')
-  @ApiBearerAuth('refresh-token')
   @Public()
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
@@ -84,14 +103,56 @@ export class AuthController {
     @GetCurrentUser() user: JwtPayloadWithRefreshToken,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const tokens = await this.authService.refreshTokens({
+    const data = await this.authService.refreshTokens({
       id: user.sub,
       refreshToken: user.refreshToken,
     });
 
-    this.setCookies(res, tokens);
+    await this.authService.updateRefreshTokenFromDB({
+      id: data.id,
+      refreshToken: data.tokens.refreshToken,
+    });
 
-    return tokens;
+    this.setCookies(res, data.tokens);
+  }
+
+  @Post('/accept-invite')
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  async acceptInvite(@Body() dto: AcceptInviteBodyDto) {
+    const safeDecode = this.jwtService.decode(dto.acceptInviteToken) as {
+      email: string;
+      projectId: string;
+    };
+    if (!safeDecode?.email || !safeDecode?.projectId) {
+      throw new ForbiddenException('Invalid token');
+    }
+
+    try {
+      await this.jwtService.verify(dto.acceptInviteToken, {
+        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${
+          safeDecode.email
+        }`,
+      });
+    } catch {
+      throw new ForbiddenException('Invalid token');
+    }
+
+    const memberInvite = await this.prisma.memberInvite.findFirst({
+      where: {
+        projectId: safeDecode.projectId,
+        email: safeDecode.email,
+      },
+    });
+
+    if (memberInvite.state !== MemberInviteState.Pending) {
+      throw new ForbiddenException('You already accepted or rejected invite');
+    }
+
+    await this.authService.acceptInvite({
+      email: safeDecode.email,
+      projectId: safeDecode.projectId,
+    });
   }
 
   setCookies(res: Response, tokens: Tokens) {
@@ -116,5 +177,31 @@ export class AuthController {
       secure: true,
       expires: new Date(Date.now() + refreshTokenExpires),
     });
+  }
+
+  @Post('/google/login')
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  async googleLogin(
+    @Body() dto: GoogleLoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const ticket = await this.googleClient.verifyIdToken({
+      idToken: dto.idToken,
+      audience: this.config.get<string>('GOOGLE_CLIENT_ID'),
+    });
+    const payload = ticket.getPayload();
+    if (!payload?.email) {
+      throw new ForbiddenException("User doesn't have email");
+    }
+
+    const data = await this.authService.googleLogin(payload);
+
+    await this.authService.updateRefreshTokenFromDB({
+      id: data.id,
+      refreshToken: data.tokens.refreshToken,
+    });
+
+    this.setCookies(res, data.tokens);
   }
 }
