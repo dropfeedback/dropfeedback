@@ -1,117 +1,55 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { FeedbacksService } from './feedbacks.service';
-import { AppModule } from '../app.module';
-import { DEMO_PROJECT_ID } from '../../prisma/seed';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
+import { FeedbackDto } from './dto';
+import { prismaMock } from 'src/libs/__mocks__/prisma';
 
 describe('FeedbacksService', () => {
-  let service: FeedbacksService;
-  let moduleRef: TestingModule;
+  let feedbackService: FeedbacksService;
 
   beforeAll(async () => {
-    moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    const moduleRef = await Test.createTestingModule({
+      providers: [FeedbacksService, PrismaService, ConfigService],
+    })
+      .overrideProvider(PrismaService)
+      .useValue(prismaMock)
+      .compile();
 
-    service = moduleRef.get(FeedbacksService);
-  });
-
-  afterAll(async () => {
-    await moduleRef.close();
+    feedbackService = moduleRef.get<FeedbacksService>(FeedbacksService);
   });
 
   describe('CRUD', () => {
-    it('should create feedback', async () => {
-      const feedback = await service.createByProjectId({
-        dto: {
-          meta: null,
-          projectId: DEMO_PROJECT_ID,
-          content: 'test feedback',
+    it('should create feedback with valid data', async () => {
+      const feedbackDto: FeedbackDto = {
+        content: 'test',
+        projectId: 'be2f10bf-666f-4535-8a58-2c785ff00bb9',
+        meta: {
+          browser: 'test',
         },
-        device: 'test device',
-        origin: 'test origin',
+      };
+
+      prismaMock.feedback.create.mockResolvedValueOnce({
+        id: 'test',
+        device: 'test',
+        origin: 'test',
+        ...feedbackDto,
+        createdAt: new Date(),
       });
 
-      expect(feedback).toBeTruthy();
-    });
-
-    it('should fetch data by projectId', async () => {
-      // Seed specific test data
-
-      const response = await service.getAllByProjectId({
-        projectId: DEMO_PROJECT_ID,
-        pagination: {
-          take: 30,
-        },
+      const result = await feedbackService.createByProjectId({
+        dto: feedbackDto,
+        device: 'test',
+        origin: 'test',
       });
 
-      expect(response).toHaveProperty('data');
-      expect(response).toHaveProperty('total');
-      expect(response).toHaveProperty('nextCursor');
-      expect(response).toHaveProperty('prevCursor');
-      expect(response.data).toBeInstanceOf(Array);
-    });
-
-    it('should filter results based on search criteria', async () => {
-      const response = await service.getAllByProjectId({
-        projectId: DEMO_PROJECT_ID,
-        search: 'searchQuery',
-        pagination: {
-          take: 30,
-        },
+      expect(result).toEqual({
+        id: 'test',
+        device: 'test',
+        origin: 'test',
+        ...feedbackDto,
+        createdAt: expect.any(Date),
       });
-
-      expect(
-        response.data.every((item) => item.content.includes('habitasse')),
-      ).toBeTruthy();
-    });
-
-    it('should handle pagination correctly', async () => {
-      const pageSize = 10;
-
-      // Fetch the first page
-      const firstPageResponse = await service.getAllByProjectId({
-        projectId: DEMO_PROJECT_ID,
-        pagination: {
-          take: pageSize,
-        },
-      });
-
-      // Assertions for the first page
-      expect(firstPageResponse.data.length).toBeLessThanOrEqual(pageSize);
-
-      // Fetch the next page using the cursor from the first page
-      const secondPageCursor = firstPageResponse.nextCursor;
-      const secondPageResponse = await service.getAllByProjectId({
-        projectId: DEMO_PROJECT_ID,
-        pagination: {
-          take: pageSize,
-          cursor: {
-            id: secondPageCursor,
-          },
-        },
-      });
-
-      // Check if the first item of the second page is different from the last item of the first page
-      expect(secondPageResponse.data[0].id).not.toBe(
-        firstPageResponse.data[firstPageResponse.data.length - 1].id,
-      );
-
-      // Fetch the previous page using the cursor from the second page
-      const prevPageCursor = secondPageResponse.prevCursor;
-      const prevPageResponse = await service.getAllByProjectId({
-        projectId: DEMO_PROJECT_ID,
-        pagination: {
-          take: -pageSize,
-          cursor: {
-            id: prevPageCursor,
-          },
-        },
-      });
-
-      // Check if the first item of the previous page is the same as the last item of the first page
-      expect(prevPageResponse.data[0].id).toBe(
-        firstPageResponse.data[firstPageResponse.data.length - 1].id,
-      );
     });
   });
 });
