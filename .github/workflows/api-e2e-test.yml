@@ -11,6 +11,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./apps/api
 
     strategy:
       matrix:
@@ -25,5 +28,5 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm install
-    - run: npm run build -- --filter=@feedbacky/api
-    - run: npm test -- --filter=@feedbacky/api
+    - run: npm run build
+    - run: npm test
