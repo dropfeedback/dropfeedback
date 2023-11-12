@@ -19,6 +19,8 @@
     "test": "dotenv -e .env.test -- vitest run",
     "test:watch": "dotenv -e .env.test -- vitest",
     "test:cov": "dotenv -e .env.test -- vitest run --coverage",
+    "pretest2:e2e": "sh ./scripts/run-integration.sh",
+    "test:e2e": "dotenv -e .env.test -- vitest run --config ./vitest.config.e2e.ts",
     "db:seed": "npm run db:generate && prisma db seed",
     "db:generate": "prisma generate",
     "db:push": "prisma db push --skip-generate",
