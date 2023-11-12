@@ -7,18 +7,25 @@ import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
+export const DEMO_USER = {
+  email: 'demo@demo.com',
+  password: 'demo',
+};
+
+export const DEMO_PROJECT_ID = '57c19f23-fc16-4bbc-816e-ba26eaeade47';
+
 async function main() {
   console.log('🌱 Seeding prisma db...');
 
   const userDemo = await prisma.user.upsert({
-    where: { email: 'demo@demo.com' },
+    where: { email: DEMO_USER.email },
     update: {},
     create: {
-      email: 'demo@demo.com',
+      email: DEMO_USER.email,
       UserProvider: {
         create: {
           type: UserProviderType.Internal,
-          hash: await bcrypt.hash('demo', 10),
+          hash: await bcrypt.hash(DEMO_USER.password, 10),
         },
       },
     },
@@ -27,6 +34,7 @@ async function main() {
   const projectDemo = await prisma.project.create({
     data: {
       name: 'Demo Project',
+      id: DEMO_PROJECT_ID,
       projectMembers: {
         create: {
           userId: userDemo.id,
