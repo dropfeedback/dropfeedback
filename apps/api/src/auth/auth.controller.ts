@@ -145,7 +145,7 @@ export class AuthController {
       },
     });
 
-    if (memberInvite.state !== MemberInviteState.Pending) {
+    if (memberInvite?.state !== MemberInviteState.Pending) {
       throw new ForbiddenException('You already accepted or rejected invite');
     }
 
@@ -158,11 +158,11 @@ export class AuthController {
   setCookies(res: Response, tokens: Tokens) {
     const accessTokenExpires = this.config.get<number>(
       'ACCESS_TOKEN_EXPIRES_IN',
-    );
+    ) as number;
 
     const refreshTokenExpires = this.config.get<number>(
       'REFRESH_TOKEN_EXPIRES_IN',
-    );
+    ) as number;
 
     res.cookie('accessToken', tokens.accessToken, {
       httpOnly: true,
