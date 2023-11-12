@@ -6,13 +6,13 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
+    "target": "es2021",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
@@ -20,9 +20,12 @@
     "allowJs": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "types": ["vitest/globals"],
     "paths": {
       "src/*": ["./src/*"]
-    },
-    "jsx": "react-jsx"
-  }
+    }
+  },
+  "exclude": ["build"],
+  "include": ["node_modules", "**/*.ts", "**/*.tsx", "**/*.js"]
 }

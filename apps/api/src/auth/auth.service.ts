@@ -155,7 +155,7 @@ export class AuthService {
 
     const isRefreshTokenMatches = await bcrypt.compare(
       refreshToken,
-      user.hashedRefreshToken,
+      user.hashedRefreshToken || '',
     );
     if (!isRefreshTokenMatches) throw new ForbiddenException('Invalid token');
 
@@ -205,7 +205,7 @@ export class AuthService {
       },
     });
 
-    if (!memberInvite) {
+    if (!memberInvite?.userId) {
       throw new ForbiddenException('Invite not found');
     }
 
@@ -225,6 +225,10 @@ export class AuthService {
         UserProvider: true,
       },
     });
+
+    if (!user || !payload?.email) {
+      throw new BadRequestException('User not found');
+    }
 
     const tokenPayload: JwtPayload = {
       email: user?.email,

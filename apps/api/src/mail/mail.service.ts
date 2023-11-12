@@ -30,7 +30,12 @@ export class MailService {
         if (err) {
           reject('Failed to create access token');
         }
-        resolve(token);
+
+        if (token) {
+          resolve(token);
+        } else {
+          reject('Failed to create access token');
+        }
       });
     });
 
