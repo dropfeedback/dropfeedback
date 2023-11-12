@@ -7,7 +7,7 @@ export class FeedbackDto
 {
   @IsNotEmpty()
   @IsString()
-  @MinLength(10)
+  @MinLength(3)
   content: string;
 
   meta: Prisma.JsonValue | null;

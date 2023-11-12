@@ -8,6 +8,4 @@ docker-compose up test_db -d
 echo '🟡 - Waiting for database to be ready...'
 $DIR/wait-for-it.sh "${DATABASE_URL}" -- echo '🟢 - Database is ready!'
 
-cd "../db/"
 npx prisma migrate reset --force
-cd "../api/"
