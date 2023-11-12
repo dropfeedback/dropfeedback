@@ -7,8 +7,6 @@ import { AuthModule } from './auth/auth.module';
 import { AccessTokenGuard } from './common/guards';
 import { ProjectsModule } from './projects/projects.module';
 import { FeedbacksModule } from './feedbacks/feedbacks.module';
-import { MailModule } from './mail/mail.module';
-import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -19,10 +17,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
     AuthModule,
     ProjectsModule,
     FeedbacksModule,
-    MailModule,
-    MailerModule.forRoot({
-      transport: 'smtps://user@domain.com:pass@smtp.domain.com',
-    }),
   ],
   controllers: [AppController],
   providers: [

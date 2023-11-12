@@ -4,10 +4,9 @@ import { ProjectsController } from './projects.controller';
 import { AccessTokenStrategy } from 'src/auth/strategies';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtModule } from '@nestjs/jwt';
-import { MailModule } from 'src/mail/mail.module';
 
 @Module({
-  imports: [JwtModule.register({}), MailModule],
+  imports: [JwtModule.register({})],
   providers: [ProjectsService, AccessTokenStrategy, PrismaService],
   controllers: [ProjectsController],
 })

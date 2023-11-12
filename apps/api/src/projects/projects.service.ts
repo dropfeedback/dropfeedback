@@ -11,18 +11,10 @@ import {
   MemberInviteState,
   ProjectMemberRole,
 } from '@prisma/client';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class ProjectsService {
-  constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
-    private config: ConfigService,
-    private mailService: MailService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
   async getAllByUser({ id }: { id: string }) {
     const projectMembers = await this.prisma.projectMember.findMany({
       where: { userId: id },
@@ -108,11 +100,6 @@ export class ProjectsService {
     const createdInvite = await this.prisma.memberInvite.create({
       data: { email, projectId, role },
       include: { project: true },
-    });
-
-    await this.mailService.sendInviteEmail({
-      email,
-      projectName: createdInvite.project.name,
     });
   }
 
