@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { Feedback, Prisma } from 'src/prisma';
 
 export class FeedbackDto
@@ -7,7 +7,6 @@ export class FeedbackDto
 {
   @IsNotEmpty()
   @IsString()
-  @MinLength(3)
   content: string;
 
   meta: Prisma.JsonValue | null;
