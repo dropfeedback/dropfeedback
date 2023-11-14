@@ -11,13 +11,15 @@ export default {
     return defineRoutes((route) => {
       route("/", "routes/landing/route.tsx", { index: true });
       route("docs", "routes/docs/route.tsx");
-      route("login", "routes/auth/login/route.tsx");
-      route("login/email", "routes/auth/login/email/route.tsx", {
-        index: true,
-      });
-      route("signup", "routes/auth/signup/route.tsx");
-      route("signup/email", "routes/auth/signup/email/route.tsx", {
-        index: true,
+      route("", "routes/auth/layout.tsx", () => {
+        route("login", "routes/auth/login/route.tsx");
+        route("login/email", "routes/auth/login/email/route.tsx", {
+          index: true,
+        });
+        route("signup", "routes/auth/signup/route.tsx");
+        route("signup/email", "routes/auth/signup/email/route.tsx", {
+          index: true,
+        });
       });
       route("dashboard", "routes/dashboard/layout.tsx", () => {
         route("", "routes/dashboard/route.tsx", { index: true });

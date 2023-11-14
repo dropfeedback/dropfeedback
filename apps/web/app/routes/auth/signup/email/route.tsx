@@ -35,52 +35,50 @@ export default function LoginWithEmail() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center">
-      <div className="flex w-80 flex-col">
-        <h1 className="text-center text-2xl font-semibold tracking-tight">
-          Sign up for DropFeedback
-        </h1>
-        <br />
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Email address" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Password" type="password" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+    <div className="flex w-80 flex-col">
+      <h1 className="text-center text-2xl font-semibold tracking-tight">
+        Sign up for DropFeedback
+      </h1>
+      <br />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Email address" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Password" type="password" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <Button type="submit" className="w-full" size="lg">
-              Sign up
-            </Button>
-          </form>
-        </Form>
-        <br />
-        <div className="text-center">
-          <Link to="/signup" className="text-base text-link">
-            ← Other Sign Up Options
-          </Link>
-        </div>
+          <Button type="submit" className="w-full" size="lg">
+            Sign up
+          </Button>
+        </form>
+      </Form>
+      <br />
+      <div className="text-center">
+        <Link to="/signup" className="text-base text-link">
+          ← Other Sign Up Options
+        </Link>
       </div>
     </div>
   );
