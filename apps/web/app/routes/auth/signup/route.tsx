@@ -4,14 +4,13 @@ import { Separator } from "~/components/ui/separator";
 
 export default function Signup() {
   return (
-    <div className="flex flex-col">
-      <h1 className="text-2xl font-semibold tracking-tight">
-        Sign up for DropFeedback
+    <div>
+      <h1 className="mb-10 text-3xl font-semibold tracking-tight">
+        Sign up to DropFeedback
       </h1>
-      <br />
-      <GoogleOAuthButton />
-      <Separator className="my-6" />
-      <div className="text-center">
+      <div className="m-auto flex w-min flex-col items-center">
+        <GoogleOAuthButton />
+        <Separator className="my-6" />
         <Link to="/signup/email" className="text-base text-link">
           Continue with Email →
         </Link>

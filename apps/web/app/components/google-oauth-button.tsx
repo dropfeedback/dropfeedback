@@ -23,6 +23,8 @@ export default function GoogleOAuthButton() {
   return (
     <GoogleLogin
       text="continue_with"
+      size="large"
+      width={240}
       onSuccess={(credentialResponse) => {
         const credential = credentialResponse.credential;
         if (!credential) return;
