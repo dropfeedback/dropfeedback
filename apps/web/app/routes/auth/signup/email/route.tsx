@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { useLocalLogin } from "./useLocalLogin";
+import { useLocalSignup } from "./useLocalSignup";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -20,7 +20,7 @@ const formSchema = z.object({
 });
 
 export default function LoginWithEmail() {
-  const { mutate } = useLocalLogin();
+  const { mutate } = useLocalSignup();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,7 +38,7 @@ export default function LoginWithEmail() {
     <div className="flex h-screen items-center justify-center">
       <div className="flex w-80 flex-col">
         <h1 className="text-center text-2xl font-semibold tracking-tight">
-          Log in to DropFeedback
+          Sign up for DropFeedback
         </h1>
         <br />
         <Form {...form}>
@@ -71,14 +71,14 @@ export default function LoginWithEmail() {
             />
 
             <Button type="submit" className="w-full" size="lg">
-              Log in
+              Sign up
             </Button>
           </form>
         </Form>
         <br />
         <div className="text-center">
-          <Link to="/login" className="text-base text-link">
-            ← Other Login Options
+          <Link to="/signup" className="text-base text-link">
+            ← Other Sign Up Options
           </Link>
         </div>
       </div>

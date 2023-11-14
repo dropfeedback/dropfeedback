@@ -2,13 +2,13 @@ import { createMutation } from "react-query-kit";
 import { type AxiosError } from "axios";
 import { axiosInstance } from "~/lib/axios";
 
-type Response = { token: string };
-type Variables = { idToken: string };
+type Response = null;
+type Variables = { email: string; password: string };
 
-export const useGoogleLogin = createMutation<Response, Variables, AxiosError>({
+export const useLocalSignup = createMutation<Response, Variables, AxiosError>({
   mutationFn: async (variables) => {
     const { data } = await axiosInstance.post<Response>(
-      "/auth/google/login",
+      "/auth/local/signup",
       variables,
     );
 
