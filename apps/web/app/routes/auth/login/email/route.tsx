@@ -50,12 +50,15 @@ export default function LoginWithEmail() {
   };
 
   return (
-    <div>
-      <h1 className="mb-10 text-3xl font-semibold tracking-tight">
+    <div className="space-y-10">
+      <h1 className="text-center text-3xl font-semibold tracking-tight">
         Log in to DropFeedback
       </h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="m-auto max-w-[325px] space-y-4"
+        >
           <FormField
             control={form.control}
             name="email"
@@ -95,7 +98,7 @@ export default function LoginWithEmail() {
           </Button>
         </form>
       </Form>
-      <div className="mt-8 text-center">
+      <div className="text-center">
         <Link to="/login" className="text-base text-link">
           ← Other Login Options
         </Link>

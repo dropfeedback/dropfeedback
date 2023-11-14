@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { ExternalLinkIcon } from "@radix-ui/react-icons";
 
 type Response = null;
 type Variables = { email: string; password: string };
@@ -50,13 +51,15 @@ export default function LoginWithEmail() {
   };
 
   return (
-    <div>
-      <h1 className="mb-10 text-3xl font-semibold tracking-tight">
+    <div className="space-y-10">
+      <h1 className="text-center text-3xl font-semibold tracking-tight">
         Sign up for DropFeedback
       </h1>
-      <br />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="m-auto max-w-[325px] space-y-4"
+        >
           <FormField
             control={form.control}
             name="email"
@@ -96,12 +99,23 @@ export default function LoginWithEmail() {
           </Button>
         </form>
       </Form>
-      <br />
-      <div className="mt-8 text-center">
+      <div className="text-center">
         <Link to="/signup" className="text-base text-link">
           ← Other Sign Up Options
         </Link>
       </div>
+      <p className="text-sm font-light text-muted-foreground">
+        By joining, you agree to our{" "}
+        <Link to="#" className="font-semibold text-primary hover:underline">
+          Terms of Service
+          <ExternalLinkIcon className="ml-0.5 inline-block h-4 w-4" />
+        </Link>{" "}
+        and{" "}
+        <Link to="#" className="font-semibold text-primary hover:underline">
+          Privacy Policy
+          <ExternalLinkIcon className="ml-0.5 inline-block h-4 w-4" />
+        </Link>
+      </p>
     </div>
   );
 }
