@@ -2,17 +2,32 @@ import { Link } from "@remix-run/react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createMutation } from "react-query-kit";
+import { type AxiosError } from "axios";
+import { axiosInstance } from "~/lib/axios";
 import { Button } from "~/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { useLocalLogin } from "./useLocalLogin";
+
+type Response = null;
+type Variables = { email: string; password: string };
+
+const useLocalLogin = createMutation<Response, Variables, AxiosError>({
+  mutationFn: async (variables) => {
+    const { data } = await axiosInstance.post<Response>(
+      "/auth/local/signin",
+      variables,
+    );
+
+    return data;
+  },
+});
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -35,11 +50,10 @@ export default function LoginWithEmail() {
   };
 
   return (
-    <div className="flex w-80 flex-col">
-      <h1 className="text-center text-2xl font-semibold tracking-tight">
+    <div>
+      <h1 className="mb-10 text-3xl font-semibold tracking-tight">
         Log in to DropFeedback
       </h1>
-      <br />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -47,9 +61,12 @@ export default function LoginWithEmail() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Email address" />
+                  <Input
+                    {...field}
+                    placeholder="Email address"
+                    className="h-12"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -60,9 +77,13 @@ export default function LoginWithEmail() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Password" type="password" />
+                  <Input
+                    {...field}
+                    placeholder="Password"
+                    type="password"
+                    className="h-12"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -70,12 +91,11 @@ export default function LoginWithEmail() {
           />
 
           <Button type="submit" className="w-full" size="lg">
-            Log in
+            Log In
           </Button>
         </form>
       </Form>
-      <br />
-      <div className="text-center">
+      <div className="mt-8 text-center">
         <Link to="/login" className="text-base text-link">
           ← Other Login Options
         </Link>
