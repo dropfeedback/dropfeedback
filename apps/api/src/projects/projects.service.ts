@@ -20,15 +20,38 @@ export class ProjectsService {
     private mailService: MailService,
   ) {}
   async getAllByUser({ id }: { id: string }) {
-    const projectMembers = await this.prisma.projectMember.findMany({
-      where: { userId: id },
-      include: { project: true },
+    const projects = await this.prisma.project.findMany({
+      orderBy: { createdAt: 'desc' },
+      where: {
+        projectMembers: {
+          some: {
+            userId: id,
+          },
+        },
+      },
+      include: {
+        _count: {
+          select: {
+            feedbacks: true,
+          },
+        },
+        projectMembers: {
+          select: {
+            role: true,
+          },
+          where: {
+            userId: id,
+          },
+        },
+      },
     });
 
-    return projectMembers.map((pm) => ({
-      id: pm.project.id,
-      name: pm.project.name,
-      role: pm.role,
+    return projects.map((pm) => ({
+      id: pm.id,
+      name: pm.name,
+      role: pm.projectMembers[0].role,
+      createdAt: pm.createdAt,
+      feedbackCount: pm._count.feedbacks,
     }));
   }
 
