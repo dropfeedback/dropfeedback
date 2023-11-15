@@ -1,5 +1,5 @@
 import { GoogleLogin } from "@react-oauth/google";
-import { useNavigate } from "@remix-run/react";
+import { useNavigate, useSearchParams } from "@remix-run/react";
 import { useMutation } from "@tanstack/react-query";
 import { type AxiosError } from "axios";
 import { fetchers } from "~/lib/fetchers";
@@ -8,12 +8,15 @@ type Response = { token: string };
 type Variables = { idToken: string };
 
 const useGoogleLogin = () => {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   return useMutation<Response, AxiosError, Variables>({
     mutationFn: fetchers.googleLogin,
     onSuccess: () => {
-      navigate("/dashboard");
+      const nextURL = searchParams.get("next");
+
+      navigate(nextURL ?? "/dashboard");
     },
   });
 };
