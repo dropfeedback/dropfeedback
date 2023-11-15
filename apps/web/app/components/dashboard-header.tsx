@@ -30,7 +30,7 @@ import {
 } from "./ui/command";
 import { cn } from "~/lib/utils";
 import { useMutation } from "@tanstack/react-query";
-import { axiosInstance } from "~/lib/axios";
+import { fetchers } from "~/lib/fetchers";
 
 const projects = [
   {
@@ -51,19 +51,21 @@ const projects = [
   },
 ];
 
+const useLogout = () => {
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: fetchers.logout,
+    onSuccess: () => {
+      navigate("/login");
+    },
+  });
+};
+
 export function DashboardHeader() {
   const params = useParams<{ projectId: string }>();
   const navigate = useNavigate();
-  const logoutMutation = useMutation({
-    mutationFn: async () => {
-      const { data } = await axiosInstance.post("/auth/logout");
-
-      return data;
-    },
-    onSuccess: () => {
-      navigate("/dashboard");
-    },
-  });
+  const { mutate } = useLogout();
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(params?.projectId || "");
@@ -86,7 +88,7 @@ export function DashboardHeader() {
   }, [value]);
 
   const logout = () => {
-    logoutMutation.mutate();
+    mutate();
   };
 
   return (

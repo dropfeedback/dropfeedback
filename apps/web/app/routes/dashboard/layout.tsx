@@ -11,13 +11,15 @@ import { fetchers } from "~/lib/fetchers";
 export async function loader({ request }: LoaderFunctionArgs) {
   const queryClient = new QueryClient();
   const { pathname } = new URL(request.url);
-  const redirectTo =
-    pathname === "/" ? "/login" : `/login?to=${encodeURIComponent(pathname)}`;
+  const redirectNext =
+    pathname === "/dashboard"
+      ? "/login"
+      : `/login?next=${encodeURIComponent(pathname)}`;
 
   const cookie = request.headers.get("Cookie");
 
   if (!cookie) {
-    throw redirect(redirectTo);
+    throw redirect(redirectNext);
   }
 
   try {
@@ -28,7 +30,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     return json({ dehydratedState: dehydrate(queryClient) });
   } catch (error) {
-    return redirect(redirectTo);
+    return redirect(redirectNext);
   }
 }
 
