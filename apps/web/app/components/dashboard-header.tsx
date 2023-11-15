@@ -65,7 +65,7 @@ const useLogout = () => {
 export function DashboardHeader() {
   const params = useParams<{ projectId: string }>();
   const navigate = useNavigate();
-  const { mutate } = useLogout();
+  const { mutate, isPending } = useLogout();
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(params?.projectId || "");
@@ -210,7 +210,9 @@ export function DashboardHeader() {
               </MenubarShortcut>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
+            <DropdownMenuItem onClick={logout}>
+              {isPending ? "Logging out.." : "Log out"}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
