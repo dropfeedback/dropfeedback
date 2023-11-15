@@ -22,8 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - run: docker-compose -f "docker-compose.yml" up -d --build --wait --wait-timeout 30
+      - uses: isbang/compose-action@v1.5.1
+        with:
+          down-flags: "--volumes"
+
       - run: echo $(docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}" -a)
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
