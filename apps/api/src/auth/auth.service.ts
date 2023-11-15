@@ -219,6 +219,10 @@ export class AuthService {
   }
 
   async googleLogin(payload: GoogleTokenPayload) {
+    if (!payload?.email) {
+      throw new ForbiddenException("User doesn't have email");
+    }
+
     const user = await this.prisma.user.findUnique({
       where: { email: payload.email },
       include: {
@@ -226,17 +230,28 @@ export class AuthService {
       },
     });
 
-    if (!user || !payload?.email) {
-      throw new BadRequestException('User not found');
-    }
-
     const tokenPayload: JwtPayload = {
-      email: user?.email,
-      sub: user?.id,
+      email: '',
+      sub: '',
       provider: UserProviderType.Google,
     };
 
-    if (!user) {
+    if (user) {
+      const hasGoogleProvider = !!user?.UserProvider?.some(
+        (provider) => provider.type === UserProviderType.Google,
+      );
+      if (!hasGoogleProvider) {
+        await this.prisma.userProvider.create({
+          data: {
+            type: UserProviderType.Google,
+            userId: user.id,
+          },
+        });
+      }
+
+      tokenPayload.sub = user.id;
+      tokenPayload.email = user.email;
+    } else {
       const newUser = await this.prisma.user.create({
         data: {
           email: payload.email,
@@ -250,18 +265,6 @@ export class AuthService {
 
       tokenPayload.sub = newUser.id;
       tokenPayload.email = newUser.email;
-    }
-
-    const hasGoogleProvider = !!user?.UserProvider?.some(
-      (provider) => provider.type === UserProviderType.Google,
-    );
-    if (user && hasGoogleProvider) {
-      await this.prisma.userProvider.create({
-        data: {
-          type: UserProviderType.Google,
-          userId: user.id,
-        },
-      });
     }
 
     const tokens = await this.signToken(tokenPayload);
