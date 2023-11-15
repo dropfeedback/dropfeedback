@@ -2,9 +2,9 @@ import { Link } from "@remix-run/react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createMutation } from "react-query-kit";
+
 import { type AxiosError } from "axios";
-import { axiosInstance } from "~/lib/axios";
+import { fetchers } from "~/lib/fetchers";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -15,20 +15,16 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
+import { useMutation } from "@tanstack/react-query";
 
 type Response = null;
 type Variables = { email: string; password: string };
 
-const useLocalSignup = createMutation<Response, Variables, AxiosError>({
-  mutationFn: async (variables) => {
-    const { data } = await axiosInstance.post<Response>(
-      "/auth/local/signup",
-      variables,
-    );
-
-    return data;
-  },
-});
+const useLocalSignup = () => {
+  return useMutation<Response, AxiosError, Variables>({
+    mutationFn: fetchers.signup,
+  });
+};
 
 const formSchema = z.object({
   email: z.string().email(),
