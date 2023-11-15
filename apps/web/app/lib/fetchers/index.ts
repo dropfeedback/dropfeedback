@@ -43,5 +43,3 @@ export const fetchers = {
   refreshToken,
   googleLogin,
 };
-
-export * from "./types";
