@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 services:
   feedbacky_db:
@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_PORT: 5432
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - feedbacky_db:/var/lib/postgresql/data
     networks:
@@ -26,7 +26,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_PORT: 5432
     ports:
-      - "5434:5432"
+      - '5434:5432'
     networks:
       - postgres
 
