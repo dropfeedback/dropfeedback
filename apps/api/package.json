@@ -19,7 +19,6 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
-    "pretest:e2e": "sh ./scripts/run-integration.sh",
     "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
     "db:seed": "npm run db:generate && prisma db seed",
     "db:generate": "prisma generate",
