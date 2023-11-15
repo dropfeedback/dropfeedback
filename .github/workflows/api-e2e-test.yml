@@ -22,18 +22,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - run: docker-compose -f "docker-compose.yml" up -d --build --wait --wait-timeout 30
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
-      - run: echo $(ls)
-      - uses: adambirds/docker-compose-action@v1.3.0
-        with:
-          down-flags: "--volumes"
-
       - run: cp .env.test .env
+
       - run: npm ci
       - run: npx prisma migrate reset --force
       - run: npm run build
