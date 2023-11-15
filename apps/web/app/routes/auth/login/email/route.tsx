@@ -4,10 +4,7 @@ import {
   useNavigate,
   useSearchParams,
 } from "@remix-run/react";
-
-import * as z from "zod";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { type AxiosError } from "axios";
 import { fetchers } from "~/lib/fetchers";
@@ -38,24 +35,23 @@ const useLocalLogin = () => {
   });
 };
 
-const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(4),
-});
+type FormValues = {
+  email: string;
+  password: string;
+};
 
 export default function LoginWithEmail() {
   const { search } = useLocation();
   const { mutate } = useLocalLogin();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<FormValues>({
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: FormValues) => {
     mutate(values);
   };
 
@@ -79,6 +75,8 @@ export default function LoginWithEmail() {
                     {...field}
                     placeholder="Email address"
                     className="h-12"
+                    required
+                    type="email"
                   />
                 </FormControl>
                 <FormMessage />
@@ -95,6 +93,8 @@ export default function LoginWithEmail() {
                     {...field}
                     placeholder="Password"
                     type="password"
+                    required
+                    minLength={4}
                     className="h-12"
                   />
                 </FormControl>

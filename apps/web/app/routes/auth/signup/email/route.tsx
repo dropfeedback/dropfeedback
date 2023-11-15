@@ -1,8 +1,7 @@
 import { Link } from "@remix-run/react";
-import * as z from "zod";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
+import { ExternalLinkIcon } from "@radix-ui/react-icons";
+import { useMutation } from "@tanstack/react-query";
 import { type AxiosError } from "axios";
 import { fetchers } from "~/lib/fetchers";
 import { Button } from "~/components/ui/button";
@@ -14,8 +13,6 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { ExternalLinkIcon } from "@radix-ui/react-icons";
-import { useMutation } from "@tanstack/react-query";
 
 type Response = null;
 type Variables = { email: string; password: string };
@@ -26,23 +23,22 @@ const useLocalSignup = () => {
   });
 };
 
-const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
+type FormValues = {
+  email: string;
+  password: string;
+};
 
-export default function LoginWithEmail() {
+export default function SignupWithEmail() {
   const { mutate } = useLocalSignup();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<FormValues>({
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: FormValues) => {
     mutate(values);
   };
 
@@ -66,6 +62,8 @@ export default function LoginWithEmail() {
                     {...field}
                     placeholder="Email address"
                     className="h-12"
+                    required
+                    type="email"
                   />
                 </FormControl>
                 <FormMessage />
@@ -83,6 +81,7 @@ export default function LoginWithEmail() {
                     placeholder="Password"
                     type="password"
                     className="h-12"
+                    minLength={4}
                   />
                 </FormControl>
                 <FormMessage />
