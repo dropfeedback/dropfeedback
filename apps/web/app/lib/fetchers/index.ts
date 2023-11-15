@@ -6,7 +6,7 @@ const me = async (cookie?: string) => {
       Cookie: cookie,
     },
   });
-  
+
   return data;
 };
 
@@ -35,8 +35,6 @@ const googleLogin = async (payload: { idToken: string }) => {
   return data;
 };
 
-
-
 export const fetchers = {
   me,
   signup,
@@ -45,3 +43,5 @@ export const fetchers = {
   refreshToken,
   googleLogin,
 };
+
+export * from "./types";

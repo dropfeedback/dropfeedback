@@ -31,6 +31,8 @@ import {
 import { cn } from "~/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { fetchers } from "~/lib/fetchers";
+import { useMe } from "~/hooks";
+import { getNameInitials } from "~/utils";
 
 const projects = [
   {
@@ -73,6 +75,8 @@ export function DashboardHeader() {
     value: string;
     label: string;
   }>();
+
+  const { data: user } = useMe();
 
   useEffect(() => {
     if (params?.projectId) {
@@ -186,15 +190,17 @@ export function DashboardHeader() {
               className="relative h-7 w-7 rounded-full p-0"
             >
               <Avatar className="h-7 w-7">
-                <AvatarImage src="https://avatars.githubusercontent.com/u/41580619?v=4" />
-                <AvatarFallback>SO</AvatarFallback>
+                <AvatarImage src={user?.avatar} />
+                <AvatarFallback>
+                  {getNameInitials(user?.name || user?.email)}
+                </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <div className="px-2 py-1.5">
-              <p className="font-medium text-primary">Salih</p>
-              <p>salihozdemir94@gmail.com</p>
+              <p className="font-medium text-primary">{user?.name}</p>
+              <p>{user?.email}</p>
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
