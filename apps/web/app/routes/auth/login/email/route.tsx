@@ -1,4 +1,10 @@
-import { Link, useNavigate } from "@remix-run/react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "@remix-run/react";
+
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,8 +25,16 @@ type Response = null;
 type Variables = { email: string; password: string };
 
 const useLocalLogin = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
   return useMutation<Response, AxiosError, Variables>({
     mutationFn: fetchers.signin,
+    onSuccess: () => {
+      const nextURL = searchParams.get("next");
+
+      navigate(nextURL ?? "/dashboard");
+    },
   });
 };
 
@@ -30,7 +44,7 @@ const formSchema = z.object({
 });
 
 export default function LoginWithEmail() {
-  const navigate = useNavigate();
+  const { search } = useLocation();
   const { mutate } = useLocalLogin();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,11 +56,7 @@ export default function LoginWithEmail() {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    mutate(values, {
-      onSuccess: () => {
-        navigate("/dashboard");
-      },
-    });
+    mutate(values);
   };
 
   return (
@@ -99,7 +109,13 @@ export default function LoginWithEmail() {
         </form>
       </Form>
       <div className="text-center">
-        <Link to="/login" className="text-base text-link">
+        <Link
+          to={{
+            pathname: "/login",
+            search,
+          }}
+          className="text-base text-link"
+        >
           ← Other Login Options
         </Link>
       </div>
