@@ -11,16 +11,12 @@ import {
   MemberInviteState,
   ProjectMemberRole,
 } from '@prisma/client';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     private prisma: PrismaService,
-    private jwtService: JwtService,
-    private config: ConfigService,
     private mailService: MailService,
   ) {}
   async getAllByUser({ id }: { id: string }) {
