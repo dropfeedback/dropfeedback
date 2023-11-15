@@ -21,15 +21,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
-      - run: "$(grep -v '^#' env.test | xargs)"
+      - run: cp .env.test .env
       - run: echo $(ls)
-
       - run: docker-compose up -d --wait --wait-timeout 30
       - run: npm ci
       - run: npx prisma migrate reset --force
