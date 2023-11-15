@@ -9,8 +9,7 @@ on:
 
 jobs:
   build:
-  
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./apps/api
@@ -29,4 +28,4 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm run build
-      - run: npm test
+      - run: npm run test
