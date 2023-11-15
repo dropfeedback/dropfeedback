@@ -28,8 +28,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
-      - run: cp env.test .env
-      - run: echo $(ls)
+      - run: cp .env.test .env
       - run: docker-compose up -d --wait --wait-timeout 30
       - run: npm ci
       - run: npx prisma migrate reset --force
