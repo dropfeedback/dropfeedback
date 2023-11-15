@@ -1,16 +1,17 @@
 import { Test } from '@nestjs/testing';
-import { FeedbacksService } from './feedbacks.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ConfigService } from '@nestjs/config';
 import { FeedbackDto } from './dto';
 import { prismaMock } from 'src/libs/__mocks__/prisma';
+import { FeedbacksService } from './feedbacks.service';
+import { AppModule } from '../app.module';
 
-describe('FeedbacksService', () => {
+// // example of mocking PrismaService
+describe('Feedbacks', () => {
   let feedbackService: FeedbacksService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [FeedbacksService, PrismaService, ConfigService],
+      imports: [AppModule],
     })
       .overrideProvider(PrismaService)
       .useValue(prismaMock)

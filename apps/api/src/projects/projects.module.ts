@@ -3,12 +3,10 @@ import { ProjectsService } from './projects.service';
 import { ProjectsController } from './projects.controller';
 import { AccessTokenStrategy } from 'src/auth/strategies';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { JwtModule } from '@nestjs/jwt';
-import { MailModule } from 'src/mail/mail.module';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
-  imports: [JwtModule.register({}), MailModule],
-  providers: [ProjectsService, AccessTokenStrategy, PrismaService],
+  providers: [ProjectsService, AccessTokenStrategy, PrismaService, MailService],
   controllers: [ProjectsController],
 })
 export class ProjectsModule {}
