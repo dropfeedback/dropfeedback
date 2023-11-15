@@ -25,7 +25,7 @@ const logout = async () => {
   return data;
 };
 
-const refreshTokens = async () => {
+const refreshToken = async () => {
   const { data } = await axiosInstance.post("/auth/refresh");
   return data;
 };
@@ -35,11 +35,13 @@ const googleLogin = async (payload: { idToken: string }) => {
   return data;
 };
 
+
+
 export const fetchers = {
   me,
   signup,
   signin,
   logout,
-  refreshTokens,
+  refreshToken,
   googleLogin,
 };
