@@ -6,17 +6,14 @@ import {
 } from "@remix-run/react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { type AxiosError } from "axios";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { motion } from "framer-motion";
 import { fetchers } from "~/lib/fetchers";
 import { Button } from "~/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "~/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { type ApiError } from "~/lib/axios";
+import { Alert, AlertDescription } from "~/components/ui/alert";
 
 type Response = null;
 type Variables = { email: string; password: string };
@@ -25,7 +22,7 @@ const useLocalLogin = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  return useMutation<Response, AxiosError, Variables>({
+  return useMutation<Response, ApiError, Variables>({
     mutationFn: fetchers.signin,
     onSuccess: () => {
       const nextURL = searchParams.get("next");
@@ -42,7 +39,7 @@ type FormValues = {
 
 export default function LoginWithEmail() {
   const { search } = useLocation();
-  const { mutate } = useLocalLogin();
+  const { mutate, isPending, error, isError } = useLocalLogin();
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -60,54 +57,76 @@ export default function LoginWithEmail() {
       <h1 className="text-center text-3xl font-semibold tracking-tight">
         Log in to DropFeedback
       </h1>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="m-auto max-w-[325px] space-y-4"
-        >
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="Email address"
-                    className="h-12"
-                    required
-                    type="email"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="Password"
-                    type="password"
-                    required
-                    minLength={4}
-                    className="h-12"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
-          <Button type="submit" className="w-full" size="lg">
-            Log In
-          </Button>
-        </form>
-      </Form>
+      <div className="m-auto max-w-[325px] space-y-6">
+        {isError && (
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Alert
+              variant="destructive"
+              className="w- bg-destructive-foreground"
+            >
+              <AlertDescription>
+                {error?.response?.data?.message ?? error?.message}
+              </AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Email address"
+                      className="h-12"
+                      required
+                      type="email"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Password"
+                      type="password"
+                      required
+                      minLength={4}
+                      className="h-12"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <Button
+              type="submit"
+              className="w-full"
+              size="lg"
+              disabled={isPending}
+            >
+              {isPending && (
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Log In
+            </Button>
+          </form>
+        </Form>
+      </div>
       <div className="text-center">
         <Link
           to={{

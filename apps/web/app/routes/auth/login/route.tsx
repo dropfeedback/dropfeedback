@@ -10,18 +10,20 @@ export default function Login() {
       <h1 className="text-center text-3xl font-semibold tracking-tight">
         Log in to DropFeedback
       </h1>
-      <div className="m-auto flex w-min flex-col items-center">
+      <div className="m-auto max-w-[325px]">
         <GoogleOAuthButton />
         <Separator className="my-6" />
-        <Link
-          to={{
-            pathname: "/login/email",
-            search,
-          }}
-          className="text-base text-link"
-        >
-          Continue with Email →
-        </Link>
+        <div className="text-center">
+          <Link
+            to={{
+              pathname: "/login/email",
+              search,
+            }}
+            className="text-base text-link"
+          >
+            Continue with Email →
+          </Link>
+        </div>
       </div>
     </div>
   );
