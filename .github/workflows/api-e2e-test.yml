@@ -26,6 +26,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
+      - run: $(grep -v '^#' .env.test | xargs)
+      - run: docker-compose up -d --wait --wait-timeout 30
+      - run: prisma migrate reset --force
       - run: npm ci
       - run: npm run build
       - run: npm run test:e2e
