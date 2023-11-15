@@ -1,6 +1,7 @@
 import { createMutation } from "react-query-kit";
 import { type AxiosError } from "axios";
 import { GoogleLogin } from "@react-oauth/google";
+import { useNavigate } from "@remix-run/react";
 import { axiosInstance } from "~/lib/axios";
 
 type Response = { token: string };
@@ -18,6 +19,7 @@ export const useGoogleLogin = createMutation<Response, Variables, AxiosError>({
 });
 
 export default function GoogleOAuthButton() {
+  const navigate = useNavigate();
   const { mutate } = useGoogleLogin();
 
   return (
@@ -29,9 +31,16 @@ export default function GoogleOAuthButton() {
         const credential = credentialResponse.credential;
         if (!credential) return;
 
-        mutate({
-          idToken: credential,
-        });
+        mutate(
+          {
+            idToken: credential,
+          },
+          {
+            onSuccess: () => {
+              navigate("/dashboard");
+            },
+          },
+        );
       }}
     />
   );
