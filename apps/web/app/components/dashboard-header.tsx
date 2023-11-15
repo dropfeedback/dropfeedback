@@ -31,7 +31,7 @@ import {
 import { cn } from "~/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { fetchers } from "~/lib/fetchers";
-import { useMe } from "~/hooks";
+import { useMe } from "~/data-hooks";
 import { getNameInitials } from "~/utils";
 
 const projects = [
