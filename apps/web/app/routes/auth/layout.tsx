@@ -1,38 +1,21 @@
 import { type LoaderFunctionArgs, redirect } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
-import { HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import { Outlet } from "@remix-run/react";
 import { AuthHeader } from "~/components/auth-header";
-import { axiosInstance } from "~/lib/axios";
-
-const fetcher = async (cookie: string) => {
-  const { data } = await axiosInstance.get<Response>("/auth/me", {
-    headers: {
-      Cookie: cookie,
-    },
-  });
-
-  return data;
-};
+import { fetchers } from "~/lib/fetchers";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const queryClient = new QueryClient();
-
   const cookie = request.headers.get("Cookie");
-  if (cookie) {
-    try {
-      await queryClient.fetchQuery({
-        queryKey: ["me"],
-        queryFn: () => fetcher(cookie),
-      });
 
-      return redirect("/dashboard");
-    } catch (error) {
-      return;
-    }
+  try {
+    await fetchers.me(cookie ?? "");
+
+    return redirect("/dashboard");
+  } catch (error) {
+    return null;
   }
 }
 
-function Layout() {
+export default function Layout() {
   return (
     <>
       <AuthHeader />
@@ -40,14 +23,5 @@ function Layout() {
         <Outlet />
       </div>
     </>
-  );
-}
-
-export default function LayoutRoute() {
-  const { dehydratedState } = useLoaderData<typeof loader>();
-  return (
-    <HydrationBoundary state={dehydratedState}>
-      <Layout />
-    </HydrationBoundary>
   );
 }

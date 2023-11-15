@@ -2,9 +2,9 @@ import { Link, useNavigate } from "@remix-run/react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createMutation } from "react-query-kit";
+import { useMutation } from "@tanstack/react-query";
 import { type AxiosError } from "axios";
-import { axiosInstance } from "~/lib/axios";
+import { fetchers } from "~/lib/fetchers";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -18,16 +18,11 @@ import { Input } from "~/components/ui/input";
 type Response = null;
 type Variables = { email: string; password: string };
 
-const useLocalLogin = createMutation<Response, Variables, AxiosError>({
-  mutationFn: async (variables) => {
-    const { data } = await axiosInstance.post<Response>(
-      "/auth/local/signin",
-      variables,
-    );
-
-    return data;
-  },
-});
+const useLocalLogin = () => {
+  return useMutation<Response, AxiosError, Variables>({
+    mutationFn: fetchers.signin,
+  });
+};
 
 const formSchema = z.object({
   email: z.string().email(),
