@@ -31,7 +31,6 @@ jobs:
       - run: echo $(ls)
       - uses: adambirds/docker-compose-action@v1.3.0
         with:
-          compose-file: "./docker-compose.yml"
           down-flags: "--volumes"
 
       - run: cp .env.test .env
