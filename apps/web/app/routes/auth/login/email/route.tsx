@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Link, useNavigate } from "@remix-run/react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,10 +31,11 @@ const useLocalLogin = createMutation<Response, Variables, AxiosError>({
 
 const formSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z.string().min(4),
 });
 
 export default function LoginWithEmail() {
+  const navigate = useNavigate();
   const { mutate } = useLocalLogin();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -46,7 +47,11 @@ export default function LoginWithEmail() {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    mutate(values);
+    mutate(values, {
+      onSuccess: () => {
+        navigate("/dashboard");
+      },
+    });
   };
 
   return (

@@ -29,6 +29,8 @@ import {
   CommandSeparator,
 } from "./ui/command";
 import { cn } from "~/lib/utils";
+import { useMutation } from "@tanstack/react-query";
+import { axiosInstance } from "~/lib/axios";
 
 const projects = [
   {
@@ -52,6 +54,16 @@ const projects = [
 export function DashboardHeader() {
   const params = useParams<{ projectId: string }>();
   const navigate = useNavigate();
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      const { data } = await axiosInstance.post("/auth/logout");
+
+      return data;
+    },
+    onSuccess: () => {
+      navigate("/dashboard");
+    },
+  });
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(params?.projectId || "");
@@ -72,6 +84,10 @@ export function DashboardHeader() {
       setCurrentProject(project);
     }
   }, [value]);
+
+  const logout = () => {
+    logoutMutation.mutate();
+  };
 
   return (
     <nav className="flex h-16 items-center border-b px-6 shadow-border">
@@ -192,7 +208,7 @@ export function DashboardHeader() {
               </MenubarShortcut>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Log out</DropdownMenuItem>
+            <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
