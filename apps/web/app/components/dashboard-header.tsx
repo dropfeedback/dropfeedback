@@ -190,7 +190,7 @@ export function DashboardHeader() {
               className="relative h-7 w-7 rounded-full p-0"
             >
               <Avatar className="h-7 w-7">
-                <AvatarImage src={user?.avatar} />
+                <AvatarImage src={user?.avatar} alt={user?.name || user.email}  />
                 <AvatarFallback>
                   {getNameInitials(user?.name || user?.email)}
                 </AvatarFallback>
