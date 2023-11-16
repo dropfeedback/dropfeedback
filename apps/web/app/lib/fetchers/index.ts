@@ -1,5 +1,10 @@
 import { axiosInstance } from "~/lib/axios";
 
+const getProjects = async () => {
+  const { data } = await axiosInstance.get(`/projects`);
+  return data;
+};
+
 const me = async (cookie?: string) => {
   const { data } = await axiosInstance.get("/auth/me", {
     headers: {
@@ -36,6 +41,7 @@ const googleLogin = async (payload: { idToken: string }) => {
 };
 
 export const fetchers = {
+  getProjects,
   me,
   signup,
   signin,

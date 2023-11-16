@@ -36,7 +36,6 @@ jobs:
           cache: "npm"
 
       - run: cp .env.test .env
-
       - run: npm ci
       - run: npx prisma migrate reset --force
       - run: npm run build
