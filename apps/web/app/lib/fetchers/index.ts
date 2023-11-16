@@ -11,7 +11,7 @@ const me = async (cookie?: string) => {
       Cookie: cookie,
     },
   });
-  
+
   return data;
 };
 
@@ -39,8 +39,6 @@ const googleLogin = async (payload: { idToken: string }) => {
   const { data } = await axiosInstance.post("/auth/google/login", payload);
   return data;
 };
-
-
 
 export const fetchers = {
   getProjects,
