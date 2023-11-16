@@ -29,6 +29,8 @@ import {
   CommandSeparator,
 } from "./ui/command";
 import { cn } from "~/lib/utils";
+import { useMutation } from "@tanstack/react-query";
+import { fetchers } from "~/lib/fetchers";
 
 const projects = [
   {
@@ -49,9 +51,21 @@ const projects = [
   },
 ];
 
+const useLogout = () => {
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: fetchers.logout,
+    onSuccess: () => {
+      navigate("/login");
+    },
+  });
+};
+
 export function DashboardHeader() {
   const params = useParams<{ projectId: string }>();
   const navigate = useNavigate();
+  const { mutate, isPending } = useLogout();
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(params?.projectId || "");
@@ -72,6 +86,10 @@ export function DashboardHeader() {
       setCurrentProject(project);
     }
   }, [value]);
+
+  const logout = () => {
+    mutate();
+  };
 
   return (
     <nav className="flex h-16 items-center border-b px-6 shadow-border">
@@ -192,7 +210,9 @@ export function DashboardHeader() {
               </MenubarShortcut>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Log out</DropdownMenuItem>
+            <DropdownMenuItem onClick={logout}>
+              {isPending ? "Logging out.." : "Log out"}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -1,5 +1,5 @@
+import { useState } from "react";
 import { cssBundleHref } from "@remix-run/css-bundle";
-import type { LinksFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -8,8 +8,11 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import styles from "./tailwind.css";
+import type { LinksFunction } from "@remix-run/node";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { ThemeProvider } from "./components/theme-provider";
+import styles from "./tailwind.css";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -21,6 +24,19 @@ export const links: LinksFunction = () => [
 ];
 
 export default function App() {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            // With SSR, set some default staleTime
+            // above 0 to avoid refetching immediately on the client
+            staleTime: 60 * 1000,
+          },
+        },
+      }),
+  );
+
   return (
     <html lang="en">
       <head>
@@ -36,9 +52,13 @@ export default function App() {
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative min-h-screen">
-            <Outlet />
-          </div>
+          <QueryClientProvider client={queryClient}>
+            <GoogleOAuthProvider clientId="108576727290-r2vpjvnub36682vn3vig0rq1jvj9to2n.apps.googleusercontent.com">
+              <div className="relative min-h-screen">
+                <Outlet />
+              </div>
+            </GoogleOAuthProvider>
+          </QueryClientProvider>
         </ThemeProvider>
         <ScrollRestoration />
         <Scripts />
