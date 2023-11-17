@@ -11,10 +11,13 @@ export default function Dashboard() {
       <div className="flex justify-end">
         <Button
           onClick={() => {
-            setSearchParams((prev) => {
-              prev.set("modal", "create-project");
-              return prev;
-            });
+            setSearchParams(
+              (prev) => {
+                prev.set("modal", "create-project");
+                return prev;
+              },
+              { replace: true },
+            );
           }}
         >
           <PlusCircledIcon className="mr-2 h-4 w-4" />

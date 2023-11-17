@@ -18,3 +18,13 @@ export type MeResponse = {
   name?: string;
   avatar?: string;
 };
+
+export type ProjectVariables = {
+  name: string;
+};
+
+export type ProjectResponse = {
+  id: string;
+  name: string;
+  createdAt: string;
+};

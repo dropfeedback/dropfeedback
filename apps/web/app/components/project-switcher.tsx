@@ -108,7 +108,7 @@ export function ProjectSwitcher() {
                 >
                   <CheckIcon
                     className={cn(
-                      "mr-2 h-4 w-4",
+                      "mr-2 h-4 w-4 shrink-0",
                       selectedProjectId === project.id
                         ? "opacity-100"
                         : "opacity-0",
@@ -122,10 +122,13 @@ export function ProjectSwitcher() {
             <CommandGroup>
               <CommandItem
                 onSelect={() => {
-                  setSearchParams((prev) => {
-                    prev.set("modal", "create-project");
-                    return prev;
-                  });
+                  setSearchParams(
+                    (prev) => {
+                      prev.set("modal", "create-project");
+                      return prev;
+                    },
+                    { replace: true },
+                  );
                   setOpen(false);
                 }}
               >
