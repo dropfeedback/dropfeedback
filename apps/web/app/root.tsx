@@ -9,9 +9,16 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { ThemeProvider } from "./components/theme-provider";
+import { ThemeProvider } from "~/components/theme-provider";
+import { Toaster } from "~/components/ui/toaster";
+import { useToast } from "~/components/ui/use-toast";
+import { ToastAction } from "~/components/ui/toast";
 import styles from "./tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -24,6 +31,8 @@ export const links: LinksFunction = () => [
 ];
 
 export default function App() {
+  const { toast } = useToast();
+
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -31,9 +40,24 @@ export default function App() {
           queries: {
             // With SSR, set some default staleTime
             // above 0 to avoid refetching immediately on the client
-            staleTime: 60 * 1000,
+            staleTime: 1000,
           },
         },
+        queryCache: new QueryCache({
+          onError: () =>
+            toast({
+              title: "Uh oh! Something went wrong.",
+              description: "There was a problem with your request.",
+              action: (
+                <ToastAction
+                  altText="Try again"
+                  onClick={() => window.location.reload()}
+                >
+                  Try again
+                </ToastAction>
+              ),
+            }),
+        }),
       }),
   );
 
@@ -54,12 +78,13 @@ export default function App() {
         >
           <QueryClientProvider client={queryClient}>
             <GoogleOAuthProvider clientId="108576727290-r2vpjvnub36682vn3vig0rq1jvj9to2n.apps.googleusercontent.com">
-              <div className="relative min-h-screen">
+              <main className="relative min-h-screen">
                 <Outlet />
-              </div>
+              </main>
             </GoogleOAuthProvider>
           </QueryClientProvider>
         </ThemeProvider>
+        <Toaster />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
