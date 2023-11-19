@@ -1,7 +1,13 @@
 import { axiosInstance } from "~/lib/axios";
+import { type ProjectVariables } from "~/types";
 
 const getProjects = async () => {
-  const { data } = await axiosInstance.get(`/projects`);
+  const { data } = await axiosInstance.get("/projects");
+  return data;
+};
+
+const createProject = async (payload: ProjectVariables) => {
+  const { data } = await axiosInstance.post("/projects", payload);
   return data;
 };
 
@@ -42,6 +48,7 @@ const googleLogin = async (payload: { idToken: string }) => {
 
 export const fetchers = {
   getProjects,
+  createProject,
   me,
   signup,
   signin,

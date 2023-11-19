@@ -19,6 +19,7 @@ import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "~/components/ui/toaster";
 import { useToast } from "~/components/ui/use-toast";
 import { ToastAction } from "~/components/ui/toast";
+import { ModalRoot } from "~/components/modals/modal-root";
 import styles from "./tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -62,7 +63,7 @@ export default function App() {
   );
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -80,6 +81,7 @@ export default function App() {
             <GoogleOAuthProvider clientId="108576727290-r2vpjvnub36682vn3vig0rq1jvj9to2n.apps.googleusercontent.com">
               <main className="relative min-h-screen">
                 <Outlet />
+                <ModalRoot />
               </main>
             </GoogleOAuthProvider>
           </QueryClientProvider>
