@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "@remix-run/react";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "@remix-run/react";
 import { useQuery } from "@tanstack/react-query";
 import {
   CaretSortIcon,
@@ -24,6 +29,7 @@ import { type Project } from "~/types";
 export function ProjectSwitcher() {
   const params = useParams<{ projectId: string }>();
   const navigate = useNavigate();
+  const [_, setSearchParams] = useSearchParams();
   const { toast } = useToast();
 
   const [open, setOpen] = useState(false);
@@ -102,7 +108,7 @@ export function ProjectSwitcher() {
                 >
                   <CheckIcon
                     className={cn(
-                      "mr-2 h-4 w-4",
+                      "mr-2 h-4 w-4 shrink-0",
                       selectedProjectId === project.id
                         ? "opacity-100"
                         : "opacity-0",
@@ -116,6 +122,13 @@ export function ProjectSwitcher() {
             <CommandGroup>
               <CommandItem
                 onSelect={() => {
+                  setSearchParams(
+                    (prev) => {
+                      prev.set("modal", "create-project");
+                      return prev;
+                    },
+                    { replace: true },
+                  );
                   setOpen(false);
                 }}
               >
