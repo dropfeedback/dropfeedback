@@ -17,11 +17,7 @@ import { GetCurrentUser, Public } from 'src/common/decorators';
 
 import type { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { MemberInviteState } from '@prisma/client';
 import { OAuth2Client } from 'google-auth-library';
-import { AcceptInviteBodyDto } from './dto/accept-invite-body.dto';
 import { GoogleLoginDto } from './dto/google-login.dto';
 
 @Controller('auth')
@@ -31,8 +27,6 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private config: ConfigService,
-    private jwtService: JwtService,
-    private prisma: PrismaService,
   ) {}
 
   @Get('/me')
@@ -114,45 +108,6 @@ export class AuthController {
     });
 
     this.setCookies(res, data.tokens);
-  }
-
-  @Post('/accept-invite')
-  @Public()
-  @HttpCode(HttpStatus.OK)
-  async acceptInvite(@Body() dto: AcceptInviteBodyDto) {
-    const safeDecode = this.jwtService.decode(dto.acceptInviteToken) as {
-      email: string;
-      projectId: string;
-    };
-    if (!safeDecode?.email || !safeDecode?.projectId) {
-      throw new ForbiddenException('Invalid token');
-    }
-
-    try {
-      await this.jwtService.verify(dto.acceptInviteToken, {
-        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${
-          safeDecode.email
-        }`,
-      });
-    } catch {
-      throw new ForbiddenException('Invalid token');
-    }
-
-    const memberInvite = await this.prisma.memberInvite.findFirst({
-      where: {
-        projectId: safeDecode.projectId,
-        email: safeDecode.email,
-      },
-    });
-
-    if (memberInvite?.state !== MemberInviteState.Pending) {
-      throw new ForbiddenException('You already accepted or rejected invite');
-    }
-
-    await this.authService.acceptInvite({
-      email: safeDecode.email,
-      projectId: safeDecode.projectId,
-    });
   }
 
   setCookies(res: Response, tokens: Tokens) {
