@@ -27,7 +27,7 @@ export const UserInviteCard: FC<UserInviteCardProps> = ({
       ]);
     },
   });
-  const { mutate: declineInvite } = useMutation({
+  const { mutate: rejectInvite } = useMutation({
     mutationFn: fetchers.rejectInvite,
     onSuccess: async () => {
       await Promise.all([
@@ -41,7 +41,7 @@ export const UserInviteCard: FC<UserInviteCardProps> = ({
   };
 
   const handleRejectInvite = () => {
-    declineInvite({ projectId });
+    rejectInvite({ projectId });
   };
 
   return (
