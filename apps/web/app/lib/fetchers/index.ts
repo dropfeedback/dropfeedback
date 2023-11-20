@@ -46,10 +46,15 @@ const googleLogin = async (payload: { idToken: string }) => {
   return data;
 };
 
-const getFeedbacks = async (params: { projectId: string }) => {
+const getFeedbacks = async (params: {
+  projectId: string;
+  cursor: string;
+  take: number;
+}) => {
   const { data } = await axiosInstance.get("/feedbacks", {
     params,
   });
+
   return data;
 };
 

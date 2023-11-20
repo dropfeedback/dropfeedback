@@ -28,3 +28,13 @@ export type ProjectResponse = {
   name: string;
   createdAt: string;
 };
+
+export type Feedback = {
+  id: string;
+  projectId: string;
+  content: string;
+  createdAt: string;
+  device: string;
+  origin: string;
+  meta?: Record<string, any> | null;
+};

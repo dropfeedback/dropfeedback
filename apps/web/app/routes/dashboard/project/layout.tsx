@@ -5,7 +5,7 @@ export default function Layout() {
   return (
     <div>
       <ProjectHeader />
-      <div className="h-[calc(100vh-6.625rem)]">
+      <div className="min-h-[calc(100vh-6.625rem)]">
         <Outlet />
       </div>
     </div>
