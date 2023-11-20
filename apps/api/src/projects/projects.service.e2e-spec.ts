@@ -91,4 +91,52 @@ describe('Feedbacks - e2e', () => {
       expect(projectsByUser3).toEqual([]);
     });
   });
+
+  describe('PATCH /projects', () => {
+    it('should update project', async () => {
+      const prisma = app.get(PrismaService);
+
+      const project = await prisma.project.create({
+        data: {
+          name: 'test project',
+        },
+      });
+
+      const updatedProject = await projectsService.updateProject({
+        id: project.id,
+        dto: {
+          name: 'updated project',
+        },
+      });
+
+      expect(updatedProject).toEqual({
+        id: project.id,
+        name: 'updated project',
+        createdAt: project.createdAt,
+      });
+    });
+  });
+
+  describe('DELETE /projects', () => {
+    it('should delete project', async () => {
+      const prisma = app.get(PrismaService);
+
+      const project = await prisma.project.create({
+        data: {
+          name: 'test project',
+        },
+      });
+
+      await projectsService.deleteProject({
+        id: project.id,
+      });
+
+      const projectShouldNotExist = await prisma.project.findUnique({
+        where: {
+          id: project.id,
+        },
+      });
+      expect(projectShouldNotExist).toBeNull();
+    });
+  });
 });

@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ProjectDto } from './dto';
+import { CreateProjectDto, UpdateProjectDto } from './dto';
 import {
   MemberInviteRole,
   MemberInviteState,
@@ -55,7 +55,13 @@ export class ProjectsService {
     }));
   }
 
-  async createProject({ userId, dto }: { userId: string; dto: ProjectDto }) {
+  async createProject({
+    userId,
+    dto,
+  }: {
+    userId: string;
+    dto: CreateProjectDto;
+  }) {
     return this.prisma.project.create({
       data: {
         name: dto.name,
@@ -65,6 +71,25 @@ export class ProjectsService {
             role: ProjectMemberRole.owner,
           },
         },
+      },
+    });
+  }
+
+  async updateProject({ id, dto }: { id: string; dto: UpdateProjectDto }) {
+    return this.prisma.project.update({
+      where: {
+        id: id,
+      },
+      data: {
+        name: dto.name,
+      },
+    });
+  }
+
+  async deleteProject({ id }: { id: string }) {
+    return this.prisma.project.delete({
+      where: {
+        id: id,
       },
     });
   }
