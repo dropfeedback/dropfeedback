@@ -137,9 +137,10 @@ export class ProjectsService {
       if (member) {
         throw new ConflictException('User already member of this project');
       }
-      // if user is not member of this project, we will send invite again.
-      // this is very rare edge case. state can be out of sync. if user accepted invite, but not member of this project.
-      // to fallback this case, we will send invite again.
+      // if user is not member of this project but state is accepted we will send invite again.
+      // because state can be out of sync this is very rare edge case.
+      // for example: user can be accept an invite, but can be not member of this project on database.
+      // to fix this, we will send invite again and update state to pending.
       else {
         await this.prisma.memberInvite.update({
           where: { id: memberInvite.id },
