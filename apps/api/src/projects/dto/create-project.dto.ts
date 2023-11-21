@@ -8,11 +8,3 @@ export class CreateProjectDto
   @MinLength(3)
   name: string;
 }
-
-export class UpdateProjectDto
-  implements Omit<Project, 'id' | 'createdAt' | 'userId'>
-{
-  @IsString()
-  @MinLength(3)
-  name: string;
-}
