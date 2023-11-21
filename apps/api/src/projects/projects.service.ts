@@ -5,13 +5,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateProjectDto, UpdateProjectDto } from './dto';
 import {
   MemberInviteRole,
   MemberInviteState,
   ProjectMemberRole,
 } from '@prisma/client';
 import { MailService } from 'src/mail/mail.service';
+import { UpdateProjectDto } from './dto/update-project.dto';
+import { CreateProjectDto } from './dto/create-project.dto';
 
 @Injectable()
 export class ProjectsService {
