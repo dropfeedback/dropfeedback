@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -141,7 +142,7 @@ export class AuthService {
     id: string;
     refreshToken: string;
   }) {
-    if (!refreshToken) throw new ForbiddenException('Invalid token');
+    if (!refreshToken) throw new UnauthorizedException('Invalid refresh token');
 
     const user = await this.prisma.user.findUnique({
       where: {
@@ -151,13 +152,14 @@ export class AuthService {
         },
       },
     });
-    if (!user) throw new ForbiddenException('Invalid credentials');
+    if (!user) throw new UnauthorizedException('Invalid refresh token');
 
     const isRefreshTokenMatches = await bcrypt.compare(
       refreshToken,
       user.hashedRefreshToken || '',
     );
-    if (!isRefreshTokenMatches) throw new ForbiddenException('Invalid token');
+    if (!isRefreshTokenMatches)
+      throw new UnauthorizedException('Invalid refresh token');
 
     const decodedToken = this.jwtService.decode(refreshToken) as JwtPayload;
 
