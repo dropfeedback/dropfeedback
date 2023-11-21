@@ -92,7 +92,29 @@ describe('Feedbacks - e2e', () => {
     });
   });
 
-  describe('PATCH /projects', () => {
+  describe('GET /projects/:projectId', () => {
+    it('should get project', async () => {
+      const prisma = app.get(PrismaService);
+
+      const project = await prisma.project.create({
+        data: {
+          name: 'test project',
+        },
+      });
+
+      const projectById = await projectsService.getProjectById({
+        projectId: project.id,
+      });
+
+      expect(projectById).toEqual({
+        id: project.id,
+        name: 'test project',
+        createdAt: project.createdAt,
+      });
+    });
+  });
+
+  describe('PATCH /projects/:projectId', () => {
     it('should update project', async () => {
       const prisma = app.get(PrismaService);
 
@@ -117,7 +139,7 @@ describe('Feedbacks - e2e', () => {
     });
   });
 
-  describe('DELETE /projects', () => {
+  describe('DELETE /projects/:projectId', () => {
     it('should delete project', async () => {
       const prisma = app.get(PrismaService);
 

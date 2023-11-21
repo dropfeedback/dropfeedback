@@ -23,6 +23,7 @@ import { GetInvitesDto } from './dto/get-invites.dto';
 import { DeleteMemberInviteDto } from './dto/delete-member-invite-param.dto';
 import { UpdateProjectParam } from './dto/update-project.param';
 import { DeleteProjectParam } from './dto/delete-project.param';
+import { GetProjectById } from './dto/get-project-by-id.param';
 
 @Controller('projects')
 export class ProjectsController {
@@ -41,6 +42,12 @@ export class ProjectsController {
     @Body() dto: CreateProjectDto,
   ) {
     return this.projectService.createProject({ userId: user.sub, dto });
+  }
+
+  @Get('/:projectId')
+  @HttpCode(HttpStatus.OK)
+  async getProjectById(@Param() param: GetProjectById) {
+    return this.projectService.getProjectById({ projectId: param.projectId });
   }
 
   @Patch('/:projectId')
