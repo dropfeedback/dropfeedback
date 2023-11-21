@@ -13,8 +13,6 @@ import {
 import { ProjectsService } from './projects.service';
 import type { JwtPayload } from 'src/auth/types';
 import { GetCurrentUser } from 'src/common/decorators';
-import { CreateProjectDto, UpdateProjectDto } from './dto';
-
 import { DeleteMemberDto } from './dto/delete-member.dto';
 import { GetMembersDto } from './dto/get-members.dto';
 import { AddMemberBodyDto } from './dto/add-member-body.dto';
@@ -24,6 +22,8 @@ import { DeleteMemberInviteDto } from './dto/delete-member-invite-param.dto';
 import { UpdateProjectParam } from './dto/update-project.param';
 import { DeleteProjectParam } from './dto/delete-project.param';
 import { GetProjectById } from './dto/get-project-by-id.param';
+import { CreateProjectDto } from './dto/create-project.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Controller('projects')
 export class ProjectsController {
