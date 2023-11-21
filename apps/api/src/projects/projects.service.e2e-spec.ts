@@ -91,4 +91,74 @@ describe('Feedbacks - e2e', () => {
       expect(projectsByUser3).toEqual([]);
     });
   });
+
+  describe('GET /projects/:projectId', () => {
+    it('should get project', async () => {
+      const prisma = app.get(PrismaService);
+
+      const project = await prisma.project.create({
+        data: {
+          name: 'test project',
+        },
+      });
+
+      const projectById = await projectsService.getProjectById({
+        projectId: project.id,
+      });
+
+      expect(projectById).toEqual({
+        id: project.id,
+        name: 'test project',
+        createdAt: project.createdAt,
+      });
+    });
+  });
+
+  describe('PATCH /projects/:projectId', () => {
+    it('should update project', async () => {
+      const prisma = app.get(PrismaService);
+
+      const project = await prisma.project.create({
+        data: {
+          name: 'test project',
+        },
+      });
+
+      const updatedProject = await projectsService.updateProject({
+        id: project.id,
+        dto: {
+          name: 'updated project',
+        },
+      });
+
+      expect(updatedProject).toEqual({
+        id: project.id,
+        name: 'updated project',
+        createdAt: project.createdAt,
+      });
+    });
+  });
+
+  describe('DELETE /projects/:projectId', () => {
+    it('should delete project', async () => {
+      const prisma = app.get(PrismaService);
+
+      const project = await prisma.project.create({
+        data: {
+          name: 'test project',
+        },
+      });
+
+      await projectsService.deleteProject({
+        id: project.id,
+      });
+
+      const projectShouldNotExist = await prisma.project.findUnique({
+        where: {
+          id: project.id,
+        },
+      });
+      expect(projectShouldNotExist).toBeNull();
+    });
+  });
 });
