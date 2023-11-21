@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { ProjectMember, User } from '@prisma/client';
 import { IsString, IsNotEmpty, IsEmail, IsEnum } from 'class-validator';
 
@@ -12,5 +13,6 @@ export class AddMemberBodyDto
   @IsNotEmpty()
   @IsString()
   @IsEnum(['manager', 'member'])
+  @ApiProperty({ enum: ['manager', 'member'] })
   role: 'manager' | 'member';
 }
