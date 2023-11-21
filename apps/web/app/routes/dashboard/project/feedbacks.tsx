@@ -1,21 +1,19 @@
-import { useCallback, useRef } from "react";
 import { useParams } from "@remix-run/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchers } from "~/lib/fetchers";
-import { type Feedback } from "~/types";
+import { Separator } from "~/components/ui/separator";
+import { Toolbar } from "~/components/feedbacks/toolbar";
+import { FeedbackDetail } from "~/components/feedbacks/detail";
+import { Inbox } from "~/components/feedbacks/inbox";
+import { type FeedbackQueryType } from "~/types";
 
-const pageSize = 5;
+const pageSize = 10;
 
 export default function Feedbacks() {
   const { projectId } = useParams<{ projectId: string }>();
 
-  const { data, isPending, isError, isFetching, hasNextPage, fetchNextPage } =
-    useInfiniteQuery<{
-      data: Feedback[];
-      nextCursor: string | null;
-      prevCursor: string | null;
-      total: number;
-    }>({
+  const { data, isPending, isError, fetchNextPage } =
+    useInfiniteQuery<FeedbackQueryType>({
       queryKey: ["feedbacks", { projectId }],
       queryFn: ({ pageParam }) => {
         const cursor = (pageParam as string) ?? "";
@@ -27,28 +25,10 @@ export default function Feedbacks() {
         });
       },
       enabled: !!projectId,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      getPreviousPageParam: (firstPage) => firstPage.prevCursor,
-      initialPageParam: { nextCursor: null },
+      getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+      getPreviousPageParam: (firstPage) => firstPage.prevCursor ?? undefined,
+      initialPageParam: "",
     });
-
-  const observer = useRef<IntersectionObserver>();
-
-  const lastElementRef = useCallback(
-    (node: HTMLLIElement) => {
-      if (isPending || isFetching) return;
-
-      if (observer.current) observer.current.disconnect();
-
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasNextPage) {
-          fetchNextPage();
-        }
-      });
-      if (node) observer.current.observe(node);
-    },
-    [isPending, hasNextPage],
-  );
 
   if (isError) return null;
 
@@ -57,25 +37,19 @@ export default function Feedbacks() {
   }
 
   return (
-    <div>
-      <h1>Feedbacks</h1>
-      <ul>
-        {data?.pages.map((page) =>
-          page.data.map((feedback) => (
-            <li
-              key={feedback.id}
-              ref={
-                page.data[page.data.length - 1].id === feedback.id
-                  ? lastElementRef
-                  : null
-              }
-            >
-              <div>{feedback.id}</div>
-              <div>{feedback.content}</div>
-            </li>
-          )),
-        )}
-      </ul>
+    <div className="h-full bg-background ">
+      <div className="container py-8">
+        <Toolbar />
+        <Separator className="my-6" />
+        <div className="flex gap-2">
+          <div className="h-[calc(100vh-16rem)] w-1/3 overflow-auto">
+            <Inbox pages={data.pages} fetchNextPage={fetchNextPage} />
+          </div>
+          <div className="w-2/3">
+            <FeedbackDetail />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

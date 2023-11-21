@@ -31,6 +31,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
+    "date-fns": "^2.30.0",
     "framer-motion": "^10.16.4",
     "isbot": "^3.6.8",
     "next-themes": "^0.2.1",
@@ -43,6 +44,7 @@
   "devDependencies": {
     "@remix-run/dev": "^2.2.0",
     "@remix-run/eslint-config": "^2.2.0",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@tanstack/eslint-plugin-query": "^5.8.3",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",

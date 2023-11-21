@@ -38,3 +38,10 @@ export type Feedback = {
   origin: string;
   meta?: Record<string, any> | null;
 };
+
+export type FeedbackQueryType = {
+  data: Feedback[];
+  nextCursor: string | null;
+  prevCursor: string | null;
+  total: number;
+};
