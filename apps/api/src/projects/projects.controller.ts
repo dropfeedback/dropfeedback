@@ -46,6 +46,14 @@ export class ProjectsController {
     return this.projectService.createProject({ userId: user.sub, dto });
   }
 
+  @Get('/current-user-invites')
+  @HttpCode(HttpStatus.OK)
+  async getCurrentUserInvites(@GetCurrentUser() user: JwtPayload) {
+    return this.projectService.currentUserInvites({
+      email: user.email,
+    });
+  }
+
   @Get('/:projectId')
   @HttpCode(HttpStatus.OK)
   async getProjectById(@Param() param: GetProjectById) {
@@ -65,14 +73,6 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   deleteProject(@Param() param: DeleteProjectParam) {
     return this.projectService.deleteProject({ id: param.projectId });
-  }
-
-  @Get('/current-user-invites')
-  @HttpCode(HttpStatus.OK)
-  async getCurrentUserInvites(@GetCurrentUser() user: JwtPayload) {
-    return this.projectService.currentUserInvites({
-      email: user.email,
-    });
   }
 
   @Post('/:projectId/member')
