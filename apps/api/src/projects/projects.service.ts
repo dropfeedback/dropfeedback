@@ -75,6 +75,14 @@ export class ProjectsService {
     });
   }
 
+  async getProjectById({ projectId }: { projectId: string }) {
+    return this.prisma.project.findUnique({
+      where: {
+        id: projectId,
+      },
+    });
+  }
+
   async updateProject({ id, dto }: { id: string; dto: UpdateProjectDto }) {
     return this.prisma.project.update({
       where: {
