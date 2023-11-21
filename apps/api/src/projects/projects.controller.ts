@@ -7,13 +7,12 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import type { JwtPayload } from 'src/auth/types';
 import { GetCurrentUser } from 'src/common/decorators';
-import { ProjectDto } from './dto';
-
 import { DeleteMemberDto } from './dto/delete-member.dto';
 import { GetMembersParam } from './dto/get-members.param';
 import { AddMemberDto } from './dto/add-member.dto';
@@ -22,6 +21,11 @@ import { GetInvitesParam } from './dto/get-invites.param';
 import { DeleteMemberInviteParam } from './dto/delete-member-invite.param';
 import { AcceptInviteParam } from './dto/accept-invite.param';
 import { RejectInviteParam } from './dto/reject-invite.param';
+import { UpdateProjectParam } from './dto/update-project.param';
+import { DeleteProjectParam } from './dto/delete-project.param';
+import { GetProjectById } from './dto/get-project-by-id.param';
+import { CreateProjectDto } from './dto/create-project.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Controller('projects')
 export class ProjectsController {
@@ -35,8 +39,32 @@ export class ProjectsController {
 
   @Post('/')
   @HttpCode(HttpStatus.CREATED)
-  createProject(@GetCurrentUser() user: JwtPayload, @Body() dto: ProjectDto) {
+  createProject(
+    @GetCurrentUser() user: JwtPayload,
+    @Body() dto: CreateProjectDto,
+  ) {
     return this.projectService.createProject({ userId: user.sub, dto });
+  }
+
+  @Get('/:projectId')
+  @HttpCode(HttpStatus.OK)
+  async getProjectById(@Param() param: GetProjectById) {
+    return this.projectService.getProjectById({ projectId: param.projectId });
+  }
+
+  @Patch('/:projectId')
+  @HttpCode(HttpStatus.OK)
+  updateProject(
+    @Body() dto: UpdateProjectDto,
+    @Param() param: UpdateProjectParam,
+  ) {
+    return this.projectService.updateProject({ id: param.projectId, dto });
+  }
+
+  @Delete('/:projectId')
+  @HttpCode(HttpStatus.OK)
+  deleteProject(@Param() param: DeleteProjectParam) {
+    return this.projectService.deleteProject({ id: param.projectId });
   }
 
   @Get('/current-user-invites')
