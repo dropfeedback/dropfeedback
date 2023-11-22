@@ -41,7 +41,7 @@ export type Feedback = {
 
 export type FeedbackQueryType = {
   data: Feedback[];
-  nextCursor: string | null;
-  prevCursor: string | null;
+  nextCursor?: string;
+  prevCursor?: string;
   total: number;
 };

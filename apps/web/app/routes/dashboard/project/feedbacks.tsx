@@ -1,16 +1,19 @@
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useParams } from "@remix-run/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInView } from "framer-motion";
 import { fetchers } from "~/lib/fetchers";
-import { Separator } from "~/components/ui/separator";
-import { Toolbar } from "~/components/feedbacks/toolbar";
-import { FeedbackDetail } from "~/components/feedbacks/detail";
-import { Inbox } from "~/components/feedbacks/inbox";
+import { FeedbackCard } from "~/components/feedback-card";
+import FeedbackFilter from "~/components/feedback-filter";
 import { type FeedbackQueryType } from "~/types";
 
 const pageSize = 10;
 
 export default function Feedbacks() {
   const { projectId } = useParams<{ projectId: string }>();
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref);
+  const [openedCardId, setOpenedCardId] = useState("");
 
   const { data, isPending, isError, fetchNextPage } =
     useInfiniteQuery<FeedbackQueryType>({
@@ -30,6 +33,12 @@ export default function Feedbacks() {
       initialPageParam: "",
     });
 
+  useEffect(() => {
+    if (isInView) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, isInView]);
+
   if (isError) return null;
 
   if (isPending) {
@@ -37,16 +46,24 @@ export default function Feedbacks() {
   }
 
   return (
-    <div className="h-full bg-background ">
-      <div className="container py-8">
-        <Toolbar />
-        <Separator className="my-6" />
-        <div className="flex gap-2">
-          <div className="h-[calc(100vh-16rem)] w-1/3 overflow-auto">
-            <Inbox pages={data.pages} fetchNextPage={fetchNextPage} />
-          </div>
-          <div className="w-2/3">
-            <FeedbackDetail />
+    <div className="bg-background">
+      <div className="container">
+        <div className="flex gap-8 pt-8">
+          <FeedbackFilter />
+          <div>
+            {data.pages.map((page) => (
+              <Fragment key={page.nextCursor}>
+                {page.data.map((feedback) => (
+                  <FeedbackCard
+                    key={feedback.id}
+                    openedCardId={openedCardId}
+                    setOpenedCardId={setOpenedCardId}
+                    {...feedback}
+                  />
+                ))}
+              </Fragment>
+            ))}
+            <div ref={ref}>Loading...</div>
           </div>
         </div>
       </div>
