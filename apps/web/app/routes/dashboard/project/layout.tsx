@@ -5,7 +5,7 @@ export default function Layout() {
   return (
     <div>
       <ProjectHeader />
-      <div className="container py-6">
+      <div className="h-[calc(100vh-6.625rem)]">
         <Outlet />
       </div>
     </div>

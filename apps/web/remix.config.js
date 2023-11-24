@@ -32,6 +32,9 @@ export default {
           route("integrations", "routes/dashboard/project/integrations.tsx", {
             index: true,
           });
+          route("settings", "routes/dashboard/project/settings.tsx", {
+            index: true,
+          });
         });
       });
     });
