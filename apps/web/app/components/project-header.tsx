@@ -26,6 +26,11 @@ const ROUTES = [
     title: "Integrations",
     path: "/dashboard/:projectId/integrations",
   },
+  {
+    key: "settings",
+    title: "Settings",
+    path: "/dashboard/:projectId/settings",
+  },
 ];
 
 export function ProjectHeader() {
