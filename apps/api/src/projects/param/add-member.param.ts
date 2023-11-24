@@ -1,7 +1,7 @@
 import { ProjectMember } from '@prisma/client';
 import { IsString, IsNotEmpty, IsUUID } from 'class-validator';
 
-export class GetInvitesDto implements Pick<ProjectMember, 'projectId'> {
+export class AddMemberParam implements Pick<ProjectMember, 'projectId'> {
   @IsNotEmpty()
   @IsString()
   @IsUUID()

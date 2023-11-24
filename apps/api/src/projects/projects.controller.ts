@@ -14,14 +14,16 @@ import { ProjectsService } from './projects.service';
 import type { JwtPayload } from 'src/auth/types';
 import { GetCurrentUser } from 'src/common/decorators';
 import { DeleteMemberDto } from './dto/delete-member.dto';
-import { GetMembersDto } from './dto/get-members.dto';
-import { AddMemberBodyDto } from './dto/add-member-body.dto';
-import { AddMemberParamDto } from './dto/add-member-param.dto';
-import { GetInvitesDto } from './dto/get-invites.dto';
-import { DeleteMemberInviteDto } from './dto/delete-member-invite-param.dto';
-import { UpdateProjectParam } from './dto/update-project.param';
-import { DeleteProjectParam } from './dto/delete-project.param';
-import { GetProjectById } from './dto/get-project-by-id.param';
+import { GetMembersParam } from './param/get-members.param';
+import { AddMemberDto } from './dto/add-member.dto';
+import { AddMemberParam } from './param/add-member.param';
+import { GetInvitesParam } from './param/get-invites.param';
+import { DeleteMemberInviteParam } from './param/delete-member-invite.param';
+import { AcceptInviteParam } from './param/accept-invite.param';
+import { RejectInviteParam } from './param/reject-invite.param';
+import { UpdateProjectParam } from './param/update-project.param';
+import { DeleteProjectParam } from './param/delete-project.param';
+import { GetProjectById } from './param/get-project-by-id.param';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 
@@ -42,6 +44,14 @@ export class ProjectsController {
     @Body() dto: CreateProjectDto,
   ) {
     return this.projectService.createProject({ userId: user.sub, dto });
+  }
+
+  @Get('/current-user-invites')
+  @HttpCode(HttpStatus.OK)
+  async getCurrentUserInvites(@GetCurrentUser() user: JwtPayload) {
+    return this.projectService.currentUserInvites({
+      email: user.email,
+    });
   }
 
   @Get('/:projectId')
@@ -65,58 +75,16 @@ export class ProjectsController {
     return this.projectService.deleteProject({ id: param.projectId });
   }
 
-  @Get('/:projectId/members')
-  @HttpCode(HttpStatus.OK)
-  async getMembers(
-    @GetCurrentUser() user: JwtPayload,
-    @Param() dto: GetMembersDto,
-  ) {
-    const hasAccess = await this.projectService.hasAccess({
-      acceptedRoles: ['arkadaslar', 'owner', 'manager'],
-      projectId: dto.projectId,
-      userId: user.sub,
-    });
-
-    if (!hasAccess) {
-      throw new ForbiddenException(
-        'You are not allowed to access this resource',
-      );
-    }
-
-    return this.projectService.members({ projectId: dto.projectId });
-  }
-
-  @Get('/:projectId/invites')
-  @HttpCode(HttpStatus.OK)
-  async getInvites(
-    @GetCurrentUser() user: JwtPayload,
-    @Param() dto: GetInvitesDto,
-  ) {
-    const hasAccess = await this.projectService.hasAccess({
-      acceptedRoles: ['arkadaslar', 'owner', 'manager'],
-      projectId: dto.projectId,
-      userId: user.sub,
-    });
-
-    if (!hasAccess) {
-      throw new ForbiddenException(
-        'You are not allowed to access this resource',
-      );
-    }
-
-    return this.projectService.invites({ projectId: dto.projectId });
-  }
-
   @Post('/:projectId/member')
   @HttpCode(HttpStatus.OK)
   async addMember(
     @GetCurrentUser() user: JwtPayload,
-    @Param() paramDto: AddMemberParamDto,
-    @Body() bodyDto: AddMemberBodyDto,
+    @Param() param: AddMemberParam,
+    @Body() dto: AddMemberDto,
   ) {
     const hasAccess = await this.projectService.hasAccess({
       acceptedRoles: ['arkadaslar', 'owner', 'manager'],
-      projectId: paramDto.projectId,
+      projectId: param.projectId,
       userId: user.sub,
     });
 
@@ -126,9 +94,76 @@ export class ProjectsController {
       );
 
     return this.projectService.addMember({
-      projectId: paramDto.projectId,
-      email: bodyDto.email,
-      role: bodyDto.role,
+      projectId: param.projectId,
+      email: dto.email,
+      role: dto.role,
+    });
+  }
+
+  @Get('/:projectId/members')
+  @HttpCode(HttpStatus.OK)
+  async getMembers(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() param: GetMembersParam,
+  ) {
+    const hasAccess = await this.projectService.hasAccess({
+      acceptedRoles: ['arkadaslar', 'owner', 'manager'],
+      projectId: param.projectId,
+      userId: user.sub,
+    });
+
+    if (!hasAccess) {
+      throw new ForbiddenException(
+        'You are not allowed to access this resource',
+      );
+    }
+
+    return this.projectService.members({ projectId: param.projectId });
+  }
+
+  @Get('/:projectId/invites')
+  @HttpCode(HttpStatus.OK)
+  async getInvites(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() param: GetInvitesParam,
+  ) {
+    const hasAccess = await this.projectService.hasAccess({
+      acceptedRoles: ['arkadaslar', 'owner', 'manager', 'member'],
+      projectId: param.projectId,
+      userId: user.sub,
+    });
+
+    if (!hasAccess) {
+      throw new ForbiddenException(
+        'You are not allowed to access this resource',
+      );
+    }
+
+    return this.projectService.invites({ projectId: param.projectId });
+  }
+
+  @Post('/:projectId/accept-invite')
+  @HttpCode(HttpStatus.OK)
+  async acceptInvite(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() param: AcceptInviteParam,
+  ) {
+    return this.projectService.acceptInvite({
+      projectId: param.projectId,
+      userId: user.sub,
+      email: user.email,
+    });
+  }
+
+  @Post('/:projectId/reject-invite')
+  @HttpCode(HttpStatus.OK)
+  async rejectInvite(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() param: RejectInviteParam,
+  ) {
+    return this.projectService.rejectInvite({
+      projectId: param.projectId,
+      email: user.email,
     });
   }
 
@@ -136,11 +171,11 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   async removeMember(
     @GetCurrentUser() user: JwtPayload,
-    @Param() dto: DeleteMemberDto,
+    @Param() param: DeleteMemberDto,
   ) {
     const hasAccess = await this.projectService.hasAccess({
       acceptedRoles: ['arkadaslar', 'owner', 'manager'],
-      projectId: dto.projectId,
+      projectId: param.projectId,
       userId: user.sub,
     });
 
@@ -150,9 +185,9 @@ export class ProjectsController {
       );
 
     await this.projectService.removeMember({
-      projectId: dto.projectId,
+      projectId: param.projectId,
       operatorId: user.sub,
-      memberId: dto.memberId,
+      memberId: param.memberId,
     });
   }
 
@@ -160,11 +195,11 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   async cancelInvite(
     @GetCurrentUser() user: JwtPayload,
-    @Param() dto: DeleteMemberInviteDto,
+    @Param() param: DeleteMemberInviteParam,
   ) {
     const hasAccess = await this.projectService.hasAccess({
       acceptedRoles: ['arkadaslar', 'owner', 'manager'],
-      projectId: dto.projectId,
+      projectId: param.projectId,
       userId: user.sub,
     });
 
@@ -173,6 +208,6 @@ export class ProjectsController {
         'You are not allowed to access this resource',
       );
 
-    await this.projectService.cancelInvite(dto.memberInviteId);
+    await this.projectService.cancelInvite(param.memberInviteId);
   }
 }
