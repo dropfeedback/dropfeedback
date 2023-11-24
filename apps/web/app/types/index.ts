@@ -12,6 +12,12 @@ export enum ProjectMemberRole {
   member,
 }
 
+export enum MemberInviteState {
+  Pending = "pending",
+  Accepted = "accepted",
+  Rejected = "rejected",
+}
+
 export type MeResponse = {
   id: string;
   email: string;
@@ -44,4 +50,13 @@ export type FeedbackQueryType = {
   nextCursor?: string;
   prevCursor?: string;
   total: number;
+};
+
+export type ProjectInvite = {
+  id: string;
+  projectId: string;
+  projectName: string;
+  email: string;
+  role: ProjectMemberRole;
+  state: MemberInviteState;
 };

@@ -1,5 +1,6 @@
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useSearchParams } from "@remix-run/react";
+import { UserInviteList } from "~/components/user-invite-list";
 import { ProjectList } from "~/components/project-list";
 import { Button } from "~/components/ui/button";
 
@@ -24,7 +25,7 @@ export default function Dashboard() {
           Create Project
         </Button>
       </div>
-      <br />
+      <UserInviteList className="mb-6 mt-4" />
       <ProjectList />
     </div>
   );

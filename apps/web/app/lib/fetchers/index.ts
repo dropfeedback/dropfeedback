@@ -11,6 +11,25 @@ const createProject = async (payload: ProjectVariables) => {
   return data;
 };
 
+const getUserInvites = async () => {
+  const { data } = await axiosInstance.get("/projects/current-user-invites");
+  return data;
+};
+
+const acceptInvite = async ({ projectId }: { projectId: string }) => {
+  const { data } = await axiosInstance.post(
+    `/projects/${projectId}/accept-invite`,
+  );
+  return data;
+};
+
+const rejectInvite = async ({ projectId }: { projectId: string }) => {
+  const { data } = await axiosInstance.post(
+    `/projects/${projectId}/reject-invite`,
+  );
+  return data;
+};
+
 const me = async (cookie?: string) => {
   const { data } = await axiosInstance.get("/auth/me", {
     headers: {
@@ -61,6 +80,9 @@ const getFeedbacks = async (params: {
 export const fetchers = {
   getProjects,
   createProject,
+  getUserInvites,
+  acceptInvite,
+  rejectInvite,
   me,
   signup,
   signin,

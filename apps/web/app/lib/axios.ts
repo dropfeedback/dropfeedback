@@ -28,10 +28,11 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const status = response.status;
+    const status = response?.status;
+    const message = response?.data?.message;
 
-    // API returns 403 when could not refresh tokens.
-    if (status === 403) {
+    // API returns 401 and message is "Invalid refresh token". redirect to login
+    if (status === 401 && message === "Invalid refresh token") {
       if (window.location.pathname !== "/login") {
         window.location.replace("/login");
       }

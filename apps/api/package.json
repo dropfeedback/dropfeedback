@@ -30,6 +30,7 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
+    "@faker-js/faker": "^8.2.0",
     "@nestjs-modules/mailer": "^1.9.1",
     "@nestjs/cli": "^10.2.1",
     "@nestjs/common": "^10.2.8",
@@ -38,7 +39,7 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/passport": "^10.0.2",
     "@nestjs/platform-express": "^10.2.8",
-    "@prisma/client": "^5.5.2",
+    "@prisma/client": "^5.6.0",
     "@react-email/components": "^0.0.11",
     "@react-email/render": "^0.0.9",
     "argon2": "^0.31.2",
@@ -56,7 +57,6 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "tsx": "^4.1.1",
-    "@faker-js/faker": "^8.2.0",
     "ua-parser-js": "^1.0.37"
   },
   "devDependencies": {
@@ -80,7 +80,7 @@
     "dotenv": "^16.3.1",
     "eslint": "^8.53.0",
     "eslint-plugin-prettier": "^5.0.1",
-    "prisma": "^5.5.2",
+    "prisma": "^5.6.0",
     "source-map-support": "^0.5.21",
     "supertest": "^6.3.3",
     "swc-loader": "^0.2.3",
