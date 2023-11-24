@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -10,7 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { MemberInviteState, UserProviderType } from '@prisma/client';
+import { UserProviderType } from '@prisma/client';
 import { TokenPayload as GoogleTokenPayload } from 'google-auth-library';
 
 @Injectable()
@@ -141,7 +142,7 @@ export class AuthService {
     id: string;
     refreshToken: string;
   }) {
-    if (!refreshToken) throw new ForbiddenException('Invalid token');
+    if (!refreshToken) throw new UnauthorizedException('Invalid refresh token');
 
     const user = await this.prisma.user.findUnique({
       where: {
@@ -151,13 +152,14 @@ export class AuthService {
         },
       },
     });
-    if (!user) throw new ForbiddenException('Invalid credentials');
+    if (!user) throw new UnauthorizedException('Invalid refresh token');
 
     const isRefreshTokenMatches = await bcrypt.compare(
       refreshToken,
       user.hashedRefreshToken || '',
     );
-    if (!isRefreshTokenMatches) throw new ForbiddenException('Invalid token');
+    if (!isRefreshTokenMatches)
+      throw new UnauthorizedException('Invalid refresh token');
 
     const decodedToken = this.jwtService.decode(refreshToken) as JwtPayload;
 
@@ -186,35 +188,6 @@ export class AuthService {
     await this.prisma.user.update({
       where: { id },
       data: { hashedRefreshToken },
-    });
-  }
-
-  async acceptInvite({
-    projectId,
-    email,
-  }: {
-    projectId: string;
-    email: string;
-  }) {
-    const memberInvite = await this.prisma.memberInvite.findUnique({
-      where: {
-        email_projectId: { email, projectId },
-        state: {
-          not: MemberInviteState.Accepted,
-        },
-      },
-    });
-
-    if (!memberInvite?.userId) {
-      throw new ForbiddenException('Invite not found');
-    }
-
-    return this.prisma.projectMember.create({
-      data: {
-        projectId,
-        userId: memberInvite.userId,
-        role: memberInvite.role,
-      },
     });
   }
 
