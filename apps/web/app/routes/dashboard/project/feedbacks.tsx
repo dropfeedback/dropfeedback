@@ -1,7 +1,7 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useParams } from "@remix-run/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useInView } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import { fetchers } from "~/lib/fetchers";
 import { FeedbackCard } from "~/components/feedback-card";
 import FeedbackFilter from "~/components/feedback-filter";
@@ -11,8 +11,7 @@ const pageSize = 10;
 
 export default function Feedbacks() {
   const { projectId } = useParams<{ projectId: string }>();
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref);
+  const { ref, inView } = useInView();
   const [openedCardId, setOpenedCardId] = useState("");
 
   const { data, isPending, isError, fetchNextPage } =
@@ -34,21 +33,17 @@ export default function Feedbacks() {
     });
 
   useEffect(() => {
-    if (isInView) {
+    if (inView) {
       fetchNextPage();
     }
-  }, [fetchNextPage, isInView]);
+  }, [fetchNextPage, inView]);
 
   const getRandomCategory = (index: number) => {
     const categories = ["Issue", "Idea", "Other"];
     return categories[index % categories.length];
   };
 
-  if (isError) return null;
-
-  if (isPending) {
-    return <div>Loading...</div>;
-  }
+  if (isError) return <p>Cound not load feedbacks</p>;
 
   return (
     <div className="bg-background">
@@ -56,22 +51,28 @@ export default function Feedbacks() {
         <div className="flex gap-8 pt-8">
           <FeedbackFilter />
           <div className="flex flex-col">
-            <div>
-              {data.pages.map((page) => (
-                <Fragment key={page.nextCursor}>
-                  {page.data.map((feedback, index) => (
-                    <FeedbackCard
-                      key={feedback.id}
-                      openedCardId={openedCardId}
-                      setOpenedCardId={setOpenedCardId}
-                      category={getRandomCategory(index)}
-                      {...feedback}
-                    />
+            {isPending ? (
+              <div>Loading...</div>
+            ) : (
+              <>
+                <div>
+                  {data.pages.map((page) => (
+                    <Fragment key={page.nextCursor}>
+                      {page.data.map((feedback, index) => (
+                        <FeedbackCard
+                          key={feedback.id}
+                          openedCardId={openedCardId}
+                          setOpenedCardId={setOpenedCardId}
+                          category={getRandomCategory(index)}
+                          {...feedback}
+                        />
+                      ))}
+                    </Fragment>
                   ))}
-                </Fragment>
-              ))}
-            </div>
-            <div ref={ref}>Loading...</div>
+                </div>
+                <div ref={ref}>Loading...</div>
+              </>
+            )}
           </div>
         </div>
       </div>

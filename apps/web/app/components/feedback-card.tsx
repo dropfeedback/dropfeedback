@@ -50,7 +50,7 @@ export function FeedbackCard({
         <div className="flex justify-between">
           <div
             className={cn(
-              "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold select-none",
+              "inline-flex select-none items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold",
               {
                 "border-orange-500 bg-orange-50 text-orange-500":
                   category === "Idea",
@@ -111,10 +111,11 @@ export function FeedbackCard({
                 <span>1240 x 720</span>
               </div>
             </div>
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
               <Button size="sm" variant="outline">
                 Archive
               </Button>
+              <Button size="sm">Reply</Button>
             </div>
           </>
         )}
