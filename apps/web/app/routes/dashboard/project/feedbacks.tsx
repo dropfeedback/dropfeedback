@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 import { useParams } from "@remix-run/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { fetchers } from "~/lib/fetchers";
 import { FeedbackCard } from "~/components/feedback-card";
 import { FeedbackFilter } from "~/components/feedback-filter";
@@ -15,7 +16,7 @@ export default function Feedbacks() {
   const { ref, inView } = useInView();
   const [openedCardId, setOpenedCardId] = useState("");
 
-  const { data, isPending, isError, fetchNextPage } =
+  const { data, isPending, isError, fetchNextPage, hasNextPage } =
     useInfiniteQuery<FeedbackQueryType>({
       queryKey: ["feedbacks", { projectId }],
       queryFn: ({ pageParam }) => {
@@ -58,7 +59,7 @@ export default function Feedbacks() {
               ))
             ) : (
               <>
-                <div>
+                <div className="mb-6">
                   {data?.pages.map((page) => (
                     <Fragment key={page.nextCursor}>
                       {page.data.map((feedback, index) => (
@@ -73,7 +74,11 @@ export default function Feedbacks() {
                     </Fragment>
                   ))}
                 </div>
-                <div ref={ref}>Loading...</div>
+                {hasNextPage && (
+                  <div ref={ref} className="flex justify-center mb-4">
+                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  </div>
+                )}
               </>
             )}
           </div>
