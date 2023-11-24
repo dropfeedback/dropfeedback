@@ -65,6 +65,18 @@ const googleLogin = async (payload: { idToken: string }) => {
   return data;
 };
 
+const getFeedbacks = async (params: {
+  projectId: string;
+  cursor: string;
+  take: number;
+}) => {
+  const { data } = await axiosInstance.get("/feedbacks", {
+    params,
+  });
+
+  return data;
+};
+
 export const fetchers = {
   getProjects,
   createProject,
@@ -77,4 +89,5 @@ export const fetchers = {
   logout,
   refreshToken,
   googleLogin,
+  getFeedbacks,
 };

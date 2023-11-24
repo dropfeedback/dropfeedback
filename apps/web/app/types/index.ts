@@ -35,6 +35,23 @@ export type ProjectResponse = {
   createdAt: string;
 };
 
+export type Feedback = {
+  id: string;
+  projectId: string;
+  content: string;
+  createdAt: string;
+  device: string;
+  origin: string;
+  meta?: Record<string, any> | null;
+};
+
+export type FeedbackQueryType = {
+  data: Feedback[];
+  nextCursor?: string;
+  prevCursor?: string;
+  total: number;
+};
+
 export type ProjectInvite = {
   id: string;
   projectId: string;
