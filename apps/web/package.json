@@ -21,6 +21,7 @@
     "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
+    "@radix-ui/react-tooltip": "^1.0.7",
     "@react-oauth/google": "^0.11.1",
     "@remix-run/css-bundle": "^2.2.0",
     "@remix-run/node": "^2.2.0",
@@ -32,6 +33,7 @@
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
     "date-fns": "^2.30.0",
+    "dayjs": "^1.11.10",
     "framer-motion": "^10.16.4",
     "isbot": "^3.6.8",
     "next-themes": "^0.2.1",
@@ -39,7 +41,8 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.48.2",
     "tailwind-merge": "^2.0.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "ua-parser-js": "^1.0.37"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.2.0",

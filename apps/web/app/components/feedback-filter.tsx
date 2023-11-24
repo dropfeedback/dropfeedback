@@ -31,6 +31,7 @@ export default function FeedbackFilter() {
         <Separator className="mb-4 mt-2" />
         <div className="-ml-3.5 grid grid-cols-2 gap-1.5 pr-4">
           <Button
+            className="text-muted-foreground hover:text-muted-foreground"
             variant={orderBy === "desc" ? "outline" : "ghost"}
             onClick={() => setOrderBy("desc")}
           >
@@ -38,6 +39,7 @@ export default function FeedbackFilter() {
             Newest first
           </Button>
           <Button
+            className="text-muted-foreground hover:text-muted-foreground"
             variant={orderBy === "asc" ? "outline" : "ghost"}
             onClick={() => setOrderBy("asc")}
           >
@@ -53,7 +55,7 @@ export default function FeedbackFilter() {
           <p className="text-xs text-muted-foreground">
             57c19f23-fc16-4bbc-816e-ba26eaeade47
           </p>
-          <Button variant="ghost" size="icon" className="h-4 w-4" title="Copy">
+          <Button variant="ghost" size="icon" className="h-4 w-4 text-muted-foreground" title="Copy">
             <CopyIcon />
           </Button>
         </div>

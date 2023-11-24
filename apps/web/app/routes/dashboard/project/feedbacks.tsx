@@ -39,6 +39,11 @@ export default function Feedbacks() {
     }
   }, [fetchNextPage, isInView]);
 
+  const getRandomCategory = (index: number) => {
+    const categories = ["Issue", "Idea", "Other"];
+    return categories[index % categories.length];
+  };
+
   if (isError) return null;
 
   if (isPending) {
@@ -50,19 +55,22 @@ export default function Feedbacks() {
       <div className="container">
         <div className="flex gap-8 pt-8">
           <FeedbackFilter />
-          <div>
-            {data.pages.map((page) => (
-              <Fragment key={page.nextCursor}>
-                {page.data.map((feedback) => (
-                  <FeedbackCard
-                    key={feedback.id}
-                    openedCardId={openedCardId}
-                    setOpenedCardId={setOpenedCardId}
-                    {...feedback}
-                  />
-                ))}
-              </Fragment>
-            ))}
+          <div className="flex flex-col">
+            <div>
+              {data.pages.map((page) => (
+                <Fragment key={page.nextCursor}>
+                  {page.data.map((feedback, index) => (
+                    <FeedbackCard
+                      key={feedback.id}
+                      openedCardId={openedCardId}
+                      setOpenedCardId={setOpenedCardId}
+                      category={getRandomCategory(index)}
+                      {...feedback}
+                    />
+                  ))}
+                </Fragment>
+              ))}
+            </div>
             <div ref={ref}>Loading...</div>
           </div>
         </div>
