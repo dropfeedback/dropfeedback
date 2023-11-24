@@ -38,7 +38,7 @@ function Layout() {
   return (
     <>
       <DashboardHeader />
-      <div className="min-h-[calc(100vh-4rem)] bg-accent dark:bg-background">
+      <div className="bg-accent dark:bg-background">
         <Outlet />
       </div>
     </>
