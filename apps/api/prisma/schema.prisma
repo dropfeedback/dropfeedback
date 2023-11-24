@@ -19,7 +19,6 @@ model User {
 
   UserProvider  UserProvider[]
   projectMember ProjectMember[]
-  MemberInvite  MemberInvite[]
 
   @@map("users")
 }
@@ -76,8 +75,6 @@ model MemberInvite {
   updatedAt DateTime          @default(now()) @updatedAt
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  User    User?   @relation(fields: [userId], references: [id])
-  userId  String? @db.Uuid
 
   @@unique([email, projectId])
   @@map("member_invites")

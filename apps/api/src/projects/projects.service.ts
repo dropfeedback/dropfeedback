@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -124,21 +126,6 @@ export class ProjectsService {
     }));
   }
 
-  async invites({ projectId }: { projectId: string }) {
-    const memberInvites = await this.prisma.memberInvite.findMany({
-      where: {
-        projectId,
-      },
-    });
-
-    return memberInvites.map((m) => ({
-      id: m.id,
-      email: m.email,
-      role: m.role,
-      state: m.state,
-    }));
-  }
-
   async addMember({
     projectId,
     email,
@@ -151,18 +138,73 @@ export class ProjectsService {
     const memberInvite = await this.prisma.memberInvite.findUnique({
       where: {
         email_projectId: { email, projectId },
-        state: MemberInviteState.Pending,
+      },
+      select: {
+        id: true,
+        email: true,
+        state: true,
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
-    if (memberInvite) {
+
+    if (memberInvite?.state === MemberInviteState.Pending) {
       throw new ConflictException('Invite already sent');
+    }
+
+    if (memberInvite?.state === MemberInviteState.Accepted) {
+      // if user is MemberInviteState is accepted, we will check if user is already member of this project
+      const member = await this.prisma.projectMember.findFirst({
+        where: {
+          projectId,
+          user: {
+            email: memberInvite.email,
+          },
+        },
+      });
+
+      // if user is already member of this project, we will throw error
+      if (member) {
+        throw new ConflictException('User already member of this project');
+      }
+      // if user is not member of this project but state is accepted we will send invite again.
+      // because state can be out of sync this is very rare edge case.
+      // for example: user can be accept an invite, but can be not member of this project on database.
+      // to fix this, we will send invite again and update state to pending.
+      else {
+        await this.prisma.memberInvite.update({
+          where: { id: memberInvite.id },
+          data: { state: MemberInviteState.Pending },
+        });
+        await this.mailService.sendInviteEmail({
+          email,
+          projectName: memberInvite.project.name,
+        });
+        return HttpStatus.OK;
+      }
+    }
+
+    // if user rejected invite, we will send invite again
+    if (memberInvite?.state === MemberInviteState.Rejected) {
+      await this.prisma.memberInvite.update({
+        where: { id: memberInvite.id },
+        data: { state: MemberInviteState.Pending },
+      });
+      await this.mailService.sendInviteEmail({
+        email,
+        projectName: memberInvite.project.name,
+      });
+      return HttpStatus.OK;
     }
 
     const createdInvite = await this.prisma.memberInvite.create({
       data: { email, projectId, role },
       include: { project: true },
     });
-
     await this.mailService.sendInviteEmail({
       email,
       projectName: createdInvite.project.name,
@@ -190,6 +232,129 @@ export class ProjectsService {
     return this.prisma.memberInvite.delete({
       where: { id: memberInviteId },
     });
+  }
+
+  async acceptInvite({
+    projectId,
+    userId,
+    email,
+  }: {
+    projectId: string;
+    userId: string;
+    email: string;
+  }) {
+    const memberInvite = await this.prisma.memberInvite.findFirst({
+      where: {
+        projectId: projectId,
+        email: email,
+      },
+    });
+
+    if (!memberInvite) {
+      throw new ForbiddenException('Invite not found');
+    }
+
+    if (memberInvite?.state === MemberInviteState.Accepted) {
+      throw new ForbiddenException('You already accepted invite.');
+    }
+
+    const member = await this.prisma.projectMember.findUnique({
+      where: {
+        userId_projectId: { projectId, userId },
+      },
+    });
+    if (member) {
+      throw new ForbiddenException('You already member of this project.');
+    }
+
+    const [projectMember] = await this.prisma.$transaction([
+      this.prisma.projectMember.create({
+        data: {
+          projectId,
+          userId,
+          role: memberInvite.role,
+        },
+      }),
+      this.prisma.memberInvite.update({
+        where: { id: memberInvite.id },
+        data: { state: MemberInviteState.Accepted },
+      }),
+    ]);
+
+    return projectMember;
+  }
+
+  async rejectInvite({
+    projectId,
+    email,
+  }: {
+    projectId: string;
+    email: string;
+  }) {
+    const invite = await this.prisma.memberInvite.findFirst({
+      where: {
+        projectId,
+        email,
+      },
+    });
+
+    if (!invite) {
+      throw new ForbiddenException('Invite not found');
+    }
+
+    if (invite.state === MemberInviteState.Accepted) {
+      throw new ForbiddenException('You already accepted invite.');
+    }
+
+    if (invite.state === MemberInviteState.Rejected) {
+      throw new ForbiddenException('You already rejected invite.');
+    }
+
+    return this.prisma.memberInvite.update({
+      where: { id: invite.id },
+      data: { state: MemberInviteState.Rejected },
+    });
+  }
+
+  async invites({ projectId }: { projectId: string }) {
+    const memberInvites = await this.prisma.memberInvite.findMany({
+      where: {
+        projectId,
+      },
+    });
+
+    return memberInvites.map((m) => ({
+      id: m.id,
+      email: m.email,
+      role: m.role,
+      state: m.state,
+    }));
+  }
+
+  async currentUserInvites({ email }: { email: string }) {
+    const memberInvites = await this.prisma.memberInvite.findMany({
+      where: {
+        email,
+        state: MemberInviteState.Pending,
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        state: true,
+        projectId: true,
+        project: true,
+      },
+    });
+
+    return memberInvites.map((m) => ({
+      id: m.id,
+      projectId: m.projectId,
+      projectName: m.project.name,
+      email: m.email,
+      role: m.role,
+      state: m.state,
+    }));
   }
 
   async hasAccess({
