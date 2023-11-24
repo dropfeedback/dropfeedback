@@ -10,7 +10,7 @@ import { FeedbackRadioGroup } from "./feedback-radio-group";
 import { Button } from "./ui/button";
 import { useState } from "react";
 
-export default function FeedbackFilter() {
+export function FeedbackFilter() {
   const [orderBy, setOrderBy] = useState("desc");
 
   return (
@@ -55,7 +55,12 @@ export default function FeedbackFilter() {
           <p className="text-xs text-muted-foreground">
             57c19f23-fc16-4bbc-816e-ba26eaeade47
           </p>
-          <Button variant="ghost" size="icon" className="h-4 w-4 text-muted-foreground" title="Copy">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-4 w-4 text-muted-foreground"
+            title="Copy"
+          >
             <CopyIcon />
           </Button>
         </div>
