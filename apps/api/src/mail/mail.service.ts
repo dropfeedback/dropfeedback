@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { render } from '@react-email/render';
 import { google } from 'googleapis';
 import { Options } from 'nodemailer/lib/smtp-transport';
+import { InviteEmail } from 'src/mail/mails/invite-email';
 import { VerificationEmail } from './mails/verification-email';
 import { JwtService } from '@nestjs/jwt';
 
@@ -61,7 +62,7 @@ export class MailService {
     email,
     html,
   }: {
-    subject: 'Verification email';
+    subject: 'Verification email' | 'Invite email';
     email: string;
     html: string;
   }) {
@@ -91,5 +92,16 @@ export class MailService {
     );
     const html = render(VerificationEmail({ token }));
     this.sendMail({ subject: 'Verification email', email, html });
+  }
+
+  async sendInviteEmail({
+    email,
+    projectName,
+  }: {
+    email: string;
+    projectName: string;
+  }) {
+    const html = render(InviteEmail({ projectName }));
+    this.sendMail({ subject: 'Invite email', email, html });
   }
 }
