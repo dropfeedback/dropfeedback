@@ -16,13 +16,13 @@ export class MailService {
   private async setTransport() {
     const OAuth2 = google.auth.OAuth2;
     const oauth2Client = new OAuth2(
-      this.config.get<string>('CLIENT_ID'),
-      this.config.get<string>('CLIENT_SECRET'),
+      this.config.get<string>('GOOGLE_EMAIL_OAUTH_CLIENT_ID'),
+      this.config.get<string>('GOOGLE_EMAIL_OAUTH_CLIENT_SECRET'),
       'https://developers.google.com/oauthplayground',
     );
 
     oauth2Client.setCredentials({
-      refresh_token: process.env.REFRESH_TOKEN,
+      refresh_token: process.env.GOOGLE_EMAIL_REFRESH_TOKEN,
     });
 
     const accessToken: string = await new Promise((resolve, reject) => {
@@ -43,9 +43,11 @@ export class MailService {
       service: 'gmail',
       auth: {
         type: 'OAuth2',
-        user: this.config.get<string>('EMAIL'),
-        clientId: this.config.get<string>('CLIENT_ID'),
-        clientSecret: this.config.get<string>('CLIENT_SECRET'),
+        user: this.config.get<string>('GOOGLE_EMAIL'),
+        clientId: this.config.get<string>('GOOGLE_EMAIL_OAUTH_CLIENT_ID'),
+        clientSecret: this.config.get<string>(
+          'GOOGLE_EMAIL_OAUTH_CLIENT_SECRET',
+        ),
         accessToken,
       },
     };
@@ -67,7 +69,7 @@ export class MailService {
       await this.mailerService.sendMail({
         transporterName: 'gmail',
         to: email,
-        from: this.config.get<string>('EMAIL'),
+        from: this.config.get<string>('GOOGLE_EMAIL'),
         subject,
         html,
       });
