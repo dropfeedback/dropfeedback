@@ -281,4 +281,55 @@ export class AuthService {
       refreshToken,
     };
   }
+
+  async emailVerification(token: string) {
+    const email = await this.decodeAndVerifyEmailToken(token);
+
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        UserProvider: true,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const internalProvider = user?.UserProvider?.find(
+      (provider) => provider.type === UserProviderType.Internal,
+    );
+
+    if (!internalProvider) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (internalProvider.emailVerified) {
+      throw new BadRequestException('Email already verified');
+    }
+
+    await this.prisma.userProvider.update({
+      where: { id: internalProvider.id },
+      data: { emailVerified: true },
+    });
+  }
+
+  private async decodeAndVerifyEmailToken(token: string) {
+    const decodedToken = this.jwtService.decode(token);
+
+    if (!decodedToken) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    try {
+      await this.jwtService.verify(token, {
+        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${
+          decodedToken.email
+        }`,
+      });
+    } catch {
+      throw new ForbiddenException('Invalid token');
+    }
+    return decodedToken.email;
+  }
 }
