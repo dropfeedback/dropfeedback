@@ -21,8 +21,9 @@ export enum MemberInviteState {
 export type MeResponse = {
   id: string;
   email: string;
-  name?: string;
-  avatar?: string;
+  firstName?: string;
+  lastName?: string;
+  avatarUrl?: string;
 };
 
 export type ProjectVariables = {

@@ -17,7 +17,12 @@ import { Alert, AlertDescription } from "~/components/ui/alert";
 import { type ApiError } from "~/lib/axios";
 
 type Response = null;
-type Variables = { email: string; password: string };
+type Variables = {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+};
 
 const useLocalSignup = () => {
   const navigate = useNavigate();
@@ -33,6 +38,8 @@ const useLocalSignup = () => {
 type FormValues = {
   email: string;
   password: string;
+  firstName: string;
+  lastName: string;
 };
 
 export default function SignupWithEmail() {
@@ -75,6 +82,42 @@ export default function SignupWithEmail() {
             onSubmit={form.handleSubmit(onSubmit)}
             className="m-auto max-w-[325px] space-y-4"
           >
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="First name"
+                      className="h-12"
+                      required
+                      type="text"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Last name"
+                      className="h-12"
+                      required
+                      type="text"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="email"
