@@ -13,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserProviderType } from '@prisma/client';
 import { TokenPayload as GoogleTokenPayload } from 'google-auth-library';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private config: ConfigService,
+    private mailService: MailService,
   ) {}
 
   async me(id: string) {
@@ -66,6 +68,7 @@ export class AuthService {
         sub: user.id,
         provider: UserProviderType.Internal,
       } satisfies JwtPayload);
+      await this.mailService.sendVerificationMail({ email: user.email });
       return { tokens, id: user.id };
     } else {
       const newUser = await this.prisma.user.create({
@@ -87,6 +90,7 @@ export class AuthService {
         sub: newUser.id,
         provider: UserProviderType.Internal,
       } satisfies JwtPayload);
+      await this.mailService.sendVerificationMail({ email: newUser.email });
       return { tokens, id: newUser.id };
     }
   }

@@ -4,13 +4,15 @@ import { ConfigService } from '@nestjs/config';
 import { render } from '@react-email/render';
 import { google } from 'googleapis';
 import { Options } from 'nodemailer/lib/smtp-transport';
-import { InviteEmail } from 'src/mail/mails/invite-email';
+import { VerificationEmail } from './mails/verification-email';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class MailService {
   constructor(
     private readonly config: ConfigService,
     private readonly mailerService: MailerService,
+    private readonly jwtService: JwtService,
   ) {}
 
   private async setTransport() {
@@ -79,14 +81,15 @@ export class MailService {
     }
   }
 
-  async sendInviteEmail({
-    email,
-    projectName,
-  }: {
-    email: string;
-    projectName: string;
-  }) {
-    const html = render(InviteEmail({ projectName }));
+  async sendVerificationMail({ email }: { email: string }) {
+    const token = await this.jwtService.signAsync(
+      { email },
+      {
+        expiresIn: this.config.get<number>('EMAIL_TOKEN_EXPIRES_IN'),
+        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${email}`,
+      },
+    );
+    const html = render(VerificationEmail({ token }));
     this.sendMail({ subject: 'Verification email', email, html });
   }
 }
