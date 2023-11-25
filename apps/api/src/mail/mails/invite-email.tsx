@@ -18,7 +18,7 @@ import {
 import { config } from '../../config';
 
 export const InviteEmail = ({ projectName }: { projectName: string }) => {
-  const inviteUrl = config().WEB_URL + '/invites';
+  const inviteUrl = config().WEB_URL + '/dashboard';
   return (
     <Html>
       <Head />
@@ -35,12 +35,13 @@ export const InviteEmail = ({ projectName }: { projectName: string }) => {
               />
             </Section>
             <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
-              Join <strong>{projectName}</strong> on <strong>Feedbacky</strong>
+              Join <strong>{projectName}</strong> on{' '}
+              <strong>DropFeedBack</strong>
             </Heading>
             <Text className="text-black text-[14px] leading-[24px]">
               Hello, you invited to the team on Vercel.{' '}
               <strong>{projectName}</strong> project on{' '}
-              <strong>Feedbacky</strong>.
+              <strong>DropFeedBack</strong>.
             </Text>
             <Section className="text-center mt-[32px] mb-[32px]">
               <Button
@@ -58,10 +59,10 @@ export const InviteEmail = ({ projectName }: { projectName: string }) => {
             </Text>
             <Hr className="border border-solid border-[#eaeaea] my-[26px] mx-0 w-full" />
             <Text className="text-[#666666] text-[12px] leading-[24px]">
-              This invitation was sended from feedbacky service. If you were not
-              expecting this invitation, you can ignore this email. If you are
-              concerned about your account's safety, please get in touch with
-              us.
+              This invitation was sended from DropFeedBack service. If you were
+              not expecting this invitation, you can ignore this email. If you
+              are concerned about your account's safety, please get in touch
+              with us.
             </Text>
           </Container>
         </Body>
