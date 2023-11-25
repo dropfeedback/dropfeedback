@@ -11,7 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { MemberInviteState, UserProviderType } from '@prisma/client';
+import { UserProviderType } from '@prisma/client';
 import { TokenPayload as GoogleTokenPayload } from 'google-auth-library';
 
 @Injectable()
@@ -188,35 +188,6 @@ export class AuthService {
     await this.prisma.user.update({
       where: { id },
       data: { hashedRefreshToken },
-    });
-  }
-
-  async acceptInvite({
-    projectId,
-    email,
-  }: {
-    projectId: string;
-    email: string;
-  }) {
-    const memberInvite = await this.prisma.memberInvite.findUnique({
-      where: {
-        email_projectId: { email, projectId },
-        state: {
-          not: MemberInviteState.Accepted,
-        },
-      },
-    });
-
-    if (!memberInvite?.userId) {
-      throw new ForbiddenException('Invite not found');
-    }
-
-    return this.prisma.projectMember.create({
-      data: {
-        projectId,
-        userId: memberInvite.userId,
-        role: memberInvite.role,
-      },
     });
   }
 
