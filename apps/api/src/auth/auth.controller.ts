@@ -19,6 +19,7 @@ import type { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { GoogleLoginDto } from './dto/google-login.dto';
+import { EmailVerificationDto } from './dto/email-verification.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -158,5 +159,12 @@ export class AuthController {
     });
 
     this.setCookies(res, data.tokens);
+  }
+
+  @Post('/email-verification')
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  async emailVerification(@Body() dto: EmailVerificationDto) {
+    return this.authService.emailVerification(dto.emailVerificationToken);
   }
 }
