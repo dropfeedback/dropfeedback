@@ -7,7 +7,16 @@
       "type": "swc",
       "options": {
         "extensions": [".js", ".ts", ".jsx", ".tsx"]
-      }
+      },
+      "plugins": [
+        {
+          "name": "@nestjs/swagger",
+          "options": {
+            "classValidatorShim": true,
+            "introspectComments": true
+          }
+        }
+      ]
     },
     "typeCheck": true,
     "deleteOutDir": true

@@ -1,6 +1,7 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
 import { CursorPagination } from '../types';
+import { DECORATORS } from '@nestjs/swagger/dist/constants';
 
 export const GetCursorPagination = createParamDecorator(
   (data, ctx: ExecutionContext): CursorPagination => {
@@ -24,4 +25,35 @@ export const GetCursorPagination = createParamDecorator(
 
     return pagination;
   },
+  [
+    (target, key) => {
+      if (!key) return;
+
+      // Here we will define query parameter for swagger documentation
+      const explicit =
+        Reflect.getMetadata(DECORATORS.API_PARAMETERS, target[key]) ?? [];
+      Reflect.defineMetadata(
+        DECORATORS.API_PARAMETERS,
+        [
+          ...explicit,
+          {
+            description: 'Cursor pagination',
+            in: 'query',
+            name: 'cursor',
+            required: true,
+            type: 'string',
+          },
+          {
+            description: 'Number of items to get',
+            in: 'query',
+            name: 'take',
+            default: 25,
+            required: false,
+            type: 'number',
+          },
+        ],
+        target[key],
+      );
+    },
+  ],
 );
