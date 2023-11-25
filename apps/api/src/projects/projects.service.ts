@@ -126,7 +126,7 @@ export class ProjectsService {
     }));
   }
 
-  async addMember({
+  async inviteMember({
     projectId,
     email,
     role,
@@ -366,14 +366,21 @@ export class ProjectsService {
     projectId: string;
     userId: string;
   }) {
-    const projectMember = await this.prisma.projectMember.findUnique({
-      where: {
-        userId_projectId: {
-          projectId,
-          userId,
+    const [project, projectMember] = await Promise.all([
+      this.prisma.project.findUnique({
+        where: { id: projectId },
+      }),
+      this.prisma.projectMember.findUnique({
+        where: {
+          userId_projectId: {
+            projectId,
+            userId,
+          },
         },
-      },
-    });
+      }),
+    ]);
+
+    if (!project) throw new NotFoundException('Project not found');
 
     if (!projectMember) throw new NotFoundException('User not found');
 

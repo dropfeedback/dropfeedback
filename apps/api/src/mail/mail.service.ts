@@ -5,24 +5,27 @@ import { render } from '@react-email/render';
 import { google } from 'googleapis';
 import { Options } from 'nodemailer/lib/smtp-transport';
 import { InviteEmail } from 'src/mail/mails/invite-email';
+import { VerificationEmail } from './mails/verification-email';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class MailService {
   constructor(
     private readonly config: ConfigService,
     private readonly mailerService: MailerService,
+    private readonly jwtService: JwtService,
   ) {}
 
   private async setTransport() {
     const OAuth2 = google.auth.OAuth2;
     const oauth2Client = new OAuth2(
-      this.config.get<string>('CLIENT_ID'),
-      this.config.get<string>('CLIENT_SECRET'),
+      this.config.get<string>('GOOGLE_EMAIL_OAUTH_CLIENT_ID'),
+      this.config.get<string>('GOOGLE_EMAIL_OAUTH_CLIENT_SECRET'),
       'https://developers.google.com/oauthplayground',
     );
 
     oauth2Client.setCredentials({
-      refresh_token: process.env.REFRESH_TOKEN,
+      refresh_token: process.env.GOOGLE_EMAIL_REFRESH_TOKEN,
     });
 
     const accessToken: string = await new Promise((resolve, reject) => {
@@ -43,9 +46,11 @@ export class MailService {
       service: 'gmail',
       auth: {
         type: 'OAuth2',
-        user: this.config.get<string>('EMAIL'),
-        clientId: this.config.get<string>('CLIENT_ID'),
-        clientSecret: this.config.get<string>('CLIENT_SECRET'),
+        user: this.config.get<string>('GOOGLE_EMAIL'),
+        clientId: this.config.get<string>('GOOGLE_EMAIL_OAUTH_CLIENT_ID'),
+        clientSecret: this.config.get<string>(
+          'GOOGLE_EMAIL_OAUTH_CLIENT_SECRET',
+        ),
         accessToken,
       },
     };
@@ -57,7 +62,7 @@ export class MailService {
     email,
     html,
   }: {
-    subject: 'Verification email';
+    subject: 'Verification email' | 'Invite email';
     email: string;
     html: string;
   }) {
@@ -67,7 +72,7 @@ export class MailService {
       await this.mailerService.sendMail({
         transporterName: 'gmail',
         to: email,
-        from: this.config.get<string>('EMAIL'),
+        from: this.config.get<string>('GOOGLE_EMAIL'),
         subject,
         html,
       });
@@ -75,6 +80,18 @@ export class MailService {
       //TODO: add logger
       console.log(error);
     }
+  }
+
+  async sendVerificationMail({ email }: { email: string }) {
+    const token = await this.jwtService.signAsync(
+      { email },
+      {
+        expiresIn: this.config.get<number>('EMAIL_TOKEN_EXPIRES_IN'),
+        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${email}`,
+      },
+    );
+    const html = render(VerificationEmail({ token }));
+    this.sendMail({ subject: 'Verification email', email, html });
   }
 
   async sendInviteEmail({
@@ -85,6 +102,6 @@ export class MailService {
     projectName: string;
   }) {
     const html = render(InviteEmail({ projectName }));
-    this.sendMail({ subject: 'Verification email', email, html });
+    this.sendMail({ subject: 'Invite email', email, html });
   }
 }
