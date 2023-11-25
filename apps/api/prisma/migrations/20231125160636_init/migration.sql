@@ -14,6 +14,9 @@ CREATE TYPE "UserProviderType" AS ENUM ('google', 'internal');
 CREATE TABLE "users" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "email" TEXT NOT NULL,
+    "firstName" TEXT,
+    "lastName" TEXT,
+    "avatarUrl" TEXT,
     "hashedRefreshToken" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -62,7 +65,6 @@ CREATE TABLE "member_invites" (
     "state" "MemberInviteState" NOT NULL DEFAULT 'pending',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "userId" UUID,
 
     CONSTRAINT "member_invites_pkey" PRIMARY KEY ("id")
 );
@@ -100,9 +102,6 @@ ALTER TABLE "project_members" ADD CONSTRAINT "project_members_projectId_fkey" FO
 
 -- AddForeignKey
 ALTER TABLE "member_invites" ADD CONSTRAINT "member_invites_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "member_invites" ADD CONSTRAINT "member_invites_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "feedbacks" ADD CONSTRAINT "feedbacks_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;

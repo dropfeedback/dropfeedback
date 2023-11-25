@@ -5,7 +5,7 @@ import {
   BadRequestException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthDto } from './dto';
+import { SignUpLocalDto, SignInLocalDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './types';
@@ -25,11 +25,17 @@ export class AuthService {
   async me(id: string) {
     return this.prisma.user.findUnique({
       where: { id },
-      select: { id: true, email: true },
+      select: {
+        id: true,
+        email: true,
+        avatarUrl: true,
+        firstName: true,
+        lastName: true,
+      },
     });
   }
 
-  async signupLocal(dto: AuthDto) {
+  async signupLocal(dto: SignUpLocalDto) {
     const hashedPassword = await this.hashData(dto.password);
 
     const user = await this.prisma.user.findUnique({
@@ -65,6 +71,8 @@ export class AuthService {
       const newUser = await this.prisma.user.create({
         data: {
           email: dto.email,
+          firstName: dto.firstName,
+          lastName: dto.lastName,
           UserProvider: {
             create: {
               type: UserProviderType.Internal,
@@ -83,7 +91,7 @@ export class AuthService {
     }
   }
 
-  async signinLocal(dto: AuthDto) {
+  async signinLocal(dto: SignInLocalDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
       include: {
@@ -228,6 +236,9 @@ export class AuthService {
       const newUser = await this.prisma.user.create({
         data: {
           email: payload.email,
+          firstName: payload.given_name,
+          lastName: payload.family_name,
+          avatarUrl: payload.picture,
           UserProvider: {
             create: {
               type: UserProviderType.Google,
