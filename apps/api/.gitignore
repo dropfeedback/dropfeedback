@@ -35,5 +35,4 @@ lerna-debug.log*
 !.vscode/extensions.json
 dist
 
-src/swagger/metadata.ts
 
