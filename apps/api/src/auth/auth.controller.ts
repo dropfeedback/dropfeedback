@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthDto } from './dto';
+import { SignInLocalDto, SignUpLocalDto } from './dto';
 import type { JwtPayload, JwtPayloadWithRefreshToken, Tokens } from './types';
 import { RefreshTokenGuard } from 'src/common/guards';
 import { GetCurrentUser, Public } from 'src/common/decorators';
@@ -39,7 +39,7 @@ export class AuthController {
   @Public()
   @HttpCode(HttpStatus.CREATED)
   async signupLocal(
-    @Body() dto: AuthDto,
+    @Body() dto: SignUpLocalDto,
     @Res({ passthrough: true }) res: Response,
   ) {
     const data = await this.authService.signupLocal(dto);
@@ -56,7 +56,7 @@ export class AuthController {
   @Public()
   @HttpCode(HttpStatus.OK)
   async signinLocal(
-    @Body() dto: AuthDto,
+    @Body() dto: SignInLocalDto,
     @Res({ passthrough: true }) res: Response,
   ) {
     const data = await this.authService.signinLocal(dto);

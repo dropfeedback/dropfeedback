@@ -43,7 +43,7 @@ export function DashboardHeader() {
   };
 
   return (
-    <nav className="flex h-16 items-center border-b px-6 shadow-border z-50">
+    <nav className="z-50 flex h-16 items-center border-b px-6 shadow-border">
       <div className="flex flex-1 items-center gap-4">
         <div className="flex items-center gap-2">
           <Link to="/dashboard">
@@ -82,18 +82,18 @@ export function DashboardHeader() {
             >
               <Avatar className="h-7 w-7">
                 <AvatarImage
-                  src={user?.avatar}
-                  alt={user?.name || user?.email}
+                  src={user?.avatarUrl}
+                  alt={`${user?.firstName} ${user?.lastName}`}
                 />
                 <AvatarFallback>
-                  {getNameInitials(user?.name || user?.email)}
+                  {getNameInitials(`${user?.firstName} ${user?.lastName}`)}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <div className="px-2 py-1.5">
-              <p className="font-medium text-primary">{user?.name}</p>
+              <p className="font-medium text-primary">{`${user?.firstName} ${user?.lastName}`}</p>
               <p>{user?.email}</p>
             </div>
             <DropdownMenuSeparator />

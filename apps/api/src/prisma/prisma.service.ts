@@ -11,7 +11,7 @@ export class PrismaService
     const url = config.get<string>('DATABASE_URL');
 
     super({
-      log: ['error', 'info', 'warn'],
+      log: ['query', 'error', 'info', 'warn'],
       datasources: {
         db: {
           url: url,
