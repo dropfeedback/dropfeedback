@@ -43,7 +43,7 @@ export function DashboardHeader() {
   };
 
   return (
-    <nav className="flex h-16 items-center border-b px-6 shadow-border">
+    <nav className="flex h-16 items-center border-b px-6 shadow-border z-50">
       <div className="flex flex-1 items-center gap-4">
         <div className="flex items-center gap-2">
           <Link to="/dashboard">
