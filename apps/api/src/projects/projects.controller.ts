@@ -15,8 +15,8 @@ import type { JwtPayload } from 'src/auth/types';
 import { GetCurrentUser } from 'src/common/decorators';
 import { DeleteMemberDto } from './dto/delete-member.dto';
 import { GetMembersParam } from './param/get-members.param';
-import { AddMemberDto } from './dto/add-member.dto';
-import { AddMemberParam } from './param/add-member.param';
+import { InviteMemberDto } from './dto/invite-member.dto';
+import { InviteMemberParam } from './dto/invite-member.param';
 import { GetInvitesParam } from './param/get-invites.param';
 import { DeleteMemberInviteParam } from './param/delete-member-invite.param';
 import { AcceptInviteParam } from './param/accept-invite.param';
@@ -75,12 +75,12 @@ export class ProjectsController {
     return this.projectService.deleteProject({ id: param.projectId });
   }
 
-  @Post('/:projectId/member')
+  @Post('/:projectId/invite')
   @HttpCode(HttpStatus.OK)
-  async addMember(
+  async inviteMember(
     @GetCurrentUser() user: JwtPayload,
-    @Param() param: AddMemberParam,
-    @Body() dto: AddMemberDto,
+    @Param() param: InviteMemberParam,
+    @Body() dto: InviteMemberDto,
   ) {
     const hasAccess = await this.projectService.hasAccess({
       acceptedRoles: ['arkadaslar', 'owner', 'manager'],
@@ -93,7 +93,7 @@ export class ProjectsController {
         'You are not allowed to access this resource',
       );
 
-    return this.projectService.addMember({
+    return this.projectService.inviteMember({
       projectId: param.projectId,
       email: dto.email,
       role: dto.role,

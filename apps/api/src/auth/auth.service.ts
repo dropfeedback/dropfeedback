@@ -13,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserProviderType } from '@prisma/client';
 import { TokenPayload as GoogleTokenPayload } from 'google-auth-library';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private config: ConfigService,
+    private mailService: MailService,
   ) {}
 
   async me(id: string) {
@@ -66,6 +68,7 @@ export class AuthService {
         sub: user.id,
         provider: UserProviderType.Internal,
       } satisfies JwtPayload);
+      await this.mailService.sendVerificationMail({ email: user.email });
       return { tokens, id: user.id };
     } else {
       const newUser = await this.prisma.user.create({
@@ -87,6 +90,7 @@ export class AuthService {
         sub: newUser.id,
         provider: UserProviderType.Internal,
       } satisfies JwtPayload);
+      await this.mailService.sendVerificationMail({ email: newUser.email });
       return { tokens, id: newUser.id };
     }
   }
@@ -276,5 +280,56 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async emailVerification(token: string) {
+    const email = await this.decodeAndVerifyEmailToken(token);
+
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        UserProvider: true,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const internalProvider = user?.UserProvider?.find(
+      (provider) => provider.type === UserProviderType.Internal,
+    );
+
+    if (!internalProvider) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (internalProvider.emailVerified) {
+      throw new BadRequestException('Email already verified');
+    }
+
+    await this.prisma.userProvider.update({
+      where: { id: internalProvider.id },
+      data: { emailVerified: true },
+    });
+  }
+
+  private async decodeAndVerifyEmailToken(token: string) {
+    const decodedToken = this.jwtService.decode(token);
+
+    if (!decodedToken) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    try {
+      await this.jwtService.verify(token, {
+        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${
+          decodedToken.email
+        }`,
+      });
+    } catch {
+      throw new ForbiddenException('Invalid token');
+    }
+    return decodedToken.email;
   }
 }
