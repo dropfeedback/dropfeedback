@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "generate-swagger-metadata": "ts-node ./generate-metadata.ts",
+    "generate-swagger-metadata": "ts-node ./src/swagger/generate-metadata.ts",
     "prebuild": "npm run db:generate",
     "predev": "npm run db:generate",
     "prestart:dev": "npm run db:generate",
