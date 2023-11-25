@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import {
   PrismaClient,
   ProjectMemberRole,
@@ -10,6 +11,9 @@ const prisma = new PrismaClient();
 export const DEMO_USER = {
   email: 'demo@demo.com',
   password: 'demo',
+  firstName: 'Demo',
+  lastName: 'User',
+  avatarUrl: 'https://i.pravatar.cc/150?img=13',
 };
 
 async function main() {
@@ -20,6 +24,9 @@ async function main() {
     update: {},
     create: {
       email: DEMO_USER.email,
+      firstName: DEMO_USER.firstName,
+      lastName: DEMO_USER.lastName,
+      avatarUrl: DEMO_USER.avatarUrl,
       UserProvider: {
         create: {
           type: UserProviderType.Internal,
@@ -41,19 +48,22 @@ async function main() {
     },
   });
 
-  for (let i = 0; i < mockData?.length; i++) {
-    const data = mockData[i];
-
+  for (let i = 1; i <= 120; i++) {
     const random = Math.floor(Math.random() * 5) + 1;
-    // if random is equal to 2, add a meta data to the feedback
+    // if random is equal to 2, add a metadata to the feedback
     const meta =
-      random === 2 ? { meta: { email: 'user@email.com', foo: 'bar' } } : {};
+      random === 2
+        ? // pick a random metadata from the mockMetaData array
+          mockMetaData[Math.floor(Math.random() * mockMetaData.length)]
+        : {};
 
     await prisma.feedback.create({
       data: {
-        ...data,
-        ...meta,
+        meta: meta,
         projectId: projectDemo.id,
+        content: faker.lorem.paragraph({ min: 1, max: 3 }),
+        device: faker.internet.userAgent(),
+        origin: faker.internet.domainSuffix(),
       },
     });
   }
@@ -68,183 +78,55 @@ main()
     process.exit(1);
   });
 
-const mockData = [
+const mockMetaData = [
   {
-    content:
-      'Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque. Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus. Phasellus in felis.',
-    device: 'Mozilla 5.0 on Linux x86_64',
-    origin: 'ft.com',
+    email: 'user1@email.com',
+    target: 'footer',
+    'app-version': '1.0.0',
   },
   {
-    content:
-      'Mauris lacinia sapien quis libero. Nullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum. Integer a nibh. In quis justo. Maecenas rhoncus aliquam lacus.',
-    device: 'Mozilla/5.0 on Windows 7',
-    origin: 'java.com',
+    email: 'user2@email.com',
+    target: 'footer',
+    'app-version': '1.0.1',
   },
   {
-    content:
-      'Nulla mollis molestie lorem. Quisque ut erat. Curabitur gravida nisi at nibh. In hac habitasse platea dictumst. Aliquam augue quam, sollicitudin vitae, consectetuer eget, rutrum at, lorem. Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat. Praesent blandit. Nam nulla.',
-    device: 'Mozilla/5.0 on Windows NT 6.1',
-    origin: 'wix.com',
+    email: 'user3@email.com',
+    target: 'footer',
+    'app-version': '1.0.2',
   },
   {
-    content:
-      'Cras in purus eu magna vulputate luctus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus vestibulum sagittis sapien. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam vel augue.',
-    device: 'Chrome/14.0.824.0 on Macintosh',
-    origin: 'wisc.edu',
+    email: 'user4@email.com',
+    target: 'footer',
+    'app-version': '1.0.3',
   },
   {
-    content:
-      'In hac habitasse platea dictumst. Morbi vestibulum, velit id pretium iaculis, diam erat fermentum justo, nec condimentum neque sapien placerat ante.',
-    device: 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:11.0) Gecko Firefox/11.0',
-    origin: 'mozilla.org',
+    email: 'user5@email.com',
+    target: 'footer',
+    'app-version': '1.0.4',
   },
   {
-    content:
-      'Cras pellentesque volutpat dui. Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris viverra diam vitae quam. Suspendisse potenti. Nullam porttitor lacus at turpis. Donec posuere metus vitae ipsum.',
-    device: 'Mozilla/5.0 on Windows 7',
-    origin: 'businessweek.com',
+    email: 'user6@email.com',
+    target: 'footer',
+    'app-version': '1.0.5',
   },
   {
-    content:
-      'Praesent id massa id nisl venenatis lacinia. Aenean sit amet justo. Morbi ut odio. Cras mi pede, malesuada in, imperdiet et, commodo vulputate, justo. In blandit ultrices enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin interdum mauris non ligula pellentesque ultrices. Phasellus id sapien in sapien iaculis congue. Vivamus metus arcu, adipiscing molestie, hendrerit at, vulputate vitae, nisl.',
-    device: 'Mozilla/5.0 on Windows NT 6.1',
-    origin: 'cpanel.net',
+    email: 'user7@email.com',
+    target: 'footer',
+    'app-version': '1.0.6',
   },
   {
-    content:
-      'Vivamus vestibulum sagittis sapien. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam vel augue. Vestibulum rutrum rutrum neque. Aenean auctor gravida sem. Praesent id massa id nisl venenatis lacinia. Aenean sit amet justo. Morbi ut odio. Cras mi pede, malesuada in, imperdiet et, commodo vulputate, justo. In blandit ultrices enim.',
-    device: 'Mozilla/5.0 on Windows NT 6.1',
-    origin: 'goodreads.com',
+    email: 'user8@email.com',
+    target: 'footer',
+    'app-version': '1.0.7',
   },
   {
-    content:
-      'In hac habitasse platea dictumst. Morbi vestibulum, velit id pretium iaculis, diam erat fermentum justo, nec condimentum neque sapien placerat ante. Nulla justo.',
-    device: 'Mozilla/5.0 on ArchLinux',
-    origin: 'discuz.net',
+    email: 'user9@email.com',
+    target: 'footer',
+    'app-version': '1.0.8',
   },
   {
-    content: 'Integer ac neque. Duis bibendum.',
-    device: 'Arc 1.0 on Mac OS X 10_7',
-    origin: 'parallels.com',
-  },
-  {
-    content: 'Aenean lectus. Pellentesque eget nunc.',
-    device: 'Arc 1.0 on Mac OS X 10_7',
-    origin: 'arizona.edu',
-  },
-  {
-    content:
-      'Aliquam augue quam, sollicitudin vitae, consectetuer eget, rutrum at, lorem. Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat. Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede. Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.',
-    device: 'Arc 1.0 on Mac OS X 10_7',
-    origin: 'auda.org.au',
-  },
-  {
-    content:
-      'Aenean fermentum. Donec ut mauris eget massa tempor convallis. Nulla neque libero, convallis eget, eleifend luctus, ultricies eu, nibh. Quisque id justo sit amet sapien dignissim vestibulum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est. Donec odio justo, sollicitudin ut, suscipit a, feugiat et, eros. Vestibulum ac est lacinia nisi venenatis tristique.',
-    device: 'Arc 1.0 on Mac OS X 10_7',
-    origin: 'storify.com',
-  },
-  {
-    content:
-      'Cras in purus eu magna vulputate luctus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus vestibulum sagittis sapien. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam vel augue.',
-    device: 'Arc 1.0 on Mac OS X 10_7',
-    origin: 'gravatar.com',
-  },
-  {
-    content:
-      'Donec diam neque, vestibulum eget, vulputate ut, ultrices vel, augue. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec pharetra, magna vestibulum aliquet ultrices, erat tortor sollicitudin mi, sit amet lobortis sapien sapien non mi. Integer ac neque. Duis bibendum. Morbi non quam nec dui luctus rutrum. Nulla tellus. In sagittis dui vel nisl. Duis ac nibh. Fusce lacus purus, aliquet at, feugiat non, pretium quis, lectus. Suspendisse potenti.',
-    device: 'Arc 1.0 on Mac OS X 10_7',
-    origin: 'google.co.uk',
-  },
-  {
-    content:
-      'Sed ante. Vivamus tortor. Duis mattis egestas metus. Aenean fermentum. Donec ut mauris eget massa tempor convallis.',
-    device: 'Arc 1.0 on Mac OS X 10_7',
-    origin: 'paypal.com',
-  },
-  {
-    content:
-      'Nullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum. Integer a nibh. In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet.',
-    device: 'Arc 1.0 on Mac OS X 10_7',
-    origin: 'issuu.com',
-  },
-  {
-    content:
-      'Etiam faucibus cursus urna. Ut tellus. Nulla ut erat id mauris vulputate elementum. Nullam varius. Nulla facilisi. Cras non velit nec nisi vulputate nonummy.',
-    device: 'Arc 1.0 on Mac OS X 10_7',
-    origin: 'rambler.ru',
-  },
-  {
-    content:
-      'Donec vitae nisi. Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus.',
-    device: 'Arc 1.0 on Mac OS X 10_7',
-    origin: 'feedburner.com',
-  },
-  {
-    content:
-      'Proin leo odio, porttitor id, consequat in, consequat ut, nulla. Sed accumsan felis. Ut at dolor quis odio consequat varius. Integer ac leo. Pellentesque ultrices mattis odio. Donec vitae nisi. Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla.',
-    device: 'Arc 1.0 on Mac OS X 10_7',
-    origin: 'jalbum.net',
-  },
-  {
-    content:
-      'Nullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum. Integer a nibh. In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet. Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo. Pellentesque viverra pede ac diam. Cras pellentesque volutpat dui. Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc.',
-    device: 'Arc 1.0 on Mac OS X 10_7',
-    origin: 'uiuc.edu',
-  },
-  {
-    content:
-      'Nam dui. Proin leo odio, porttitor id, consequat in, consequat ut, nulla. Sed accumsan felis. Ut at dolor quis odio consequat varius. Integer ac leo. Pellentesque ultrices mattis odio.',
-    device: 'Arc 1.0 on Mac OS X 10_7',
-    origin: 'princeton.edu',
-  },
-  {
-    content:
-      'Pellentesque ultrices mattis odio. Donec vitae nisi. Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus. Curabitur at ipsum ac tellus semper interdum. Mauris ullamcorper purus sit amet nulla. Quisque arcu libero, rutrum ac, lobortis vel, dapibus at, diam. Nam tristique tortor eu pede.',
-    device: 'Chrome 140 on Windows 11',
-    origin: 'yellowbook.com',
-  },
-  {
-    content:
-      'Mauris lacinia sapien quis libero. Nullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum. Integer a nibh. In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet. Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo. Pellentesque viverra pede ac diam. Cras pellentesque volutpat dui.',
-    device: 'Chrome 140 on Windows 11',
-    origin: 'angelfire.com',
-  },
-  {
-    content:
-      'Vivamus vel nulla eget eros elementum pellentesque. Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla.',
-    device: 'Chrome 140 on Windows 11',
-    origin: 'bloglines.com',
-  },
-  {
-    content:
-      'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus vestibulum sagittis sapien. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam vel augue. Vestibulum rutrum rutrum neque. Aenean auctor gravida sem. Praesent id massa id nisl venenatis lacinia.',
-    device: 'Chrome 140 on Windows 11',
-    origin: 'dion.ne.jp',
-  },
-  {
-    content:
-      'Nulla neque libero, convallis eget, eleifend luctus, ultricies eu, nibh. Quisque id justo sit amet sapien dignissim vestibulum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est. Donec odio justo, sollicitudin ut, suscipit a, feugiat et, eros.',
-    device: 'Chrome 140 on Windows 11',
-    origin: 'bbc.co.uk',
-  },
-  {
-    content:
-      'Nullam molestie nibh in lectus. Pellentesque at nulla. Suspendisse potenti.',
-    device: 'Chrome 140 on Windows 11',
-    origin: 'opera.com',
-  },
-  {
-    content:
-      'Etiam pretium iaculis justo. In hac habitasse platea dictumst. Etiam faucibus cursus urna.',
-    device: 'Chrome 140 on Windows 11',
-    origin: 'fastcompany.com',
-  },
-  {
-    content:
-      'Nam congue, risus semper porta volutpat, quam pede lobortis ligula, sit amet eleifend pede libero quis orci. Nullam molestie nibh in lectus. Pellentesque at nulla. Suspendisse potenti.',
-    device: 'Chrome 140 on Windows 11',
-    origin: 'digg.com',
+    email: 'user10@email.com',
+    target: 'footer',
+    'app-version': '1.0.9',
   },
 ];
