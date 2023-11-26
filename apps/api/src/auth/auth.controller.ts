@@ -111,30 +111,6 @@ export class AuthController {
     this.setCookies(res, data.tokens);
   }
 
-  setCookies(res: Response, tokens: Tokens) {
-    const accessTokenExpires = this.config.get<number>(
-      'ACCESS_TOKEN_EXPIRES_IN',
-    ) as number;
-
-    const refreshTokenExpires = this.config.get<number>(
-      'REFRESH_TOKEN_EXPIRES_IN',
-    ) as number;
-
-    res.cookie('accessToken', tokens.accessToken, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      expires: new Date(Date.now() + accessTokenExpires),
-    });
-
-    res.cookie('refreshToken', tokens.refreshToken, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      expires: new Date(Date.now() + refreshTokenExpires),
-    });
-  }
-
   @Post('/google/login')
   @Public()
   @HttpCode(HttpStatus.OK)
@@ -166,5 +142,21 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async emailVerification(@Body() dto: EmailVerificationDto) {
     return this.authService.emailVerification(dto.emailVerificationToken);
+  }
+
+  setCookies(res: Response, tokens: Tokens) {
+    res.cookie('accessToken', tokens.accessToken, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+    });
+
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    });
   }
 }
