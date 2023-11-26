@@ -10,6 +10,12 @@ CREATE TYPE "MemberInviteState" AS ENUM ('pending', 'accepted', 'rejected');
 -- CreateEnum
 CREATE TYPE "UserProviderType" AS ENUM ('google', 'internal');
 
+-- CreateEnum
+CREATE TYPE "FeedbackCategory" AS ENUM ('other', 'issue', 'idea');
+
+-- CreateEnum
+CREATE TYPE "FeedbackStatus" AS ENUM ('new', 'archived');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -74,6 +80,8 @@ CREATE TABLE "feedbacks" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "projectId" UUID NOT NULL,
     "content" TEXT NOT NULL,
+    "category" "FeedbackCategory" NOT NULL DEFAULT 'other',
+    "status" "FeedbackStatus" NOT NULL DEFAULT 'new',
     "meta" JSON,
     "origin" VARCHAR(255),
     "device" VARCHAR(255),

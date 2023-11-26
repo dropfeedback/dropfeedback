@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { FeedbackDto } from './dto';
+import { CreateFeedbackDto } from './dto';
 import { prismaMock } from 'src/libs/__mocks__/prisma';
 import { FeedbacksService } from './feedbacks.service';
 import { AppModule } from '../app.module';
@@ -22,12 +22,14 @@ describe('Feedbacks', () => {
 
   describe('CRUD', () => {
     it('should create feedback with valid data', async () => {
-      const feedbackDto: FeedbackDto = {
+      const feedbackDto: CreateFeedbackDto = {
         content: 'test',
         projectId: 'be2f10bf-666f-4535-8a58-2c785ff00bb9',
         meta: {
           browser: 'test',
         },
+        category: 'other',
+        status: 'new',
       };
 
       prismaMock.feedback.create.mockResolvedValueOnce({
@@ -36,6 +38,8 @@ describe('Feedbacks', () => {
         origin: 'test',
         ...feedbackDto,
         createdAt: new Date(),
+        category: 'other',
+        status: 'new',
       });
 
       const result = await feedbackService.createByProjectId({

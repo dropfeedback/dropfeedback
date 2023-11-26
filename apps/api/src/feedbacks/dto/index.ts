@@ -1,1 +1,1 @@
-export * from './feedback.dto';
+export * from './create-feedback.dto';

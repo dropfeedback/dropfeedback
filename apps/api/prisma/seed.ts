@@ -29,7 +29,7 @@ async function main() {
       avatarUrl: DEMO_USER.avatarUrl,
       UserProvider: {
         create: {
-          type: UserProviderType.Internal,
+          type: UserProviderType.internal,
           hash: await bcrypt.hash(DEMO_USER.password, 10),
         },
       },
@@ -49,18 +49,24 @@ async function main() {
   });
 
   for (let i = 1; i <= 120; i++) {
-    const random = Math.floor(Math.random() * 5) + 1;
+    const randomMeta = Math.floor(Math.random() * 5) + 1;
     // if random is equal to 2, add a metadata to the feedback
     const meta =
-      random === 2
+      randomMeta === 2
         ? // pick a random metadata from the mockMetaData array
           mockMetaData[Math.floor(Math.random() * mockMetaData.length)]
         : {};
 
+    const randomCategory = Math.floor(Math.random() * 3) + 1;
+    const category =
+      randomCategory === 1 ? 'idea' : randomCategory === 2 ? 'issue' : 'other';
+
     await prisma.feedback.create({
       data: {
-        meta: meta,
+        meta,
+        category,
         projectId: projectDemo.id,
+        status: i > 100 ? 'archived' : 'new',
         content: faker.lorem.paragraph({ min: 1, max: 3 }),
         device: faker.internet.userAgent(),
         origin: faker.internet.domainSuffix(),

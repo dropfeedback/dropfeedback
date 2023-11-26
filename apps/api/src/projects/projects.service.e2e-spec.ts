@@ -2,24 +2,20 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../app.module';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { createProject, upsertUser } from 'src/test/helpers/crud';
 import { ProjectMemberRole } from '@prisma/client';
 import { ProjectsService } from './projects.service';
 import { faker } from '@faker-js/faker';
+import { createNestApp } from 'src/test/helpers/create-nest-app';
 
 describe('Feedbacks - e2e', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
   let projectsService: ProjectsService;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-
-    projectsService = moduleRef.get(ProjectsService);
+    app = await createNestApp();
+    prisma = app.get(PrismaService);
+    projectsService = app.get(ProjectsService);
   });
 
   afterAll(async () => {
@@ -28,22 +24,58 @@ describe('Feedbacks - e2e', () => {
 
   describe('GET /projects', () => {
     it('should get projects', async () => {
-      const prisma = app.get(PrismaService);
-
       // create mock data and insert into db
       const [user1, user2, user3] = await Promise.all([
-        upsertUser({ prisma, email: faker.internet.email() }),
-        upsertUser({ prisma, email: faker.internet.email() }),
-        upsertUser({ prisma, email: faker.internet.email() }),
+        prisma.user.upsert({
+          update: {},
+          create: {
+            email: faker.internet.email(),
+          },
+          where: {
+            email: faker.internet.email(),
+          },
+        }),
+        prisma.user.upsert({
+          update: {},
+          create: {
+            email: faker.internet.email(),
+          },
+          where: {
+            email: faker.internet.email(),
+          },
+        }),
+        prisma.user.upsert({
+          update: {},
+          create: {
+            email: faker.internet.email(),
+          },
+          where: {
+            email: faker.internet.email(),
+          },
+        }),
       ]);
       const [project1, project2] = await Promise.all([
-        createProject({
-          prisma,
-          userId: user1.id,
+        prisma.project.create({
+          data: {
+            name: 'test project',
+            projectMembers: {
+              create: {
+                userId: user1.id,
+                role: ProjectMemberRole.owner,
+              },
+            },
+          },
         }),
-        createProject({
-          prisma,
-          userId: user2.id,
+        prisma.project.create({
+          data: {
+            name: 'test project',
+            projectMembers: {
+              create: {
+                userId: user2.id,
+                role: ProjectMemberRole.owner,
+              },
+            },
+          },
         }),
       ]);
       await prisma.feedback.createMany({
@@ -94,8 +126,6 @@ describe('Feedbacks - e2e', () => {
 
   describe('GET /projects/:projectId', () => {
     it('should get project', async () => {
-      const prisma = app.get(PrismaService);
-
       const project = await prisma.project.create({
         data: {
           name: 'test project',
@@ -116,8 +146,6 @@ describe('Feedbacks - e2e', () => {
 
   describe('PATCH /projects/:projectId', () => {
     it('should update project', async () => {
-      const prisma = app.get(PrismaService);
-
       const project = await prisma.project.create({
         data: {
           name: 'test project',
@@ -141,8 +169,6 @@ describe('Feedbacks - e2e', () => {
 
   describe('DELETE /projects/:projectId', () => {
     it('should delete project', async () => {
-      const prisma = app.get(PrismaService);
-
       const project = await prisma.project.create({
         data: {
           name: 'test project',

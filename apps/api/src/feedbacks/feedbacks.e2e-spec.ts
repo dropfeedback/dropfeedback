@@ -1,30 +1,226 @@
-import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { AppModule } from '../app.module';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Project } from '@prisma/client';
+import request from 'supertest';
+import { createNestApp } from 'src/test/helpers/create-nest-app';
+import { getAuthCookie } from 'src/test/helpers/auth';
 
 describe('Feedbacks - e2e', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
+  let authCookie: string[] = [];
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
+    app = await createNestApp();
+    prisma = await app.get(PrismaService);
+    authCookie = await getAuthCookie(app);
   });
 
   afterAll(async () => {
     await app.close();
   });
 
+  describe('GET /feedbacks', async () => {
+    let project: Project | null = null;
+
+    beforeAll(async () => {
+      // create mock project
+      project = await prisma.project.create({
+        data: {
+          name: 'test project',
+        },
+      });
+
+      // create mock feedbacks
+      await prisma.feedback.createMany({
+        data: [
+          {
+            content: 'archived other',
+            projectId: project?.id,
+            status: 'archived',
+            category: 'other',
+          },
+          {
+            content: 'new other',
+            projectId: project?.id,
+            status: 'new',
+            category: 'other',
+          },
+          {
+            content: 'new issue',
+            projectId: project?.id,
+            status: 'new',
+            category: 'issue',
+          },
+          {
+            content: 'new idea',
+            projectId: project?.id,
+            status: 'new',
+            category: 'idea',
+          },
+        ],
+      });
+    });
+
+    it('should get feedbacks', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/feedbacks')
+        .query({ projectId: project?.id })
+        .set('Cookie', authCookie);
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toMatchObject({
+        data: expect.any(Array),
+        countAll: 4,
+        countCurrent: 4,
+        countArchived: 1,
+        countIdea: 1,
+        countIssue: 1,
+        countNew: 3,
+        countOther: 2,
+      });
+    });
+
+    it('should count depends to search param', async () => {
+      request(app.getHttpServer())
+        .get('/feedbacks')
+        .query({ projectId: project?.id, search: 'other' })
+        .set('Cookie', authCookie)
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body).toMatchObject({
+            data: expect.any(Array),
+            countAll: 4,
+            countCurrent: 2,
+            countArchived: 1,
+            countNew: 1,
+            countIdea: 0,
+            countIssue: 0,
+            countOther: 2,
+          });
+        });
+
+      request(app.getHttpServer())
+        .get('/feedbacks')
+        .query({ projectId: project?.id, search: 'idea' })
+        .set('Cookie', authCookie)
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body).toMatchObject({
+            data: expect.any(Array),
+            countAll: 4,
+            countCurrent: 1,
+            countArchived: 0,
+            countNew: 1,
+            countIdea: 1,
+            countIssue: 0,
+            countOther: 0,
+          });
+        });
+    });
+
+    it('should data filter by params', async () => {
+      request(app.getHttpServer())
+        .get('/feedbacks')
+        .query({ projectId: project?.id, category: 'issue' })
+        .set('Cookie', authCookie)
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body.data).length(1);
+          expect(response.body).toMatchObject({
+            countAll: 4,
+            countCurrent: 1,
+            countArchived: 1,
+            countIdea: 1,
+            countIssue: 1,
+            countNew: 3,
+            countOther: 2,
+          });
+        });
+
+      request(app.getHttpServer())
+        .get('/feedbacks')
+        .query({ projectId: project?.id, category: 'idea' })
+        .set('Cookie', authCookie)
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body.data).length(1);
+          expect(response.body).toMatchObject({
+            countAll: 4,
+            countCurrent: 1,
+            countArchived: 1,
+            countIdea: 1,
+            countIssue: 1,
+            countNew: 3,
+            countOther: 2,
+          });
+        });
+
+      request(app.getHttpServer())
+        .get('/feedbacks')
+        .query({ projectId: project?.id, category: 'other' })
+        .set('Cookie', authCookie)
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body.data).length(2);
+          expect(response.body).toMatchObject({
+            countAll: 4,
+            countCurrent: 2,
+            countArchived: 1,
+            countIdea: 1,
+            countIssue: 1,
+            countNew: 3,
+            countOther: 2,
+          });
+        });
+
+      request(app.getHttpServer())
+        .get('/feedbacks')
+        .query({ projectId: project?.id, status: 'new' })
+        .set('Cookie', authCookie)
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body.data).length(3);
+          expect(response.body).toMatchObject({
+            countAll: 4,
+            countCurrent: 3,
+            countArchived: 1,
+            countIdea: 1,
+            countIssue: 1,
+            countNew: 3,
+            countOther: 2,
+          });
+        });
+
+      request(app.getHttpServer())
+        .get('/feedbacks')
+        .query({ projectId: project?.id, status: 'archived' })
+        .set('Cookie', authCookie)
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body.data).length(1);
+        });
+    });
+
+    it('invalid params', async () => {
+      await request(app.getHttpServer())
+        .get('/feedbacks')
+        .query({ projectId: '' })
+        .set('Cookie', authCookie)
+        .expect(400);
+    });
+  });
+
   describe('POST /feedbacks', () => {
     it('should create feedback with valid data', async () => {
-      //  get demo project
-      const project = await app.get(PrismaService).project.findFirst();
+      // create mock project
+      const project = await prisma.project.create({
+        data: {
+          name: 'test project',
+        },
+      });
 
+      // create feedback
       const response = await request(app.getHttpServer())
         .post('/feedbacks')
         .send({
@@ -45,33 +241,33 @@ describe('Feedbacks - e2e', () => {
     it('invalid dto', async () => {
       await request(app.getHttpServer())
         .post('/feedbacks')
-        .send({})
-        .expect(500);
+        .send({ projectId: '2114' });
+      expect(400);
 
       await request(app.getHttpServer())
         .post('/feedbacks')
         .send({ content: '' })
-        .expect(500);
+        .expect(400);
 
       await request(app.getHttpServer())
         .post('/feedbacks')
         .send({ content: '12' })
-        .expect(500);
+        .expect(400);
 
       await request(app.getHttpServer())
         .post('/feedbacks')
         .send({ projectId: '' })
-        .expect(500);
+        .expect(400);
 
       await request(app.getHttpServer())
         .post('/feedbacks')
         .send({ projectId: '', content: '' })
-        .expect(500);
+        .expect(400);
 
       await request(app.getHttpServer())
         .post('/feedbacks')
         .send({ projectId: '12345', content: '' })
-        .expect(500);
+        .expect(400);
     });
   });
 });

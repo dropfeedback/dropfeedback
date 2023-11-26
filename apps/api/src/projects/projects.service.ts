@@ -152,11 +152,11 @@ export class ProjectsService {
       },
     });
 
-    if (memberInvite?.state === MemberInviteState.Pending) {
+    if (memberInvite?.state === MemberInviteState.pending) {
       throw new ConflictException('Invite already sent');
     }
 
-    if (memberInvite?.state === MemberInviteState.Accepted) {
+    if (memberInvite?.state === MemberInviteState.accepted) {
       // if user is MemberInviteState is accepted, we will check if user is already member of this project
       const member = await this.prisma.projectMember.findFirst({
         where: {
@@ -178,7 +178,7 @@ export class ProjectsService {
       else {
         await this.prisma.memberInvite.update({
           where: { id: memberInvite.id },
-          data: { state: MemberInviteState.Pending },
+          data: { state: MemberInviteState.pending },
         });
         await this.mailService.sendInviteEmail({
           email,
@@ -189,10 +189,10 @@ export class ProjectsService {
     }
 
     // if user rejected invite, we will send invite again
-    if (memberInvite?.state === MemberInviteState.Rejected) {
+    if (memberInvite?.state === MemberInviteState.rejected) {
       await this.prisma.memberInvite.update({
         where: { id: memberInvite.id },
-        data: { state: MemberInviteState.Pending },
+        data: { state: MemberInviteState.pending },
       });
       await this.mailService.sendInviteEmail({
         email,
@@ -254,7 +254,7 @@ export class ProjectsService {
       throw new ForbiddenException('Invite not found');
     }
 
-    if (memberInvite?.state === MemberInviteState.Accepted) {
+    if (memberInvite?.state === MemberInviteState.accepted) {
       throw new ForbiddenException('You already accepted invite.');
     }
 
@@ -277,7 +277,7 @@ export class ProjectsService {
       }),
       this.prisma.memberInvite.update({
         where: { id: memberInvite.id },
-        data: { state: MemberInviteState.Accepted },
+        data: { state: MemberInviteState.accepted },
       }),
     ]);
 
@@ -302,17 +302,17 @@ export class ProjectsService {
       throw new ForbiddenException('Invite not found');
     }
 
-    if (invite.state === MemberInviteState.Accepted) {
+    if (invite.state === MemberInviteState.accepted) {
       throw new ForbiddenException('You already accepted invite.');
     }
 
-    if (invite.state === MemberInviteState.Rejected) {
+    if (invite.state === MemberInviteState.rejected) {
       throw new ForbiddenException('You already rejected invite.');
     }
 
     return this.prisma.memberInvite.update({
       where: { id: invite.id },
-      data: { state: MemberInviteState.Rejected },
+      data: { state: MemberInviteState.rejected },
     });
   }
 
@@ -335,7 +335,7 @@ export class ProjectsService {
     const memberInvites = await this.prisma.memberInvite.findMany({
       where: {
         email,
-        state: MemberInviteState.Pending,
+        state: MemberInviteState.pending,
       },
       select: {
         id: true,
