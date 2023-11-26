@@ -73,7 +73,7 @@ model MemberInvite {
 
   projectId String            @db.Uuid
   email     String
-  state     MemberInviteState @default(Pending)
+  state     MemberInviteState @default(pending)
   createdAt DateTime          @default(now())
   updatedAt DateTime          @default(now()) @updatedAt
 
@@ -84,13 +84,15 @@ model MemberInvite {
 }
 
 model Feedback {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  projectId String   @db.Uuid
-  content   String   @db.Text
-  meta      Json?    @db.Json
-  origin    String?  @db.VarChar(255)
-  device    String?  @db.VarChar(255)
-  createdAt DateTime @default(now())
+  id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId String           @db.Uuid
+  content   String           @db.Text
+  category  FeedbackCategory @default(other)
+  status    FeedbackStatus   @default(new)
+  meta      Json?            @db.Json
+  origin    String?          @db.VarChar(255)
+  device    String?          @db.VarChar(255)
+  createdAt DateTime         @default(now())
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
@@ -110,12 +112,23 @@ enum MemberInviteRole {
 }
 
 enum MemberInviteState {
-  Pending  @map("pending")
-  Accepted @map("accepted")
-  Rejected @map("rejected")
+  pending
+  accepted
+  rejected
 }
 
 enum UserProviderType {
-  Google   @map("google")
-  Internal @map("internal")
+  google
+  internal
+}
+
+enum FeedbackCategory {
+  other
+  issue
+  idea
+}
+
+enum FeedbackStatus {
+  new
+  archived
 }

@@ -49,7 +49,7 @@ export class AuthService {
 
     if (user) {
       const hasInternalProvider = !!user?.UserProvider?.some(
-        (provider) => provider.type === UserProviderType.Internal,
+        (provider) => provider.type === UserProviderType.internal,
       );
       if (hasInternalProvider) {
         throw new ConflictException('User already exists');
@@ -57,7 +57,7 @@ export class AuthService {
 
       await this.prisma.userProvider.create({
         data: {
-          type: UserProviderType.Internal,
+          type: UserProviderType.internal,
           hash: hashedPassword,
           userId: user.id,
         },
@@ -66,7 +66,7 @@ export class AuthService {
       const tokens = await this.signToken({
         email: user.email,
         sub: user.id,
-        provider: UserProviderType.Internal,
+        provider: UserProviderType.internal,
       } satisfies JwtPayload);
       await this.mailService.sendVerificationMail({ email: user.email });
       return { tokens, id: user.id };
@@ -78,7 +78,7 @@ export class AuthService {
           lastName: dto.lastName,
           UserProvider: {
             create: {
-              type: UserProviderType.Internal,
+              type: UserProviderType.internal,
               hash: hashedPassword,
             },
           },
@@ -88,7 +88,7 @@ export class AuthService {
       const tokens = await this.signToken({
         email: newUser.email,
         sub: newUser.id,
-        provider: UserProviderType.Internal,
+        provider: UserProviderType.internal,
       } satisfies JwtPayload);
       await this.mailService.sendVerificationMail({ email: newUser.email });
       return { tokens, id: newUser.id };
@@ -108,7 +108,7 @@ export class AuthService {
     }
 
     const internalProvider = user?.UserProvider?.find(
-      (provider) => provider.type === UserProviderType.Internal,
+      (provider) => provider.type === UserProviderType.internal,
     );
     if (!internalProvider) {
       throw new BadRequestException('Invalid credentials');
@@ -124,7 +124,7 @@ export class AuthService {
     const tokens = await this.signToken({
       sub: user.id,
       email: user.email,
-      provider: UserProviderType.Internal,
+      provider: UserProviderType.internal,
     });
 
     return { tokens, id: user.id };
@@ -218,17 +218,17 @@ export class AuthService {
     const tokenPayload: JwtPayload = {
       email: '',
       sub: '',
-      provider: UserProviderType.Google,
+      provider: UserProviderType.google,
     };
 
     if (user) {
       const hasGoogleProvider = !!user?.UserProvider?.some(
-        (provider) => provider.type === UserProviderType.Google,
+        (provider) => provider.type === UserProviderType.google,
       );
       if (!hasGoogleProvider) {
         await this.prisma.userProvider.create({
           data: {
-            type: UserProviderType.Google,
+            type: UserProviderType.google,
             userId: user.id,
           },
         });
@@ -245,7 +245,7 @@ export class AuthService {
           avatarUrl: payload.picture,
           UserProvider: {
             create: {
-              type: UserProviderType.Google,
+              type: UserProviderType.google,
             },
           },
         },
@@ -297,7 +297,7 @@ export class AuthService {
     }
 
     const internalProvider = user?.UserProvider?.find(
-      (provider) => provider.type === UserProviderType.Internal,
+      (provider) => provider.type === UserProviderType.internal,
     );
 
     if (!internalProvider) {
