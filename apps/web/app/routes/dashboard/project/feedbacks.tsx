@@ -40,11 +40,6 @@ export default function Feedbacks() {
     }
   }, [fetchNextPage, inView]);
 
-  const getRandomCategory = (index: number) => {
-    const categories = ["Issue", "Idea", "Other"];
-    return categories[index % categories.length];
-  };
-
   if (isError) return <p>Cound not load feedbacks</p>;
 
   return (
@@ -67,7 +62,6 @@ export default function Feedbacks() {
                           key={feedback.id}
                           openedCardId={openedCardId}
                           setOpenedCardId={setOpenedCardId}
-                          category={getRandomCategory(index)}
                           {...feedback}
                         />
                       ))}
@@ -75,7 +69,7 @@ export default function Feedbacks() {
                   ))}
                 </div>
                 {hasNextPage && (
-                  <div ref={ref} className="flex justify-center mb-4">
+                  <div ref={ref} className="mb-4 flex justify-center">
                     <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                   </div>
                 )}
