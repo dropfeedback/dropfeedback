@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateFeedbackDto } from './dto';
 import { CursorPagination, OrderBy } from 'src/common/types';
@@ -141,11 +145,19 @@ export class FeedbacksService {
   }
 
   async getById({ id }: { id: string }) {
-    return this.prisma.feedback.findUnique({
-      where: {
-        id,
-      },
-    });
+    try {
+      return await this.prisma.feedback.findUniqueOrThrow({
+        where: {
+          id,
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Feedback not found');
+      }
+
+      throw new BadRequestException(error.message);
+    }
   }
 
   async createByProjectId({

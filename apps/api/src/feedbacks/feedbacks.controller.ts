@@ -22,6 +22,7 @@ import { GetOderBy } from 'src/common/decorators/order-by.decorator';
 import { SetStatusDto } from './dto/set-status.dto';
 import { SetStatusParam } from './dto/set-status.param';
 import { GetAll } from './dto/get-all.query';
+import { GetOneParam } from './dto/get-one-param';
 
 @Controller('feedbacks')
 export class FeedbacksController {
@@ -57,7 +58,7 @@ export class FeedbacksController {
 
   @Get('/:feedbackId')
   @HttpCode(HttpStatus.OK)
-  getById(@Param() param: SetStatusParam) {
+  getById(@Param() param: GetOneParam) {
     return this.feedbackService.getById({ id: param.feedbackId });
   }
 
