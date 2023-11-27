@@ -14,7 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { type Feedback } from "~/types";
+import { FeedbackCategory, type Feedback } from "~/types";
 import UAParser from "ua-parser-js";
 
 export function FeedbackCard({
@@ -27,7 +27,7 @@ export function FeedbackCard({
   openedCardId,
   setOpenedCardId,
 }: Feedback & {
-  category: string;
+  category: FeedbackCategory;
   openedCardId?: string;
   setOpenedCardId: (id: string) => void;
 }) {
@@ -53,10 +53,11 @@ export function FeedbackCard({
               "inline-flex select-none items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold",
               {
                 "border-orange-500 bg-orange-50 text-orange-500":
-                  category === "Idea",
-                "border-red-500 bg-red-50 text-red-500": category === "Issue",
+                  category === FeedbackCategory.idea,
+                "border-red-500 bg-red-50 text-red-500":
+                  category === FeedbackCategory.issue,
                 "border-slate-500 bg-slate-50 text-slate-500":
-                  category === "Other",
+                  category === FeedbackCategory.other,
               },
             )}
           >
