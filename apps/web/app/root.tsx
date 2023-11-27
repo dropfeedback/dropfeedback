@@ -19,7 +19,7 @@ import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "~/components/ui/toaster";
 import { useToast } from "~/components/ui/use-toast";
 import { ToastAction } from "~/components/ui/toast";
-import { ModalRoot } from "~/components/modals/modal-root";
+import { ModalRoot } from "~/components/global-modals/modal-root";
 import styles from "./tailwind.css";
 
 export const links: LinksFunction = () => [
