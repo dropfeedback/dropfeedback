@@ -82,7 +82,7 @@ describe('Feedbacks - e2e', () => {
     });
 
     it('should count depends to search param', async () => {
-      request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/feedbacks')
         .query({ projectId: project?.id, search: 'other' })
         .set('Cookie', authCookie)
@@ -100,7 +100,7 @@ describe('Feedbacks - e2e', () => {
           });
         });
 
-      request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/feedbacks')
         .query({ projectId: project?.id, search: 'idea' })
         .set('Cookie', authCookie)
@@ -120,7 +120,7 @@ describe('Feedbacks - e2e', () => {
     });
 
     it('should data filter by params', async () => {
-      request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/feedbacks')
         .query({ projectId: project?.id, category: 'issue' })
         .set('Cookie', authCookie)
@@ -138,7 +138,7 @@ describe('Feedbacks - e2e', () => {
           });
         });
 
-      request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/feedbacks')
         .query({ projectId: project?.id, category: 'idea' })
         .set('Cookie', authCookie)
@@ -156,7 +156,7 @@ describe('Feedbacks - e2e', () => {
           });
         });
 
-      request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/feedbacks')
         .query({ projectId: project?.id, category: 'other' })
         .set('Cookie', authCookie)
@@ -174,7 +174,7 @@ describe('Feedbacks - e2e', () => {
           });
         });
 
-      request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/feedbacks')
         .query({ projectId: project?.id, status: 'new' })
         .set('Cookie', authCookie)
@@ -192,7 +192,7 @@ describe('Feedbacks - e2e', () => {
           });
         });
 
-      request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/feedbacks')
         .query({ projectId: project?.id, status: 'archived' })
         .set('Cookie', authCookie)
