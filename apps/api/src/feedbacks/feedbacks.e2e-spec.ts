@@ -202,12 +202,71 @@ describe('Feedbacks - e2e', () => {
         });
     });
 
-    it('invalid params', async () => {
+    it('should handle invalid params', async () => {
+      await request(app.getHttpServer())
+        .get('/feedbacks')
+        .query({ projectId: '12345' })
+        .set('Cookie', authCookie)
+        .expect(400);
+
       await request(app.getHttpServer())
         .get('/feedbacks')
         .query({ projectId: '' })
         .set('Cookie', authCookie)
         .expect(400);
+    });
+  });
+
+  describe('GET /feedbacks/:feedbackId', () => {
+    it('should get feedback by id', async () => {
+      // create mock project
+      const project = await prisma.project.create({
+        data: {
+          name: 'test project',
+        },
+      });
+
+      // create mock feedback
+      const feedback = await prisma.feedback.create({
+        data: {
+          content: 'test content',
+          projectId: project?.id,
+        },
+      });
+
+      const response = await request(app.getHttpServer())
+        .get(`/feedbacks/${feedback?.id}`)
+        .set('Cookie', authCookie);
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toMatchObject({
+        id: feedback?.id,
+        content: 'test content',
+        createdAt: expect.any(String),
+        category: 'other',
+        status: 'new',
+        origin: null,
+        meta: null,
+        device: null,
+        projectId: project?.id,
+      });
+    });
+
+    it('should handle invalid params', async () => {
+      await request(app.getHttpServer())
+        .get('/feedbacks/12345')
+        .set('Cookie', authCookie)
+        .expect(400);
+
+      await request(app.getHttpServer())
+        .get('/feedbacks/')
+        .set('Cookie', authCookie)
+        .expect(400);
+
+      await request(app.getHttpServer())
+        .get('/feedbacks/b6ec9022-8d13-11ee-b9d1-0242ac120002')
+        .set('Cookie', authCookie)
+        .expect(404);
     });
   });
 
