@@ -106,18 +106,6 @@ export class ProjectsController {
     @GetCurrentUser() user: JwtPayload,
     @Param() param: GetMembersParam,
   ) {
-    const hasAccess = await this.projectService.hasAccess({
-      acceptedRoles: ['arkadaslar', 'owner', 'manager'],
-      projectId: param.projectId,
-      userId: user.sub,
-    });
-
-    if (!hasAccess) {
-      throw new ForbiddenException(
-        'You are not allowed to access this resource',
-      );
-    }
-
     return this.projectService.members({ projectId: param.projectId });
   }
 
