@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 import { Feedback } from 'src/prisma';
 
-export class SetStatusParam
+export class GetOneParam
   implements
     Omit<
       Feedback,
@@ -18,6 +18,7 @@ export class SetStatusParam
     >
 {
   @IsNotEmpty()
+  @IsUUID()
   @IsString()
   feedbackId: string;
 }
