@@ -1,9 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 import { FeedbackStatus, FeedbackCategory } from 'src/prisma';
 
 export class GetAll {
   @IsNotEmpty()
+  @IsUUID()
   @IsString()
   projectId: string;
 
