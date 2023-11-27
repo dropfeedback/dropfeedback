@@ -27,52 +27,46 @@ import { fetchers } from "~/lib/fetchers";
 import { type Project } from "~/types";
 
 export function ProjectSwitcher() {
-  const params = useParams<{ projectId: string }>();
+  const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const [_, setSearchParams] = useSearchParams();
   const { toast } = useToast();
 
-  const [open, setOpen] = useState(false);
-  const [selectedProjectId, setSelectedProjectId] = useState(params?.projectId);
-  const [currentProject, setCurrentProject] = useState<Project>();
+  if (!projectId) throw new Error("Project ID is required");
 
-  const {
-    data: projects,
-    isPending,
-    isError,
-    isSuccess,
-  } = useQuery<Project[]>({
+  const [open, setOpen] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>(projectId);
+
+  const projects = useQuery<Project[]>({
     queryKey: ["projects"],
     queryFn: () => fetchers.getProjects(),
   });
 
+  const project = useQuery<Project>({
+    queryKey: ["project", selectedProjectId],
+    queryFn: () => fetchers.getProject(selectedProjectId),
+  });
+
+
   useEffect(() => {
-    if (isSuccess) {
-      const project = projects.find(
-        (project) => project.id === selectedProjectId,
-      );
-
-      if (!project) {
-        toast({
-          description: "Project not found.",
-          action: (
-            <ToastAction
-              altText="Go to dashboard"
-              onClick={() => navigate("/dashboard")}
-            >
-              Go to dashboard
-            </ToastAction>
-          ),
-        });
-      }
-
-      setCurrentProject(project);
+    if (project.error) {
+      toast({
+        description: "Project not found.",
+        action: (
+          <ToastAction
+            altText="Go to dashboard"
+            onClick={() => navigate("/dashboard")}
+          >
+            Go to dashboard
+          </ToastAction>
+        ),
+      });
     }
-  }, [isSuccess, navigate, projects, selectedProjectId, toast]);
+  }, [project.error, navigate, toast]);
 
-  if (isError) return null;
+  if (projects.isError || project.isError) return null;
 
-  if (isPending) {
+  if (projects.isPending || project.isPending) {
     return (
       <div className="flex gap-1">
         <Skeleton className="h-5 w-24" />
@@ -81,11 +75,9 @@ export function ProjectSwitcher() {
     );
   }
 
-  if (!currentProject) return null;
-
   return (
     <>
-      <Link to={`/dashboard/${currentProject.id}`}>{currentProject.name}</Link>
+      <Link to={`/dashboard/${project.data.id}`}>{project.data.name}</Link>
 
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -96,7 +88,7 @@ export function ProjectSwitcher() {
         <PopoverContent className="z-50 w-[200px] bg-background p-0">
           <Command>
             <CommandGroup>
-              {projects.map((project) => (
+              {projects.data.map((project) => (
                 <CommandItem
                   key={project.id}
                   value={project.id}
