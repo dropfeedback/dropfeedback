@@ -1,21 +1,23 @@
-import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { AppModule } from '../app.module';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProjectMemberRole } from '@prisma/client';
 import { ProjectsService } from './projects.service';
 import { faker } from '@faker-js/faker';
+import request from 'supertest';
 import { createNestApp } from 'src/test/helpers/create-nest-app';
+import { getAuthCookie } from 'src/test/helpers/auth';
 
 describe('Feedbacks - e2e', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let projectsService: ProjectsService;
+  let authCookie: string[] = [];
 
   beforeAll(async () => {
     app = await createNestApp();
     prisma = app.get(PrismaService);
     projectsService = app.get(ProjectsService);
+    authCookie = await getAuthCookie(app);
   });
 
   afterAll(async () => {
@@ -141,6 +143,18 @@ describe('Feedbacks - e2e', () => {
         name: 'test project',
         createdAt: project.createdAt,
       });
+    });
+
+    it('should handle invalid params', async () => {
+      await request(app.getHttpServer())
+        .get('/projects/12345')
+        .set('Cookie', authCookie)
+        .expect(400);
+
+      await request(app.getHttpServer())
+        .get('/projects/b6ec9022-8d13-11ee-b9d1-0242ac120002')
+        .set('Cookie', authCookie)
+        .expect(404);
     });
   });
 

@@ -79,11 +79,19 @@ export class ProjectsService {
   }
 
   async getProjectById({ projectId }: { projectId: string }) {
-    return this.prisma.project.findUnique({
-      where: {
-        id: projectId,
-      },
-    });
+    try {
+      return await this.prisma.project.findUniqueOrThrow({
+        where: {
+          id: projectId,
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Project not found');
+      }
+
+      throw new BadRequestException(error.message);
+    }
   }
 
   async updateProject({ id, dto }: { id: string; dto: UpdateProjectDto }) {
