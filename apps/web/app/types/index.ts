@@ -44,14 +44,33 @@ export type Feedback = {
   device: string;
   origin: string;
   meta?: Record<string, any> | null;
+  category: FeedbackCategory;
+  status: FeedbackStatus;
 };
 
 export type FeedbackQueryType = {
   data: Feedback[];
   nextCursor?: string;
   prevCursor?: string;
-  total: number;
+  countAll: number;
+  countCurrent: number;
+  countArchived: number;
+  countNew: number;
+  countIdea: number;
+  countIssue: number;
+  countOther: number;
 };
+
+export enum FeedbackCategory {
+  other = "other",
+  issue = "issue",
+  idea = "idea",
+}
+
+export enum FeedbackStatus {
+  new = "new",
+  archived = "archived",
+}
 
 export type ProjectInvite = {
   id: string;
