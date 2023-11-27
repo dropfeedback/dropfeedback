@@ -9,7 +9,7 @@ export type Project = {
 export enum ProjectMemberRole {
   owner,
   manager,
-  member,
+  member
 }
 
 export enum MemberInviteState {
@@ -79,4 +79,9 @@ export type ProjectInvite = {
   email: string;
   role: ProjectMemberRole;
   state: MemberInviteState;
+};
+
+export type InviteMemberVariables = {
+  email: string;
+  role: keyof typeof ProjectMemberRole;
 };
