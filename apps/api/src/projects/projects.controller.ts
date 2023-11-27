@@ -26,6 +26,7 @@ import { DeleteProjectParam } from './param/delete-project.param';
 import { GetProjectById } from './param/get-project-by-id.param';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { GetTeamParam } from './param/get-team.param';
 
 @Controller('projects')
 export class ProjectsController {
@@ -100,6 +101,27 @@ export class ProjectsController {
     });
   }
 
+  @Get('/:projectId/team')
+  @HttpCode(HttpStatus.OK)
+  async getTeam(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() param: GetTeamParam,
+  ) {
+    const hasAccess = await this.projectService.hasAccess({
+      acceptedRoles: ['arkadaslar', 'owner', 'manager', 'member'],
+      projectId: param.projectId,
+      userId: user.sub,
+    });
+
+    if (!hasAccess) {
+      throw new ForbiddenException(
+        'You are not allowed to access this resource',
+      );
+    }
+
+    return this.projectService.getTeam({ projectId: param.projectId });
+  }
+
   @Get('/:projectId/members')
   @HttpCode(HttpStatus.OK)
   async getMembers(
@@ -107,7 +129,7 @@ export class ProjectsController {
     @Param() param: GetMembersParam,
   ) {
     const hasAccess = await this.projectService.hasAccess({
-      acceptedRoles: ['arkadaslar', 'owner', 'manager'],
+      acceptedRoles: ['arkadaslar', 'owner', 'manager', 'member'],
       projectId: param.projectId,
       userId: user.sub,
     });
