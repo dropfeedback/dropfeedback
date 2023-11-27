@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "@remix-run/react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
-import { CopyIcon, CheckIcon } from "@radix-ui/react-icons";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { CopyIcon, CheckIcon, ReloadIcon } from "@radix-ui/react-icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,22 +27,87 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
+import { Skeleton } from "~/components/ui/skeleton";
 import { useCopyToClipboard } from "~/lib/hooks/useCopyToClipboard";
+import { fetchers } from "~/lib/fetchers";
+import { type ApiError } from "~/lib/axios";
 import { type Project } from "~/types";
 
 export default function Settings() {
+  const { projectId } = useParams<{ projectId: string }>();
+  if (!projectId) throw new Error("Project ID is required");
+
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const form = useForm<Project>({
     defaultValues: {
-      id: "c3872099-78b3-41a1-8e57-6661d8b5eff4",
-      name: "Lorem Ipsum",
+      id: projectId,
+      name: "",
     },
   });
+
+  const project = useQuery<Project>({
+    queryKey: ["project", projectId],
+    queryFn: () => fetchers.getProject(projectId),
+    enabled: !!projectId,
+  });
+
+  useEffect(() => {
+    if (project.data) {
+      form.reset(project.data);
+    }
+  }, [project.data, form]);
+
+  const updateMutation = useMutation<Project, ApiError, Pick<Project, "name">>({
+    mutationFn: (variables) => fetchers.updateProject(projectId, variables),
+    onSuccess: (data) => {
+      //Update the project in the cache
+      queryClient.setQueryData(["project", projectId], data);
+      queryClient.setQueryData(["projects"], (projects: Project[]) => {
+        if (!projects) return;
+
+        const index = projects.findIndex((p) => p.id === projectId);
+
+        if (index === -1) return projects;
+
+        return [
+          ...projects.slice(0, index),
+          { ...projects[index], name: data.name },
+          ...projects.slice(index + 1),
+        ];
+      });
+      form.reset(data);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: () => fetchers.deleteProject(projectId),
+    onSuccess: () => {
+      //Remove the project from the cache
+      queryClient.setQueryData(["projects"], (projects: Project[]) => {
+        if (!projects) return;
+
+        const index = projects.findIndex((p) => p.id === projectId);
+
+        if (index === -1) return projects;
+
+        return [...projects.slice(0, index), ...projects.slice(index + 1)];
+      });
+    },
+  });
+
+  useEffect(() => {
+    if (deleteMutation.isSuccess) {
+      navigate("/dashboard");
+    }
+  }, [deleteMutation.isSuccess, navigate]);
 
   const [copy] = useCopyToClipboard();
   const [isCopied, setIsCopied] = useState(false);
 
   const onSubmit = (variables: Project) => {
-    console.log("submit form", variables);
+    updateMutation.mutate({ name: variables.name.trim() });
   };
 
   const copyProjectId = () => {
@@ -111,14 +178,23 @@ export default function Settings() {
                   <FormDescription>
                     Used to identify your Project on the Dashboard.
                   </FormDescription>
-                  <FormControl>
-                    <Input className="max-w-[300px]" {...field} />
-                  </FormControl>
+                  <div className="w-[300px]">
+                    {project.isPending ? (
+                      <Skeleton className="h-9 w-full" />
+                    ) : (
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                    )}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" size="sm">
+            <Button type="submit" size="sm" disabled={updateMutation.isPending}>
+              {updateMutation.isPending ? (
+                <ReloadIcon className="mr-2 animate-spin" />
+              ) : null}
               Save
             </Button>
           </form>
@@ -146,7 +222,9 @@ export default function Settings() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction>Continue</AlertDialogAction>
+                <AlertDialogAction onClick={() => deleteMutation.mutate()}>
+                  Continue
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
