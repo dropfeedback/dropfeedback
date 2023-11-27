@@ -12,7 +12,7 @@ export class InviteMemberDto
 
   @IsNotEmpty()
   @IsString()
-  @IsEnum(['manager', 'member'])
+  @IsEnum(['manager', 'member'], { message: 'Role must be manager or member' })
   @ApiProperty({ enum: ['manager', 'member'] })
   role: 'manager' | 'member';
 }
