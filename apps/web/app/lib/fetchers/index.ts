@@ -6,6 +6,21 @@ const getProjects = async () => {
   return data;
 };
 
+const getProject = async (projectId: string) => {
+  const { data } = await axiosInstance.get(`/projects/${projectId}`);
+  return data;
+};
+
+const updateProject = async (projectId: string, payload: ProjectVariables) => {
+  const { data } = await axiosInstance.patch(`/projects/${projectId}`, payload);
+  return data;
+};
+
+const deleteProject = async (projectId: string) => {
+  const { data } = await axiosInstance.delete(`/projects/${projectId}`);
+  return data;
+};
+
 const createProject = async (payload: ProjectVariables) => {
   const { data } = await axiosInstance.post("/projects", payload);
   return data;
@@ -79,6 +94,9 @@ const getFeedbacks = async (params: {
 
 export const fetchers = {
   getProjects,
+  getProject,
+  updateProject,
+  deleteProject,
   createProject,
   getUserInvites,
   acceptInvite,
