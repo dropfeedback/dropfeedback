@@ -113,6 +113,54 @@ export class ProjectsService {
     });
   }
 
+  async getTeam({ projectId }: { projectId: string }) {
+    const [members, invites] = await Promise.all([
+      this.prisma.projectMember.findMany({
+        orderBy: { createdAt: 'desc' },
+        where: {
+          projectId,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              avatarUrl: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      }),
+      this.prisma.memberInvite.findMany({
+        orderBy: { createdAt: 'desc' },
+        where: {
+          projectId,
+          state: {
+            not: MemberInviteState.accepted,
+          },
+        },
+      }),
+    ]);
+
+    return {
+      members: members.map((m) => ({
+        id: m.user.id,
+        email: m.user.email,
+        role: m.role,
+        avatarUrl: m.user.avatarUrl,
+        firstName: m.user.firstName,
+        lastName: m.user.lastName,
+      })),
+      invites: invites.map((m) => ({
+        id: m.id,
+        email: m.email,
+        role: m.role,
+        state: m.state,
+      })),
+    };
+  }
+
   async members({ projectId }: { projectId: string }) {
     const members = await this.prisma.projectMember.findMany({
       where: {
