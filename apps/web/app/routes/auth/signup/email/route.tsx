@@ -17,63 +17,54 @@ import { Alert, AlertDescription } from "~/components/ui/alert";
 import { LoadingIndicator } from "~/components/loading-indicator";
 import { type ApiError } from "~/lib/axios";
 
-type Response = null;
-type Variables = {
+type FormValues = {
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  name: string;
 };
 
-const useLocalSignup = () => {
+export default function SignupWithEmail() {
   const navigate = useNavigate();
 
-  return useMutation<Response, ApiError, Variables>({
+  const signUp = useMutation<undefined, ApiError, FormValues>({
     mutationFn: fetchers.signup,
     onSuccess: () => {
       navigate("/dashboard");
     },
+    meta: {
+      errorToast: false,
+    },
   });
-};
-
-type FormValues = {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-};
-
-export default function SignupWithEmail() {
-  const { mutate, isPending, error, isError } = useLocalSignup();
 
   const form = useForm<FormValues>({
     defaultValues: {
       email: "",
       password: "",
+      name: "",
     },
   });
 
   const onSubmit = (values: FormValues) => {
-    mutate(values);
+    signUp.mutate(values);
   };
 
   return (
     <div className="space-y-10">
-      <h1 className="text-center text-3xl font-semibold tracking-tight">
+      <h1 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
         Sign up for DropFeedback
       </h1>
       <div className="m-auto max-w-[325px] space-y-6">
-        {isError && (
+        {signUp.isError && (
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <Alert
               variant="destructive"
-              className="w- bg-destructive-foreground"
+              className="text-red bg-red-foreground border-red"
             >
               <AlertDescription>
-                {error?.response?.data?.message ?? error?.message}
+                {signUp.error?.response?.data?.message ?? signUp.error?.message}
               </AlertDescription>
             </Alert>
           </motion.div>
@@ -85,31 +76,13 @@ export default function SignupWithEmail() {
           >
             <FormField
               control={form.control}
-              name="firstName"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="First name"
-                      className="h-12"
-                      required
-                      type="text"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Last name"
+                      placeholder="Name"
                       className="h-12"
                       required
                       type="text"
@@ -160,9 +133,9 @@ export default function SignupWithEmail() {
               type="submit"
               className="w-full"
               size="lg"
-              disabled={isPending}
+              disabled={signUp.isPending}
             >
-              {isPending && <LoadingIndicator className="mr-2" />}
+              {signUp.isPending && <LoadingIndicator className="mr-2" />}
               Sign Up
             </Button>
           </form>
@@ -173,7 +146,7 @@ export default function SignupWithEmail() {
           ← Other Sign Up Options
         </Link>
       </div>
-      <p className="text-sm font-light text-muted-foreground">
+      <p className="text-center font-light text-muted-foreground">
         By joining, you agree to our{" "}
         <Link to="#" className="font-semibold text-primary hover:underline">
           Terms of Service

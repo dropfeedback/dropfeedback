@@ -61,7 +61,8 @@ export default function App() {
             }),
         }),
         mutationCache: new MutationCache({
-          onError: () => {
+          onError: (error, variables, context, mutation) => {
+            if (mutation.options?.meta?.errorToast === false) return;
             toast({
               title: "Uh oh! Something went wrong.",
               description: "There was a problem with your mutation.",

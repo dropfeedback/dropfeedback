@@ -15,7 +15,7 @@ export function AuthHeader() {
   }, [location.pathname]);
 
   return (
-    <nav className="flex h-16 items-center border-b px-6 shadow-border">
+    <div className="flex h-16 items-center border-b bg-background px-4 md:px-6">
       <div className="flex flex-1 items-center gap-4">
         <div className="flex items-center gap-2">
           <Link to="/">
@@ -40,6 +40,6 @@ export function AuthHeader() {
           )}
         </Button>
       </div>
-    </nav>
+    </div>
   );
 }
