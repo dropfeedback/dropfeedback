@@ -10,6 +10,7 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 import {
+  MutationCache,
   QueryCache,
   QueryClient,
   QueryClientProvider,
@@ -58,6 +59,14 @@ export default function App() {
                 </ToastAction>
               ),
             }),
+        }),
+        mutationCache: new MutationCache({
+          onError: () => {
+            toast({
+              title: "Uh oh! Something went wrong.",
+              description: "There was a problem with your mutation.",
+            });
+          },
         }),
       }),
   );
