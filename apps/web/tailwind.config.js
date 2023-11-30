@@ -43,6 +43,26 @@ module.exports = {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
+        blue: {
+          DEFAULT: "hsl(var(--blue))",
+          foreground: "hsl(var(--blue-foreground))",
+        },
+        gray: {
+          DEFAULT: "hsl(var(--gray))",
+          foreground: "hsl(var(--gray-foreground))",
+        },
+        red: {
+          DEFAULT: "hsl(var(--red))",
+          foreground: "hsl(var(--red-foreground))",
+        },
+        amber: {
+          DEFAULT: "hsl(var(--amber))",
+          foreground: "hsl(var(--amber-foreground))",
+        },
+        green: {
+          DEFAULT: "hsl(var(--green))",
+          foreground: "hsl(var(--green-foreground))",
+        },
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",

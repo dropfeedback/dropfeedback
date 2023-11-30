@@ -80,3 +80,22 @@ export type ProjectInvite = {
   role: ProjectMemberRole;
   state: MemberInviteState;
 };
+
+export type InviteMemberVariables = {
+  email: string;
+  role: keyof typeof ProjectMemberRole;
+};
+
+export type ProjectMember = {
+  id: string;
+  email: string;
+  role: ProjectMemberRole;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string;
+};
+
+export type ProjectTeam = {
+  invites: Omit<ProjectInvite, "projectId" | "projectName">[];
+  members: ProjectMember[];
+};
