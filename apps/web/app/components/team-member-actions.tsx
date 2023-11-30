@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams } from "@remix-run/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { DotsHorizontalIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import {
   AlertDialogHeader,
   AlertDialogFooter,
@@ -29,6 +29,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
+import { LoadingIndicator } from "./loading-indicator";
 import { fetchers } from "~/lib/fetchers";
 import { type ApiError } from "~/lib/axios";
 import { type ProjectMember } from "~/types";
@@ -147,9 +148,7 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
                 removeMember.mutate({ memberId: member.id });
               }}
             >
-              {removeMember.isPending && (
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-              )}
+              {removeMember.isPending && <LoadingIndicator className="mr-2" />}
               Remove
             </Button>
           </AlertDialogFooter>
