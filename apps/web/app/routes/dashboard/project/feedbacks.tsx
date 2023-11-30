@@ -18,7 +18,7 @@ export default function Feedbacks() {
 
   const { data, isPending, isError, fetchNextPage, hasNextPage } =
     useInfiniteQuery<FeedbackQueryType>({
-      queryKey: ["feedbacks", { projectId }],
+      queryKey: ["feedbacks", projectId],
       queryFn: ({ pageParam }) => {
         const cursor = (pageParam as string) ?? "";
 

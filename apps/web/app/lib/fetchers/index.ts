@@ -92,6 +92,41 @@ const getFeedbacks = async (params: {
   return data;
 };
 
+const getProjectMembers = async (projectId: string) => {
+  const { data } = await axiosInstance.get(`/projects/${projectId}/members`);
+  return data;
+};
+
+const inviteMember = async (
+  projectId: string,
+  payload: { email: string; role: string },
+) => {
+  const { data } = await axiosInstance.post(
+    `/projects/${projectId}/invite`,
+    payload,
+  );
+  return data;
+};
+
+const deleteMember = async (projectId: string, memberId: string) => {
+  const { data } = await axiosInstance.delete(
+    `/projects/${projectId}/member/${memberId}`,
+  );
+  return data;
+};
+
+const cancelInvite = async (projectId: string, inviteId: string) => {
+  const { data } = await axiosInstance.delete(
+    `/projects/${projectId}/invite/${inviteId}`,
+  );
+  return data;
+};
+
+const getProjectTeam = async (projectId: string) => {
+  const { data } = await axiosInstance.get(`/projects/${projectId}/team`);
+  return data;
+}
+
 export const fetchers = {
   getProjects,
   getProject,
@@ -108,4 +143,9 @@ export const fetchers = {
   refreshToken,
   googleLogin,
   getFeedbacks,
+  getProjectMembers,
+  inviteMember,
+  deleteMember,
+  cancelInvite,
+  getProjectTeam,
 };

@@ -10,6 +10,7 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 import {
+  MutationCache,
   QueryCache,
   QueryClient,
   QueryClientProvider,
@@ -19,7 +20,7 @@ import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "~/components/ui/toaster";
 import { useToast } from "~/components/ui/use-toast";
 import { ToastAction } from "~/components/ui/toast";
-import { ModalRoot } from "~/components/modals/modal-root";
+import { ModalRoot } from "~/components/global-modals/modal-root";
 import styles from "./tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -58,6 +59,14 @@ export default function App() {
                 </ToastAction>
               ),
             }),
+        }),
+        mutationCache: new MutationCache({
+          onError: () => {
+            toast({
+              title: "Uh oh! Something went wrong.",
+              description: "There was a problem with your mutation.",
+            });
+          },
         }),
       }),
   );
