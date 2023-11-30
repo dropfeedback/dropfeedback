@@ -35,6 +35,7 @@ import { Command, CommandGroup, CommandItem } from "./ui/command";
 
 import { type ApiError } from "~/lib/axios";
 import { fetchers } from "~/lib/fetchers";
+import { Separator } from "./ui/separator";
 
 const roles = [
   { label: "Member", value: "member" },
@@ -42,11 +43,7 @@ const roles = [
   { label: "Owner", value: "owner" },
 ];
 
-export default function InviteMemberModal({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function InviteMemberModal({ children }: { children: React.ReactNode }) {
   const { projectId } = useParams<{ projectId: string }>();
   if (!projectId) throw new Error("Project ID is required");
 
@@ -71,7 +68,7 @@ export default function InviteMemberModal({
       form.reset();
       setOpen(false);
       queryClient.invalidateQueries({
-        queryKey: ["members", { projectId }],
+        queryKey: ["team", projectId],
       });
     },
   });
@@ -90,6 +87,7 @@ export default function InviteMemberModal({
             They will receive an email invitation to join the project.
           </DialogDescription>
         </DialogHeader>
+        <Separator />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField

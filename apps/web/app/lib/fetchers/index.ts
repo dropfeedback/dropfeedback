@@ -122,6 +122,11 @@ const cancelInvite = async (projectId: string, memberId: string) => {
   return data;
 };
 
+const getProjectTeam = async (projectId: string) => {
+  const { data } = await axiosInstance.get(`/projects/${projectId}/team`);
+  return data;
+}
+
 export const fetchers = {
   getProjects,
   getProject,
@@ -142,4 +147,5 @@ export const fetchers = {
   inviteMember,
   deleteMember,
   cancelInvite,
+  getProjectTeam,
 };
