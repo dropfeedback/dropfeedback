@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "@remix-run/react";
 import { useMutation } from "@tanstack/react-query";
-import { GearIcon, ChatBubbleIcon, SlashIcon } from "@radix-ui/react-icons";
+import {
+  GearIcon,
+  ChatBubbleIcon,
+  SlashIcon,
+  ExitIcon,
+} from "@radix-ui/react-icons";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import {
@@ -102,8 +107,14 @@ export function DashboardHeader() {
               </MenubarShortcut>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout} className="text-red">
+            <DropdownMenuItem
+              onClick={logout}
+              className="text-red focus:text-red focus:bg-red-foreground"
+            >
               {logoutMutation.isPending ? "Logging out.." : "Log out"}
+              <MenubarShortcut>
+                <ExitIcon />
+              </MenubarShortcut>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
