@@ -27,12 +27,11 @@ import {
   CaretSortIcon,
   CheckIcon,
   ExternalLinkIcon,
-  ReloadIcon,
 } from "@radix-ui/react-icons";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "~/lib/utils";
 import { Command, CommandGroup, CommandItem } from "./ui/command";
-
+import { LoadingIndicator } from "./loading-indicator";
 import { type ApiError } from "~/lib/axios";
 import { fetchers } from "~/lib/fetchers";
 import { Separator } from "./ui/separator";
@@ -191,9 +190,7 @@ export function InviteMemberModal({ children }: { children: React.ReactNode }) {
                 Cancel
               </Button>
               <Button type="submit" disabled={inviteUser.isPending}>
-                {inviteUser.isPending && (
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                )}
+                {inviteUser.isPending && <LoadingIndicator className="mr-2" />}
                 Invite
               </Button>
             </DialogFooter>
