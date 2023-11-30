@@ -18,3 +18,14 @@ export const getRelativeTime = (date: string) => {
     return dateFns.format(then, "dd.mm.yyyy");
   }
 };
+
+export const getNameInitials = (name?: string, count = 2) => {
+  if (!name) return "";
+
+  const initials = name
+    .split(" ")
+    .map((n) => n[0])
+    .join("");
+  const filtered = initials.replace(/[^a-zA-Z]/g, "");
+  return filtered.slice(0, count).toUpperCase();
+};
