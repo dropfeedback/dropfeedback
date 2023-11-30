@@ -1,11 +1,7 @@
+import { useState } from "react";
 import { Link, useParams, useNavigate } from "@remix-run/react";
 import { useMutation } from "@tanstack/react-query";
-import {
-  GearIcon,
-  MixerHorizontalIcon,
-  ChatBubbleIcon,
-  SlashIcon,
-} from "@radix-ui/react-icons";
+import { GearIcon, ChatBubbleIcon, SlashIcon } from "@radix-ui/react-icons";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import {
@@ -16,30 +12,28 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { MenubarShortcut } from "~/components/ui/menubar";
-import { fetchers } from "~/lib/fetchers";
-import { getNameInitials } from "~/utils";
-import { useMe } from "~/data-hooks";
 import { ProjectSwitcher } from "./project-switcher";
+import { useMe } from "~/data-hooks";
+import { fetchers } from "~/lib/fetchers";
+import { getNameInitials } from "~/lib/utils";
+import { ThemeSwitcher } from "./theme-switcher";
 
-const useLogout = () => {
+export function DashboardHeader() {
+  const params = useParams<{ projectId: string }>();
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
-  return useMutation({
+  const logoutMutation = useMutation({
     mutationFn: fetchers.logout,
     onSuccess: () => {
       navigate("/login");
     },
   });
-};
 
-export function DashboardHeader() {
-  const params = useParams<{ projectId: string }>();
-
-  const { mutate, isPending } = useLogout();
   const { data: user } = useMe();
 
   const logout = () => {
-    mutate();
+    logoutMutation.mutate();
   };
 
   return (
@@ -74,7 +68,7 @@ export function DashboardHeader() {
         >
           <Link to="/docs">Docs</Link>
         </Button>
-        <DropdownMenu>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
@@ -91,18 +85,16 @@ export function DashboardHeader() {
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="w-[220px]">
             <div className="px-2 py-1.5">
               <p className="font-medium text-primary">{`${user?.firstName} ${user?.lastName}`}</p>
               <p>{user?.email}</p>
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <div className="flex justify-between px-2 py-1.5 transition-colors hover:text-accent-foreground">
               Theme
-              <MenubarShortcut>
-                <MixerHorizontalIcon />
-              </MenubarShortcut>
-            </DropdownMenuItem>
+              <ThemeSwitcher />
+            </div>
             <DropdownMenuItem>
               Settings
               <MenubarShortcut>
@@ -110,8 +102,8 @@ export function DashboardHeader() {
               </MenubarShortcut>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout}>
-              {isPending ? "Logging out.." : "Log out"}
+            <DropdownMenuItem onClick={logout} className="text-red">
+              {logoutMutation.isPending ? "Logging out.." : "Log out"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
