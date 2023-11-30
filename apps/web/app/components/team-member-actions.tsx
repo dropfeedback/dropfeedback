@@ -67,8 +67,8 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
   const removeMember = useMutation<undefined, ApiError, DeleteMemberVariables>({
     mutationFn: ({ memberId }) => fetchers.deleteMember(projectId, memberId),
     onSuccess: () => {
-      setShowDeleteDialog(false);
       queryClient.invalidateQueries({ queryKey: ["team", projectId] });
+      setShowDeleteDialog(false);
     },
   });
 

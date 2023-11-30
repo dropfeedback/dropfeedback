@@ -115,9 +115,9 @@ const deleteMember = async (projectId: string, memberId: string) => {
   return data;
 };
 
-const cancelInvite = async (projectId: string, memberId: string) => {
+const cancelInvite = async (projectId: string, inviteId: string) => {
   const { data } = await axiosInstance.delete(
-    `/projects/${projectId}/invite/${memberId}`,
+    `/projects/${projectId}/invite/${inviteId}`,
   );
   return data;
 };
