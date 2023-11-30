@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { useParams } from "@remix-run/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { DotsHorizontalIcon, ReloadIcon } from "@radix-ui/react-icons";
 import {
   AlertDialogHeader,
   AlertDialogFooter,
@@ -27,6 +29,8 @@ import {
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
+import { fetchers } from "~/lib/fetchers";
+import { type ApiError } from "~/lib/axios";
 import { type ProjectMember } from "~/types";
 
 const roles = [
@@ -48,9 +52,25 @@ const roles = [
   },
 ];
 
+type DeleteMemberVariables = {
+  memberId: string;
+};
+
 export function TeamMemberActions({ member }: { member: ProjectMember }) {
+  const { projectId } = useParams<{ projectId: string }>();
+  if (!projectId) throw new Error("Project ID is required");
+
   const [open, setIsOpen] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const queryClient = useQueryClient();
+
+  const removeMember = useMutation<undefined, ApiError, DeleteMemberVariables>({
+    mutationFn: ({ memberId }) => fetchers.deleteMember(projectId, memberId),
+    onSuccess: () => {
+      setShowDeleteDialog(false);
+      queryClient.invalidateQueries({ queryKey: ["team", projectId] });
+    },
+  });
 
   return (
     <>
@@ -122,10 +142,14 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <Button
               variant="destructive"
+              disabled={removeMember.isPending}
               onClick={() => {
-                setShowDeleteDialog(false);
+                removeMember.mutate({ memberId: member.id });
               }}
             >
+              {removeMember.isPending && (
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Remove
             </Button>
           </AlertDialogFooter>
