@@ -96,13 +96,13 @@ export default function Teams() {
                       <TableCell className="w-16 text-muted-foreground">
                         <div
                           className={cn(
-                            "inline-flex select-none items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold",
+                            "inline-flex select-none items-center rounded-md px-2.5 py-0.5 text-xs font-semibold",
                             {
-                              "border-amber bg-amber-foreground text-amber":
+                              "bg-amber-foreground text-amber":
                                 invite.state === MemberInviteState.Pending,
-                              "border-red bg-red-foreground text-red":
+                              "bg-red-foreground text-red":
                                 invite.state === MemberInviteState.Rejected,
-                              "border-green bg-green-foreground text-green":
+                              "bg-green-foreground text-green":
                                 invite.state === MemberInviteState.Accepted,
                             },
                           )}
