@@ -213,7 +213,7 @@ export class ProjectsController {
     });
   }
 
-  @Delete('/:projectId/invite/:memberId')
+  @Delete('/:projectId/invite/:memberInviteId')
   @HttpCode(HttpStatus.OK)
   async cancelInvite(
     @GetCurrentUser() user: JwtPayload,
