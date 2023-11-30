@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "@remix-run/react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { CopyIcon, CheckIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { CopyIcon, CheckIcon } from "@radix-ui/react-icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +28,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
+import { LoadingIndicator } from "~/components/loading-indicator";
 import { useCopyToClipboard } from "~/lib/hooks/useCopyToClipboard";
 import { fetchers } from "~/lib/fetchers";
 import { type ApiError } from "~/lib/axios";
@@ -193,7 +194,7 @@ export default function Settings() {
             />
             <Button type="submit" size="sm" disabled={updateMutation.isPending}>
               {updateMutation.isPending ? (
-                <ReloadIcon className="mr-2 animate-spin" />
+                <LoadingIndicator className="mr-2" />
               ) : null}
               Save
             </Button>

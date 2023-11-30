@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "@remix-run/react";
-import { DotsHorizontalIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import {
   AlertDialogHeader,
   AlertDialogFooter,
@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { LoadingIndicator } from "./loading-indicator";
 import { fetchers } from "~/lib/fetchers";
 import { type ProjectInvite } from "~/types";
 import { type ApiError } from "~/lib/axios";
@@ -83,9 +84,7 @@ export function TeamInviteActions({
                 cancelInvite.mutate({ inviteId: invite.id });
               }}
             >
-              {cancelInvite.isPending && (
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-              )}
+              {cancelInvite.isPending && <LoadingIndicator className="mr-2" />}
               Cancel Invite
             </Button>
           </AlertDialogFooter>

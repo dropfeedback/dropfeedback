@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@remix-run/react";
 import { useForm } from "react-hook-form";
-import { ExternalLinkIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import { useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { fetchers } from "~/lib/fetchers";
@@ -14,6 +14,7 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Alert, AlertDescription } from "~/components/ui/alert";
+import { LoadingIndicator } from "~/components/loading-indicator";
 import { type ApiError } from "~/lib/axios";
 
 type Response = null;
@@ -161,9 +162,7 @@ export default function SignupWithEmail() {
               size="lg"
               disabled={isPending}
             >
-              {isPending && (
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-              )}
+              {isPending && <LoadingIndicator className="mr-2" />}
               Sign Up
             </Button>
           </form>

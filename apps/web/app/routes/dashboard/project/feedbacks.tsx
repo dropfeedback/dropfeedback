@@ -2,11 +2,11 @@ import { Fragment, useEffect, useState } from "react";
 import { useParams } from "@remix-run/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { fetchers } from "~/lib/fetchers";
 import { FeedbackCard } from "~/components/feedback-card";
 import { FeedbackFilter } from "~/components/feedback-filter";
 import { FeedbackCardSkeleton } from "~/components/feedback-card-skeleton";
+import { LoadingIndicator } from "~/components/loading-indicator";
 import { type FeedbackQueryType } from "~/types";
 
 const pageSize = 10;
@@ -70,7 +70,7 @@ export default function Feedbacks() {
                 </div>
                 {hasNextPage && (
                   <div ref={ref} className="mb-4 flex justify-center">
-                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    <LoadingIndicator className="mr-2" />
                   </div>
                 )}
               </>

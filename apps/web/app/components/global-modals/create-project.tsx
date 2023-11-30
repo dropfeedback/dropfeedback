@@ -1,7 +1,6 @@
 import { useNavigate, useSearchParams } from "@remix-run/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +20,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
+import { LoadingIndicator } from "../loading-indicator";
 import { type ProjectVariables, type ProjectResponse } from "~/types";
 import { type ApiError } from "~/lib/axios";
 
@@ -108,9 +108,7 @@ export function CreateProject() {
                 Cancel
               </Button>
               <Button type="submit" disabled={isPending}>
-                {isPending && (
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                )}
+                {isPending && <LoadingIndicator className="mr-2" />}
                 Save
               </Button>
             </DialogFooter>
