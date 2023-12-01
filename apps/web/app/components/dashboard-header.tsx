@@ -80,19 +80,16 @@ export function DashboardHeader() {
               className="relative h-7 w-7 rounded-full p-0"
             >
               <Avatar className="h-7 w-7">
-                <AvatarImage
-                  src={user?.avatarUrl}
-                  alt={`${user?.firstName} ${user?.lastName}`}
-                />
+                <AvatarImage src={user?.avatarUrl} alt={`${user?.fullName}`} />
                 <AvatarFallback>
-                  {getNameInitials(`${user?.firstName} ${user?.lastName}`)}
+                  {getNameInitials(`${user?.fullName}`)}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[220px]">
             <div className="px-2 py-1.5">
-              <p className="font-medium text-primary">{`${user?.firstName} ${user?.lastName}`}</p>
+              <p className="font-medium text-primary">{`${user?.fullName}`}</p>
               <p>{user?.email}</p>
             </div>
             <DropdownMenuSeparator />
@@ -109,7 +106,7 @@ export function DashboardHeader() {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={logout}
-              className="text-red focus:text-red focus:bg-red-foreground"
+              className="text-red focus:bg-red-foreground focus:text-red"
             >
               {logoutMutation.isPending ? "Logging out.." : "Log out"}
               <MenubarShortcut>

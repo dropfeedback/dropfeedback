@@ -57,15 +57,15 @@ export default function Teams() {
                               <Avatar>
                                 <AvatarImage
                                   src={member.avatarUrl}
-                                  alt={`${member.firstName} ${member.lastName}`}
+                                  alt={`${member.fullName}`}
                                 />
                                 <AvatarFallback>
-                                  {member.firstName[0] + member.lastName[0]}
+                                  {`${member.fullName}`}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
                                 <p className="font-medium leading-none">
-                                  {member.firstName} {member.lastName}
+                                  {`${member.fullName}`}
                                 </p>
                                 <p className="text-muted-foreground">
                                   {member.email}
