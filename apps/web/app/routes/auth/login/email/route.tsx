@@ -7,27 +7,29 @@ import {
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { fetchers } from "~/lib/fetchers";
 import { Button } from "~/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { LoadingIndicator } from "~/components/loading-indicator";
-import { type ApiError } from "~/lib/axios";
 import { Alert, AlertDescription } from "~/components/ui/alert";
+import { LoadingIndicator } from "~/components/loading-indicator";
+import { fetchers } from "~/lib/fetchers";
+import { type ApiError } from "~/lib/axios";
 
-type Response = null;
 type Variables = { email: string; password: string };
 
 const useLocalLogin = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  return useMutation<Response, ApiError, Variables>({
+  return useMutation<undefined, ApiError, Variables>({
     mutationFn: fetchers.signin,
     onSuccess: () => {
       const nextURL = searchParams.get("next");
 
       navigate(nextURL ?? "/dashboard");
+    },
+    meta: {
+      errorToast: false,
     },
   });
 };
@@ -54,7 +56,7 @@ export default function LoginWithEmail() {
 
   return (
     <div className="space-y-10">
-      <h1 className="text-center text-3xl font-semibold tracking-tight">
+      <h1 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
         Log in to DropFeedback
       </h1>
 
@@ -66,7 +68,7 @@ export default function LoginWithEmail() {
           >
             <Alert
               variant="destructive"
-              className="w- bg-destructive-foreground"
+              className="border-red bg-red-foreground text-red"
             >
               <AlertDescription>
                 {error?.response?.data?.message ?? error?.message}
