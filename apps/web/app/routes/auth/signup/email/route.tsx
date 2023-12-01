@@ -20,7 +20,7 @@ import { type ApiError } from "~/lib/axios";
 type FormValues = {
   email: string;
   password: string;
-  name: string;
+  fullName: string;
 };
 
 export default function SignupWithEmail() {
@@ -40,7 +40,7 @@ export default function SignupWithEmail() {
     defaultValues: {
       email: "",
       password: "",
-      name: "",
+      fullName: "",
     },
   });
 
@@ -61,7 +61,7 @@ export default function SignupWithEmail() {
           >
             <Alert
               variant="destructive"
-              className="text-red bg-red-foreground border-red"
+              className="border-red bg-red-foreground text-red"
             >
               <AlertDescription>
                 {signUp.error?.response?.data?.message ?? signUp.error?.message}
@@ -76,7 +76,7 @@ export default function SignupWithEmail() {
           >
             <FormField
               control={form.control}
-              name="name"
+              name="fullName"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>

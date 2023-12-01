@@ -98,8 +98,7 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Change {member.firstName} {member.lastName}&apos;s role on this
-              project
+              Change {member.fullName}&apos;s role on this project
             </DialogTitle>
             <DialogDescription>
               This will change the permissions of this person on this project.
@@ -132,7 +131,7 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Remove {member.firstName} {member.lastName} from this project?
+              Remove {member.fullName} from this project?
             </AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This person will no longer have
