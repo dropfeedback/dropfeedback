@@ -9,51 +9,58 @@ import { type ApiError } from "~/lib/axios";
 type Response = { token: string };
 type Variables = { idToken: string };
 
-const useGoogleLogin = () => {
+export function GoogleOAuthButton() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  return useMutation<Response, ApiError, Variables>({
-    mutationKey: ["googleLogin"],
+  const loginMutation = useMutation<Response, ApiError, Variables>({
     mutationFn: fetchers.googleLogin,
     onSuccess: () => {
       const nextURL = searchParams.get("next");
 
       navigate(nextURL ?? "/dashboard");
     },
+    meta: {
+      errorToast: false,
+    },
   });
-};
-
-export default function GoogleOAuthButton() {
-  const { mutate, error, isError } = useGoogleLogin();
 
   return (
     <div className="space-y-6">
-      {isError && (
+      {loginMutation.isError && (
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Alert variant="destructive" className="bg-destructive-foreground">
+          <Alert
+            variant="destructive"
+            className="border-red text-red bg-red-foreground"
+          >
             <AlertDescription>
-              {error?.response?.data?.message ?? error?.message}
+              {loginMutation.error?.response?.data?.message ??
+                loginMutation.error?.message}
             </AlertDescription>
           </Alert>
         </motion.div>
       )}
-      <GoogleLogin
-        text="continue_with"
-        size="large"
-        width={325}
-        onSuccess={(credentialResponse) => {
-          const credential = credentialResponse.credential;
-          if (!credential) return;
+      <div style={{ colorScheme: "light" }}>
+        <GoogleLogin
+          text="continue_with"
+          size="large"
+          width={300}
+          useOneTap
+          auto_select
+          theme="filled_blue"
+          onSuccess={(credentialResponse) => {
+            const credential = credentialResponse.credential;
+            if (!credential) return;
 
-          mutate({
-            idToken: credential,
-          });
-        }}
-      />
+            loginMutation.mutate({
+              idToken: credential,
+            });
+          }}
+        />
+      </div>
     </div>
   );
 }

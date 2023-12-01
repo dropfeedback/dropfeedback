@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@remix-run/react";
-import GoogleOAuthButton from "~/components/google-oauth-button";
+import { GoogleOAuthButton } from "~/components/google-oauth-button";
 import { Separator } from "~/components/ui/separator";
 
 export default function Login() {
@@ -7,7 +7,7 @@ export default function Login() {
 
   return (
     <div className="space-y-10">
-      <h1 className="text-center text-3xl font-semibold tracking-tight">
+      <h1 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
         Log in to DropFeedback
       </h1>
       <div className="m-auto max-w-[325px]">

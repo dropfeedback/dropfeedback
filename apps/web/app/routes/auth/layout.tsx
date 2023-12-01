@@ -19,8 +19,10 @@ export default function Layout() {
   return (
     <>
       <AuthHeader />
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-        <Outlet />
+      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden">
+        <div className="container mx-4 w-full sm:w-fit rounded-lg border p-4 sm:p-16  ">
+          <Outlet />
+        </div>
       </div>
     </>
   );

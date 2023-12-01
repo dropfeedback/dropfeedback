@@ -1,12 +1,12 @@
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import { Link } from "@remix-run/react";
-import GoogleOAuthButton from "~/components/google-oauth-button";
+import { GoogleOAuthButton } from "~/components/google-oauth-button";
 import { Separator } from "~/components/ui/separator";
 
 export default function Signup() {
   return (
     <div className="space-y-10">
-      <h1 className="text-center text-3xl font-semibold tracking-tight">
+      <h1 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
         Sign up to DropFeedback
       </h1>
       <div className="m-auto flex w-min flex-col items-center">
@@ -16,7 +16,7 @@ export default function Signup() {
           Continue with Email →
         </Link>
       </div>
-      <p className="text-sm font-light text-muted-foreground">
+      <p className="font-light text-muted-foreground text-center">
         By joining, you agree to our{" "}
         <Link to="#" className="font-semibold text-primary hover:underline">
           Terms of Service
