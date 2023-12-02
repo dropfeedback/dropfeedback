@@ -20,8 +20,7 @@ CREATE TYPE "FeedbackStatus" AS ENUM ('new', 'archived');
 CREATE TABLE "users" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "email" TEXT NOT NULL,
-    "firstName" TEXT,
-    "lastName" TEXT,
+    "fullName" TEXT,
     "avatarUrl" TEXT,
     "hashedRefreshToken" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
