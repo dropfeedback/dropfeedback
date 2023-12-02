@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
+import { Separator } from "../ui/separator";
 import { LoadingIndicator } from "../loading-indicator";
 import { type ProjectVariables, type ProjectResponse } from "~/types";
 import { type ApiError } from "~/lib/axios";
@@ -76,6 +77,7 @@ export function CreateProject() {
             Add a new project to collect and manage feedbacks.
           </DialogDescription>
         </DialogHeader>
+        <Separator />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
