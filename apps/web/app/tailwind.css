@@ -104,6 +104,12 @@
   }
 }
 
+@layer components {
+  .container {
+    @apply px-4 md:px-6;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
