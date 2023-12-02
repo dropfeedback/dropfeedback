@@ -4,8 +4,7 @@ import request from 'supertest';
 export const MOCK_USER = {
   email: 'teste2e@teste2e.com',
   password: 'teste2e',
-  firstName: 'teste2e',
-  lastName: 'teste2e',
+  fullName: 'teste2e',
 };
 
 export const signUp = async (app: INestApplication) => {

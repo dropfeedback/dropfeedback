@@ -31,8 +31,7 @@ export class AuthService {
         id: true,
         email: true,
         avatarUrl: true,
-        firstName: true,
-        lastName: true,
+        fullName: true,
       },
     });
   }
@@ -74,8 +73,7 @@ export class AuthService {
       const newUser = await this.prisma.user.create({
         data: {
           email: dto.email,
-          firstName: dto.firstName,
-          lastName: dto.lastName,
+          fullName: dto.fullName,
           UserProvider: {
             create: {
               type: UserProviderType.internal,
@@ -240,8 +238,7 @@ export class AuthService {
       const newUser = await this.prisma.user.create({
         data: {
           email: payload.email,
-          firstName: payload.given_name,
-          lastName: payload.family_name,
+          fullName: payload.given_name + ' ' + payload.family_name,
           avatarUrl: payload.picture,
           UserProvider: {
             create: {
