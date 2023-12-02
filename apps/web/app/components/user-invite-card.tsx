@@ -1,21 +1,12 @@
-import type { FC } from "react";
-import {
-  CheckCircledIcon,
-  CrossCircledIcon,
-  EnvelopeClosedIcon,
-} from "@radix-ui/react-icons";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import type { ProjectInvite } from "~/types";
-import { Button } from "./ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { motion } from "framer-motion";
+import { Button } from "./ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { fetchers } from "~/lib/fetchers";
+import type { ProjectInvite } from "~/types";
+import { Close } from "@radix-ui/react-popover";
 
-type UserInviteCardProps = ProjectInvite;
-
-export const UserInviteCard: FC<UserInviteCardProps> = ({
-  projectName,
-  projectId,
-}) => {
+export function UserInviteCard({ projectName, projectId }: ProjectInvite) {
   const queryClient = useQueryClient();
 
   const { mutate: acceptInvite } = useMutation({
@@ -30,9 +21,7 @@ export const UserInviteCard: FC<UserInviteCardProps> = ({
   const { mutate: rejectInvite } = useMutation({
     mutationFn: fetchers.rejectInvite,
     onSuccess: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["user-invites"] }),
-      ]);
+      queryClient.invalidateQueries({ queryKey: ["user-invites"] });
     },
   });
 
@@ -45,33 +34,50 @@ export const UserInviteCard: FC<UserInviteCardProps> = ({
   };
 
   return (
-    <Alert>
-      <EnvelopeClosedIcon className="h-4 w-4" />
-      <AlertTitle className="mb-0 leading-6">Project Invitation</AlertTitle>
-      <AlertDescription className="flex items-center justify-between">
-        <p>
-          You have been invited to join the{" "}
-          <span className="font-semibold text-primary">"{projectName}"</span>.
-        </p>
-        <div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-success hover:text-success"
-            onClick={handleAcceptInvite}
-          >
-            <CheckCircledIcon className="h-6 w-6" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-destructive hover:text-destructive"
-            onClick={handleRejectInvite}
-          >
-            <CrossCircledIcon className="h-6 w-6" />
-          </Button>
+    <div className="bg-amber-foreground border-b p-2">
+      <motion.div
+        className="container"
+        exit={{ opacity: 0, x: "100%", transition: { duration: 0.2 } }}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-y-2">
+          <p>
+            You have been invited to the project{" "}
+            <span className="font-semibold">{projectName}</span>.
+          </p>
+          <div className="space-x-2">
+            <Button variant="default" onClick={handleAcceptInvite} size="sm">
+              Accept
+            </Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="destructive" size="sm">
+                  Reject
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent side="bottom" align="center" className="p-3">
+                <p className="font-medium text-primary">
+                  Are you sure you want to reject this invite?
+                </p>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="default"
+                    onClick={handleRejectInvite}
+                    size="sm"
+                    className="h-7"
+                  >
+                    Yes
+                  </Button>
+                  <Close asChild>
+                    <Button variant="outline" size="sm" className="h-7">
+                      No
+                    </Button>
+                  </Close>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
-      </AlertDescription>
-    </Alert>
+      </motion.div>
+    </div>
   );
-};
+}
