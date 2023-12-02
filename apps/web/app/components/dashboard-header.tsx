@@ -42,7 +42,7 @@ export function DashboardHeader() {
   };
 
   return (
-    <nav className="z-50 flex h-16 items-center border-b px-6 shadow-border">
+    <nav className="z-50 flex h-16 items-center border-b px-4 md:px-6">
       <div className="flex flex-1 items-center gap-4">
         <div className="flex items-center gap-2">
           <Link to="/dashboard">
@@ -63,7 +63,7 @@ export function DashboardHeader() {
         </div>
       </div>
       <div className="flex items-center justify-end gap-2">
-        <Button variant="outline" className="font-normal text-muted-foreground">
+        <Button variant="outline" className="font-normal text-muted-foreground hidden md:block">
           Feedback
         </Button>
         <Button
