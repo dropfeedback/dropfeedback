@@ -21,8 +21,7 @@ export enum MemberInviteState {
 export type MeResponse = {
   id: string;
   email: string;
-  firstName?: string;
-  lastName?: string;
+  fullName?: string;
   avatarUrl?: string;
 };
 
@@ -90,8 +89,7 @@ export type ProjectMember = {
   id: string;
   email: string;
   role: ProjectMemberRole;
-  firstName: string;
-  lastName: string;
+  fullName: string;
   avatarUrl: string;
 };
 

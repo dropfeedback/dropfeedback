@@ -11,8 +11,7 @@ const prisma = new PrismaClient();
 export const DEMO_USER = {
   email: 'demo@demo.com',
   password: 'demo',
-  firstName: 'Demo',
-  lastName: 'User',
+  fullName: 'Demo User',
   avatarUrl: 'https://i.pravatar.cc/150?img=13',
 };
 
@@ -24,8 +23,7 @@ async function main() {
     update: {},
     create: {
       email: DEMO_USER.email,
-      firstName: DEMO_USER.firstName,
-      lastName: DEMO_USER.lastName,
+      fullName: DEMO_USER.fullName,
       avatarUrl: DEMO_USER.avatarUrl,
       UserProvider: {
         create: {
