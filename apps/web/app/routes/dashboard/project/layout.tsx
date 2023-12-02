@@ -1,5 +1,5 @@
 import { Outlet } from "@remix-run/react";
-import { ProjectHeader } from "~/components/project-header";
+import { ProjectHeader } from "~/components/headers/project-header";
 
 export default function Layout() {
   return (
