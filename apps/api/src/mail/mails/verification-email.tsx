@@ -41,15 +41,15 @@ export const VerificationEmail = ({ token }: { token: string }) => {
               Welcome to <strong>DropFeedBack</strong>
             </Heading>
             <Text className="text-black text-[14px] leading-[24px]">
-              Hello, you invited to the team on Vercel.{' '}
-              <strong>DropFeedBack</strong>.
+              We are excited to have you on board. First, you need to confirm
+              your email address. Just press the button below.
             </Text>
             <Section className="text-center mt-[32px] mb-[32px]">
               <Button
-                className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center"
+                className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center p-4"
                 href={acceptVerificationLink}
               >
-                Join the team
+                Confirm
               </Button>
             </Section>
             <Text className="text-black text-[14px] leading-[24px]">
