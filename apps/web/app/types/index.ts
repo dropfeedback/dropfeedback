@@ -93,7 +93,14 @@ export type ProjectMember = {
   avatarUrl: string;
 };
 
+export type ProjectMemberInvite = {
+  id: string;
+  email: string;
+  role: ProjectMemberRole;
+  state: MemberInviteState;
+};
+
 export type ProjectTeam = {
-  invites: Omit<ProjectInvite, "projectId" | "projectName">[];
+  invites: ProjectMemberInvite[];
   members: ProjectMember[];
 };

@@ -1,12 +1,12 @@
 import { TeamInviteActions } from "./team-invite-actions";
 import { Table, TableBody, TableCell, TableRow } from "./ui/table";
 import { cn } from "~/lib/utils";
-import { MemberInviteState, type ProjectInvite } from "~/types";
+import { MemberInviteState, type ProjectMemberInvite } from "~/types";
 
 export function TeamInviteTable({
   invites,
 }: {
-  invites: Omit<ProjectInvite, "projectId" | "projectName">[];
+  invites: ProjectMemberInvite[];
 }) {
   return (
     <Table>
