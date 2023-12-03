@@ -23,6 +23,8 @@ export type MeResponse = {
   email: string;
   fullName?: string;
   avatarUrl?: string;
+  isEmailVerified: boolean;
+  provider: UserProviderType;
 };
 
 export type ProjectVariables = {
@@ -97,3 +99,12 @@ export type ProjectTeam = {
   invites: Omit<ProjectInvite, "projectId" | "projectName">[];
   members: ProjectMember[];
 };
+
+export type VerifyEmailPayload = {
+  emailVerificationToken: string;
+};
+
+export enum UserProviderType {
+  google = "google",
+  internal = "internal",
+}

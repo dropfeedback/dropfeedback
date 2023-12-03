@@ -6,20 +6,27 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInLocalDto, SignUpLocalDto } from './dto';
 import type { JwtPayload, JwtPayloadWithRefreshToken, Tokens } from './types';
 import { RefreshTokenGuard } from 'src/common/guards';
-import { GetCurrentUser, Public } from 'src/common/decorators';
+import {
+  EmailVerificationIsNotRequired,
+  GetCurrentUser,
+  Public,
+} from 'src/common/decorators';
 
 import type { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { GoogleLoginDto } from './dto/google-login.dto';
-import { EmailVerificationDto } from './dto/email-verification.dto';
+import { VerifyEmailDto } from './dto/verify-email';
+import { UserProviderType } from '@prisma/client';
 
 @Controller('auth')
 export class AuthController {
@@ -31,9 +38,15 @@ export class AuthController {
   ) {}
 
   @Get('/me')
+  @EmailVerificationIsNotRequired()
   @HttpCode(HttpStatus.OK)
-  async me(@GetCurrentUser() user: JwtPayload) {
-    return this.authService.me(user.sub);
+  async me(@GetCurrentUser() jwtPayload: JwtPayload) {
+    const user = await this.authService.me(jwtPayload.sub);
+    return {
+      ...user,
+      provider: jwtPayload.provider,
+      isEmailVerified: jwtPayload.isEmailVerified,
+    };
   }
 
   @Post('/local/signup')
@@ -68,6 +81,42 @@ export class AuthController {
     });
 
     this.setCookies(res, data.tokens);
+  }
+
+  @Post('/local/verify-email')
+  @Public()
+  @EmailVerificationIsNotRequired()
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(
+    @Body() dto: VerifyEmailDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { id, email } = await this.authService.verifyEmail(
+      dto.emailVerificationToken,
+    );
+
+    const { accessToken, refreshToken } = await this.authService.signAuthToken({
+      provider: UserProviderType.internal,
+      sub: id,
+      email,
+      isEmailVerified: true,
+    } satisfies JwtPayload);
+
+    await this.authService.updateRefreshTokenFromDB({
+      id,
+      refreshToken: refreshToken,
+    });
+
+    this.setCookies(res, { accessToken, refreshToken });
+
+    return {};
+  }
+
+  @Post('/local/send-verification-email')
+  @EmailVerificationIsNotRequired()
+  @HttpCode(HttpStatus.OK)
+  async sendVerificationEmail(@GetCurrentUser() user: JwtPayload) {
+    this.authService.sendVerificationMail({ email: user.email });
   }
 
   @Post('/logout')
@@ -135,13 +184,6 @@ export class AuthController {
     });
 
     this.setCookies(res, data.tokens);
-  }
-
-  @Post('/email-verification')
-  @Public()
-  @HttpCode(HttpStatus.OK)
-  async emailVerification(@Body() dto: EmailVerificationDto) {
-    return this.authService.emailVerification(dto.emailVerificationToken);
   }
 
   setCookies(res: Response, tokens: Tokens) {
