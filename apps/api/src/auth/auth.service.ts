@@ -72,6 +72,7 @@ export class AuthService {
         sub: user.id,
         provider: UserProviderType.internal,
         isEmailVerified: false,
+        iss: 'dropfeedback.com',
       } satisfies JwtPayload);
 
       this.sendVerificationMail({ email: user.email });
@@ -96,6 +97,7 @@ export class AuthService {
         sub: newUser.id,
         provider: UserProviderType.internal,
         isEmailVerified: false,
+        iss: 'dropfeedback.com',
       } satisfies JwtPayload);
 
       this.sendVerificationMail({ email: newUser.email });
@@ -135,6 +137,7 @@ export class AuthService {
       email: user.email,
       provider: UserProviderType.internal,
       isEmailVerified: internalProvider?.emailVerified || false,
+      iss: 'dropfeedback.com',
     });
 
     return { tokens, id: user.id };
@@ -200,6 +203,7 @@ export class AuthService {
       email: user.email,
       provider: decodedToken.provider,
       isEmailVerified: internalProvider?.emailVerified || false,
+      iss: 'dropfeedback.com',
     });
 
     return { tokens, id: user.id };
@@ -241,6 +245,7 @@ export class AuthService {
       sub: '',
       provider: UserProviderType.google,
       isEmailVerified: true,
+      iss: 'dropfeedback.com',
     };
 
     if (user) {
@@ -311,7 +316,7 @@ export class AuthService {
   }
 
   async verifyEmail(token: string) {
-    const decodedToken = this.jwtService.decode(token);
+    const decodedToken: JwtPayload = this.jwtService.decode(token);
     if (!decodedToken) {
       throw new BadRequestException('Invalid token');
     }
@@ -319,8 +324,10 @@ export class AuthService {
     try {
       await this.jwtService.verify(token, {
         secret: this.config.get<string>('EMAIL_TOKEN_SECRET'),
+        jwtid: decodedToken.email,
+        complete: true,
       });
-    } catch {
+    } catch (error) {
       throw new ForbiddenException('Invalid token');
     }
 

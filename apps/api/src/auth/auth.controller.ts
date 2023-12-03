@@ -98,6 +98,7 @@ export class AuthController {
       sub: id,
       email,
       isEmailVerified: true,
+      iss: 'dropfeedback.com',
     } satisfies JwtPayload);
 
     await this.authService.updateRefreshTokenFromDB({

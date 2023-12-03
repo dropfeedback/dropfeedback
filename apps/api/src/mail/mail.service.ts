@@ -88,7 +88,7 @@ export class MailService {
       {
         expiresIn: this.config.get<number>('EMAIL_TOKEN_EXPIRES_IN'),
         secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}`,
-        keyid: email,
+        jwtid: email,
         issuer: 'dropfeedback.com',
       },
     );
