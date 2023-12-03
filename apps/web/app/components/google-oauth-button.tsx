@@ -49,7 +49,6 @@ export function GoogleOAuthButton() {
           size="large"
           width={300}
           useOneTap
-          auto_select
           theme="filled_blue"
           onSuccess={(credentialResponse) => {
             const credential = credentialResponse.credential;

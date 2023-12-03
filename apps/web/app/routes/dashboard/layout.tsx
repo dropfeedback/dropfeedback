@@ -38,7 +38,7 @@ function Layout() {
   return (
     <>
       <DashboardHeader />
-      <div className="bg-accent dark:bg-background">
+      <div className="flex h-[calc(100vh-4rem)] flex-col">
         <Outlet />
       </div>
     </>
