@@ -1,9 +1,10 @@
 import type { FC } from "react";
 import { useQuery } from "@tanstack/react-query";
-import clsx from "clsx";
-import { fetchers } from "~/lib/fetchers";
-import type { ProjectInvite } from "~/types";
+import { AnimatePresence } from "framer-motion";
 import { UserInviteCard } from "./user-invite-card";
+import { fetchers } from "~/lib/fetchers";
+import { cn } from "~/lib/utils";
+import type { ProjectInvite } from "~/types";
 
 type UserInviteListProps = {
   className?: string;
@@ -16,10 +17,12 @@ export const UserInviteList: FC<UserInviteListProps> = ({ className }) => {
   });
 
   return (
-    <div className={clsx(className, "flex flex-col gap-2")}>
-      {invites?.map((invite) => {
-        return <UserInviteCard key={invite.id} {...invite} />;
-      })}
+    <div className={cn(className, "flex flex-col")}>
+      <AnimatePresence initial={false}>
+        {invites?.map((invite) => {
+          return <UserInviteCard key={invite.id} {...invite} />;
+        })}
+      </AnimatePresence>
     </div>
   );
 };

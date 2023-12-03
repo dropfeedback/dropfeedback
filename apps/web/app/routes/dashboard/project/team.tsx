@@ -24,7 +24,7 @@ export default function Teams() {
   if (team.isError) return <p>Could not load team</p>;
 
   return (
-    <div className="h-full space-y-6 bg-background">
+    <div className="space-y-6 bg-background">
       <div className="container flex items-center justify-between p-8 pb-0">
         <div>
           <h2 className="text-3xl tracking-wide">Team</h2>
