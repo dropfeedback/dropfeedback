@@ -36,7 +36,8 @@ export default function EmailVerification() {
     if (!emailVerificationToken) return;
 
     verifyEmail.mutate({ emailVerificationToken });
-  }, [verifyEmail, emailVerificationToken, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verifyEmail.mutate, emailVerificationToken]);
 
   const handleResendVerificationEmail = async () => {
     await resendVerificationEmail.mutateAsync();
