@@ -127,12 +127,12 @@ export default function Settings() {
   }, [isCopied]);
 
   return (
-    <div className="h-full space-y-6 bg-background">
-      <div className="container p-10 pb-4">
+    <>
+      <div className="container py-10 pb-4">
         <h2 className="text-3xl tracking-wide">Project Settings</h2>
       </div>
       <Separator className="my-6" />
-      <div className="container">
+      <div className="container mb-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
@@ -231,6 +231,6 @@ export default function Settings() {
           </AlertDialog>
         </div>
       </div>
-    </div>
+    </>
   );
 }
