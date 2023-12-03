@@ -1,6 +1,5 @@
 import { useNavigate, useSearchParams } from "@remix-run/react";
 import { useMutation } from "@tanstack/react-query";
-import clsx from "clsx";
 import { useEffect } from "react";
 import { LoadingIndicator } from "~/components/loading-indicator";
 import { Button } from "~/components/ui/button";
@@ -8,6 +7,7 @@ import { fetchers } from "~/lib/fetchers";
 import type { ApiError } from "~/lib/axios";
 import type { VerifyEmailPayload } from "~/types";
 import { useTimer } from "use-timer";
+import { cn } from "~/lib/utils";
 
 export default function EmailVerification() {
   const { time, start, status } = useTimer({
@@ -21,59 +21,48 @@ export default function EmailVerification() {
   const [params] = useSearchParams();
   const emailVerificationToken = params.get("emailVerificationToken");
 
-  const { mutateAsync: resendVerificationEmail } = useMutation({
+  const resendVerificationEmail = useMutation({
     mutationFn: fetchers.resendVerificationEmail,
   });
 
-  const {
-    mutate: verifyEmail,
-    isPending: verifyingEmail,
-    isError: isVerifyEmailError,
-    isIdle: isVerifyEmailIdle,
-  } = useMutation<{}, ApiError, VerifyEmailPayload>({
+  const verifyEmail = useMutation<{}, ApiError, VerifyEmailPayload>({
     mutationFn: fetchers.verifyEmail,
-    meta: {
-      errorToast: false,
+    onSuccess: () => {
+      navigate("/dashboard", { replace: true });
     },
   });
 
   useEffect(() => {
     if (!emailVerificationToken) return;
 
-    verifyEmail(
-      { emailVerificationToken },
-      {
-        onSuccess: () => {
-          navigate("/dashboard", { replace: true });
-        },
-      },
-    );
+    verifyEmail.mutate({ emailVerificationToken });
   }, [verifyEmail, emailVerificationToken, navigate]);
 
   const handleResendVerificationEmail = async () => {
-    await resendVerificationEmail();
+    await resendVerificationEmail.mutateAsync();
     start();
   };
 
-  const showApiError = isVerifyEmailError;
+  const showApiError = verifyEmail.isError;
   const showUrlInvalidError = !emailVerificationToken;
   const hasError = showApiError || showUrlInvalidError;
-  const showLoading = (verifyingEmail || isVerifyEmailIdle) && !hasError;
+  const showLoading =
+    (verifyEmail.isPending || verifyEmail.isIdle) && !hasError;
 
   return (
     <div
-      className={clsx(
+      className={cn(
         "mt-[15dvh]",
         "space-y-8",
         "flex flex-col items-center justify-center",
       )}
     >
-      <div className={clsx("m-auto max-w-[500px]")}>
+      <div className={cn("m-auto max-w-[500px]")}>
         {showLoading && (
           <div className="flex flex-col items-center gap-4">
-            <div className={clsx("h-8 w-8")}>
+            <div className={cn("h-8 w-8")}>
               <LoadingIndicator
-                className={clsx("h-full w-full", "border-link")}
+                className={cn("h-full w-full", "border-link")}
               />
             </div>
             <h1 className="text-center text-2xl font-bold">
@@ -90,7 +79,7 @@ export default function EmailVerification() {
             <Button className="mt-4" variant="outline">
               Resend Email
             </Button>
-            <p className="mt-4 text-center text-gray-500">
+            <p className="mt-4 text-center text-muted-foreground">
               If you have not yet received an email, please check your Spam
               folder.
             </p>
@@ -120,7 +109,7 @@ export default function EmailVerification() {
                 )}
               </div>
             </Button>
-            <p className="mt-4 text-center text-gray-500">
+            <p className="mt-4 text-center text-muted-foreground">
               If you have not yet received an email, please check your Spam
               folder or contact support.
             </p>
