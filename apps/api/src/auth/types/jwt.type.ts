@@ -5,6 +5,8 @@ export type JwtPayload = {
   sub: string;
   provider: UserProviderType;
   isEmailVerified: boolean;
+  iss: 'dropfeedback.com';
+  jti?: string;
 };
 
 export type JwtPayloadWithRefreshToken = JwtPayload & { refreshToken: string };
