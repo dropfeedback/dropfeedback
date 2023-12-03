@@ -8,6 +8,14 @@ export function TeamInviteTable({
 }: {
   invites: ProjectMemberInvite[];
 }) {
+  if (invites.length === 0) {
+    return (
+      <div className="text-center py-3">
+        <p className="text-muted-foreground">No invites yet.</p>
+      </div>
+    );
+  }
+
   return (
     <Table>
       <TableBody>

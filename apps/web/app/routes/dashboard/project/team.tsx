@@ -1,7 +1,6 @@
 import { useParams } from "@remix-run/react";
 import { useQuery } from "@tanstack/react-query";
-import { InviteMemberModal } from "~/components/invite-member-modal";
-import { Button } from "~/components/ui/button";
+import { TeamInviteModal } from "~/components/team-invite-modal";
 import { Separator } from "~/components/ui/separator";
 import { TeamSkeleton } from "~/components/team-skeleton";
 import { TeamMemberTable } from "~/components/team-member-table";
@@ -29,9 +28,7 @@ export default function Teams() {
             Manage and invite team members.
           </p>
         </div>
-        <InviteMemberModal>
-          <Button>Invite Member</Button>
-        </InviteMemberModal>
+        <TeamInviteModal />
       </div>
       <Separator className="mb-6" />
       <div className="container">

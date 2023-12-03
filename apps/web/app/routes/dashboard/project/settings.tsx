@@ -184,7 +184,7 @@ export default function Settings() {
                       <Skeleton className="h-9 w-full" />
                     ) : (
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} autoComplete="false"/>
                       </FormControl>
                     )}
                   </div>
