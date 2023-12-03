@@ -19,7 +19,9 @@ import { config } from '../../config';
 
 export const VerificationEmail = ({ token }: { token: string }) => {
   const acceptVerificationLink =
-    config().WEB_URL + '/verification?emailVerificationToken=' + token;
+    config().WEB_URL +
+    '/dashboard/email-verification?emailVerificationToken=' +
+    token;
   return (
     <Html>
       <Head />
@@ -63,8 +65,8 @@ export const VerificationEmail = ({ token }: { token: string }) => {
             <Text className="text-[#666666] text-[12px] leading-[24px]">
               This invitation was sended from DropFeedBack service. If you were
               not expecting this invitation, you can ignore this email. If you
-              are concerned about your account's safety, please get in touch
-              with us.
+              are concerned about your account&apos;s safety, please get in
+              touch with us.
             </Text>
           </Container>
         </Body>

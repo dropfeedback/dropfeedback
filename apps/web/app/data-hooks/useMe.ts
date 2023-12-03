@@ -8,6 +8,9 @@ export const useMe = () => {
     queryFn: () => fetchers.me(),
     retry: false,
     refetchOnWindowFocus: false,
+    meta: {
+      errorToast: false,
+    },
   });
 
   return result;

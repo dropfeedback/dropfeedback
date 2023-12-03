@@ -1,5 +1,5 @@
 import { axiosInstance } from "~/lib/axios";
-import { type ProjectVariables } from "~/types";
+import { VerifyEmailPayload, type ProjectVariables } from "~/types";
 
 const getProjects = async () => {
   const { data } = await axiosInstance.get("/projects");
@@ -65,6 +65,21 @@ const signin = async (payload: { email: string; password: string }) => {
   return data;
 };
 
+const verifyEmail = async (payload: VerifyEmailPayload) => {
+  const { data } = await axiosInstance.post(
+    "/auth/local/verify-email",
+    payload,
+  );
+  return data;
+};
+
+const resendVerificationEmail = async () => {
+  const { data } = await axiosInstance.post(
+    "/auth/local/send-verification-email",
+  );
+  return data;
+};
+
 const logout = async () => {
   const { data } = await axiosInstance.post("/auth/logout");
   return data;
@@ -125,7 +140,7 @@ const cancelInvite = async (projectId: string, inviteId: string) => {
 const getProjectTeam = async (projectId: string) => {
   const { data } = await axiosInstance.get(`/projects/${projectId}/team`);
   return data;
-}
+};
 
 export const fetchers = {
   getProjects,
@@ -139,6 +154,8 @@ export const fetchers = {
   me,
   signup,
   signin,
+  verifyEmail,
+  resendVerificationEmail,
   logout,
   refreshToken,
   googleLogin,
