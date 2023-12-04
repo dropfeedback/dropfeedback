@@ -6,6 +6,8 @@ import {
   PersonIcon,
   SizeIcon,
 } from "@radix-ui/react-icons";
+import UAParser from "ua-parser-js";
+import { motion } from "framer-motion";
 import { cn, getRelativeTime } from "~/lib/utils";
 import { Button } from "./ui/button";
 import {
@@ -15,19 +17,17 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import { FeedbackCategory, type Feedback } from "~/types";
-import UAParser from "ua-parser-js";
 
 export function FeedbackCard({
   id,
   content,
   createdAt,
-  category,
   device,
   origin,
+  category,
   openedCardId,
   setOpenedCardId,
 }: Feedback & {
-  category: FeedbackCategory;
   openedCardId?: string;
   setOpenedCardId: (id: string) => void;
 }) {
@@ -36,35 +36,36 @@ export function FeedbackCard({
   const ua = uaParser.getResult();
 
   return (
-    <button
+    <motion.button
       aria-label="Open feedback card to see more details"
+      whileInView={{ opacity: 1, transition: { duration: 0.15 } }}
       className={cn(
-        "block w-full select-text border-b p-2 text-left transition-all last:border-none",
+        "block w-full select-text border-b p-2 text-left opacity-0 transition-all last:border-none",
         {
-          "my-4 cursor-auto rounded-md border-x border-t bg-accent/50": isOpen,
+          "cursor-auto bg-accent/70": isOpen,
         },
       )}
       onClick={() => setOpenedCardId(id)}
     >
       <div className="flex flex-col gap-2">
-        <div className="flex justify-between">
+        <div className="flex items-end justify-between">
+          <div className="text-xs text-muted-foreground">
+            {getRelativeTime(createdAt)}
+          </div>
           <div
             className={cn(
               "inline-flex select-none items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold",
               {
-                "border-orange-500 bg-orange-50 text-orange-500":
+                "border-amber bg-amber-foreground text-amber":
                   category === FeedbackCategory.idea,
-                "border-red-500 bg-red-50 text-red-500":
+                "border-red bg-red-foreground text-red":
                   category === FeedbackCategory.issue,
-                "border-slate-500 bg-slate-50 text-slate-500":
+                "border-gray bg-gray-foreground text-gray":
                   category === FeedbackCategory.other,
               },
             )}
           >
             {category}
-          </div>
-          <div className="text-xs text-muted-foreground">
-            {getRelativeTime(createdAt)}
           </div>
         </div>
         <p
@@ -76,7 +77,8 @@ export function FeedbackCard({
         </p>
         {isOpen && (
           <>
-            <div className="grid grid-cols-2 gap-y-2">
+            <div className="border-b-2 border-dashed" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2">
               <div className="inline-flex items-center gap-2">
                 <SessionIcon tooltipDescription="Reporter">
                   <PersonIcon className="text-muted-foreground" />
@@ -121,7 +123,7 @@ export function FeedbackCard({
           </>
         )}
       </div>
-    </button>
+    </motion.button>
   );
 }
 

@@ -45,8 +45,11 @@ export default function Feedbacks() {
   return (
     <div className="bg-background">
       <div className="container">
-        <div className="flex min-h-[calc(100vh-105px)] gap-8 pt-8">
+        <div className="flex min-h-[calc(100vh-105px)] flex-wrap gap-8 pt-8 md:flex-nowrap">
           <FeedbackFilter />
+          <h2 className="w-full text-center text-3xl tracking-wide md:hidden">
+            Feedback
+          </h2>
           <div className="flex w-full flex-col">
             {isPending ? (
               [...Array(5)].map((_, index) => (
@@ -55,7 +58,7 @@ export default function Feedbacks() {
             ) : (
               <>
                 <div className="mb-6">
-                  {data?.pages.map((page) => (
+                  {data.pages.map((page) => (
                     <Fragment key={page.nextCursor}>
                       {page.data.map((feedback, index) => (
                         <FeedbackCard

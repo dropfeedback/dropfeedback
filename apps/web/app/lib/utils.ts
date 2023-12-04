@@ -13,7 +13,7 @@ export const getRelativeTime = (date: string) => {
   if (diff === 0) {
     return dateFns.formatDistanceToNow(then, { addSuffix: true });
   } else if (diff === 1) {
-    return `Yesterday ${dateFns.format(then, "HH:mm")}`;
+    return `yesterday ${dateFns.format(then, "HH:mm")}`;
   } else {
     return dateFns.format(then, "dd.mm.yyyy");
   }

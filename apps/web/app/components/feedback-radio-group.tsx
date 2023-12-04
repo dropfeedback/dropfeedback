@@ -35,7 +35,7 @@ export function FeedbackRadioGroup() {
   const [selected, setSelected] = useState("all");
 
   return (
-    <div className="-ml-3.5 flex flex-col gap-1.5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-1.5">
       {categories.map((category) => (
         <Button
           key={category.value}
@@ -43,15 +43,15 @@ export function FeedbackRadioGroup() {
           className={cn(
             "justify-between px-1.5 font-semibold text-muted-foreground transition-colors duration-200 hover:text-muted-foreground",
             {
-              "border border-blue-500 bg-blue-50 text-blue-500 hover:bg-blue-50 hover:text-blue-500":
+              "bg-blue-foreground text-blue hover:bg-blue-foreground hover:text-blue":
                 selected === "all" && selected === category.value,
-              "border border-red-500 bg-red-50 text-red-500 hover:bg-red-50 hover:text-red-500":
+              "bg-red-foreground text-red hover:bg-red-foreground hover:text-red":
                 selected === "issue" && selected === category.value,
-              "border border-orange-500 bg-orange-50 text-orange-500 hover:bg-orange-50 hover:text-orange-500":
+              "bg-amber-foreground text-amber hover:bg-amber-foreground hover:text-amber":
                 selected === "idea" && selected === category.value,
-              "border border-slate-500 bg-slate-50 text-slate-500 hover:bg-slate-50 hover:text-slate-500":
+              "bg-gray-foreground text-gray hover:bg-gray-foreground hover:text-gray":
                 selected === "other" && selected === category.value,
-              "border border-stone-500 bg-stone-50 text-stone-500 hover:bg-stone-50 hover:text-stone-500":
+              "bg-stone-100  hover:bg-stone-100  dark:bg-stone-800 hover:dark:bg-stone-800":
                 selected === "archive" && selected === category.value,
             },
           )}
@@ -59,14 +59,14 @@ export function FeedbackRadioGroup() {
         >
           <div className="flex items-center">
             {category.value === "archive" ? (
-              <DotIcon className="h-6 w-6 text-stone-500" />
+              <DotIcon className="h-6 w-6" />
             ) : (
               <DotFilledIcon
                 className={cn("h-6 w-6", {
-                  "text-blue-500": category.value === "all",
-                  "text-red-500": category.value === "issue",
-                  "text-orange-500": category.value === "idea",
-                  "text-slate-500": category.value === "other",
+                  "text-blue": category.value === "all",
+                  "text-red": category.value === "issue",
+                  "text-amber": category.value === "idea",
+                  "text-gray": category.value === "other",
                 })}
               />
             )}
