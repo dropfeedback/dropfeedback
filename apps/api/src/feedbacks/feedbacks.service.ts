@@ -190,14 +190,21 @@ export class FeedbacksService {
   async setStatus({ dto, id }: { dto: SetStatusDto; id: string }) {
     const { status, projectId } = dto;
 
-    return this.prisma.feedback.update({
-      where: {
-        id,
-        projectId,
-      },
-      data: {
-        status,
-      },
-    });
+    try {
+      return await this.prisma.feedback.update({
+        where: {
+          id,
+          projectId,
+        },
+        data: {
+          status,
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Feedback not found');
+      }
+      throw new BadRequestException(error.message);
+    }
   }
 }
