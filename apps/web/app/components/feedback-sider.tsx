@@ -2,7 +2,6 @@ import { useContext, useEffect, useRef, useState } from "react";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
-  CopyIcon,
   MagnifyingGlassIcon,
 } from "@radix-ui/react-icons";
 import debounce from "lodash.debounce";
@@ -11,10 +10,12 @@ import { Button } from "./ui/button";
 import { FeedbackRadioGroup } from "./feedback-radio-group";
 import { FeedbackCollapsibleArea } from "./feedback-collapsible-area";
 import { FeedbackContext } from "./feedback-provider";
+import { CopyButton } from "./copy-button";
 
 export function FeedbackSider() {
   const [search, setSearch] = useState("");
-  const { setCurrentFilter, orderBy, setOrderBy } = useContext(FeedbackContext);
+  const { setCurrentFilter, orderBy, setOrderBy, projectId } =
+    useContext(FeedbackContext);
 
   const debouncedSearch = useRef(
     debounce((value) => {
@@ -70,17 +71,11 @@ export function FeedbackSider() {
           </FeedbackCollapsibleArea>
           <FeedbackCollapsibleArea title="Project ID">
             <div className="flex items-center gap-1.5">
-              <p className="text-xs text-muted-foreground">
-                57c19f23-fc16-4bbc-816e-ba26eaeade47
-              </p>
-              <Button
-                variant="ghost"
-                size="icon"
+              <p className="text-xs text-muted-foreground tracking-tight">{projectId}</p>
+              <CopyButton
                 className="h-4 w-4 text-muted-foreground"
-                title="Copy"
-              >
-                <CopyIcon />
-              </Button>
+                value={projectId}
+              />
             </div>
           </FeedbackCollapsibleArea>
         </div>
