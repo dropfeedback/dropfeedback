@@ -46,7 +46,7 @@ async function main() {
     },
   });
 
-  const createDateBetweenLastThreeDays = () => {
+  const getDateBetweenLastThreeDays = () => {
     const now = new Date();
     const threeDaysAgo = new Date();
     threeDaysAgo.setDate(now.getDate() - 3);
@@ -65,6 +65,7 @@ async function main() {
     const randomCategory = Math.floor(Math.random() * 3) + 1;
     const category =
       randomCategory === 1 ? 'idea' : randomCategory === 2 ? 'issue' : 'other';
+    const date = getDateBetweenLastThreeDays();
 
     await prisma.feedback.create({
       data: {
@@ -75,7 +76,8 @@ async function main() {
         content: faker.lorem.paragraph({ min: 1, max: 3 }),
         device: faker.internet.userAgent(),
         origin: faker.internet.domainSuffix(),
-        createdAt: createDateBetweenLastThreeDays(),
+        createdAt: date,
+        updatedAt: date,
       },
     });
   }

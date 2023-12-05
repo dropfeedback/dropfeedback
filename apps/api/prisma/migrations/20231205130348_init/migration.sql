@@ -85,6 +85,7 @@ CREATE TABLE "feedbacks" (
     "origin" VARCHAR(255),
     "device" VARCHAR(255),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "feedbacks_pkey" PRIMARY KEY ("id")
 );
