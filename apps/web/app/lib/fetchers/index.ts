@@ -102,11 +102,12 @@ const getFeedbacks = async (params: {
 };
 
 const updateFeedbackStatus = async (payload: {
+  id: string;
   projectId: string;
   status: FeedbackStatus;
 }) => {
-  const { data } = await axiosInstance.post(
-    `/feedbacks/${payload.projectId}`,
+  const { data } = await axiosInstance.patch(
+    `/feedbacks/${payload.id}/status`,
     payload,
   );
   return data;

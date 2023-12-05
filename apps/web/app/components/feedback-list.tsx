@@ -48,6 +48,7 @@ export function FeedbackList() {
     if (status === "success") {
       setCounts({
         all: data.pages[0].countAll,
+        countNew: data.pages[0].countNew,
         current: data.pages[0].countCurrent,
         issue: data.pages[0].countIssue,
         idea: data.pages[0].countIdea,

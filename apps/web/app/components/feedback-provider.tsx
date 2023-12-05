@@ -1,6 +1,6 @@
 import { useParams } from "@remix-run/react";
 import React, { createContext, useState } from "react";
-import { type OrderBy, type FeedbackFilter } from "~/types";
+import { type OrderBy, type FeedbackFilter, FeedbackStatus } from "~/types";
 
 type Count = {
   all?: number;
@@ -9,6 +9,7 @@ type Count = {
   idea?: number;
   other?: number;
   archive?: number;
+  countNew?: number;
 };
 
 type FeedbackContextType = {
@@ -25,6 +26,7 @@ export const FeedbackContext = createContext<FeedbackContextType>({
   projectId: "",
   currentFilter: {
     search: "",
+    status: FeedbackStatus.new,
   },
   setCurrentFilter: () => {},
   counts: {},
@@ -39,9 +41,12 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
 
   const [currentFilter, setCurrentFilter] = useState<FeedbackFilter>({
     search: "",
+    status: FeedbackStatus.new,
   });
   const [counts, setCounts] = useState<Count>({});
-  const [orderBy, setOrderBy] = useState<OrderBy>({ createdAt: "desc" });
+  const [orderBy, setOrderBy] = useState<OrderBy>({
+    createdAt: "desc",
+  });
 
   return (
     <FeedbackContext.Provider

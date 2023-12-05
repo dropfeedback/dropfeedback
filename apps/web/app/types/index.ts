@@ -62,8 +62,8 @@ export type FeedbackQueryType = {
 
 export type FeedbackFilter = {
   category?: FeedbackCategory;
-  status?: FeedbackStatus;
-  search?: string;
+  status: FeedbackStatus;
+  search: string;
 };
 
 export enum FeedbackCategory {

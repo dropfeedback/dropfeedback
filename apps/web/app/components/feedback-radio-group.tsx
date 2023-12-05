@@ -77,7 +77,7 @@ export function FeedbackRadioGroup() {
 
             setCurrentFilter((prev) => ({
               ...prev,
-              status: undefined,
+              status: FeedbackStatus.new,
               category: value === "all" ? undefined : FeedbackCategory[value],
             }));
           }}
@@ -104,7 +104,7 @@ export function FeedbackRadioGroup() {
               {category.value === "all"
                 ? currentFilter.search === undefined ||
                   currentFilter.search === ""
-                  ? counts.all
+                  ? counts.countNew
                   : (counts.idea ?? 0) +
                     (counts.issue ?? 0) +
                     (counts.other ?? 0)

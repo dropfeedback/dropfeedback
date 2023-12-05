@@ -8,7 +8,7 @@ import {
 } from "@radix-ui/react-icons";
 import UAParser from "ua-parser-js";
 import { motion } from "framer-motion";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { cn, getRelativeTime } from "~/lib/utils";
 import { Button } from "./ui/button";
 import {
@@ -22,7 +22,8 @@ import { fetchers } from "~/lib/fetchers";
 import { FeedbackCategory, type Feedback, FeedbackStatus } from "~/types";
 import { type ApiError } from "~/lib/axios";
 
-type ArchiveFeedbackVariables = {
+type UpdateFeedbackStatusVariables = {
+  id: string;
   projectId: string;
   status: FeedbackStatus;
 };
@@ -35,23 +36,30 @@ export function FeedbackCard({
   origin,
   category,
   openedCardId,
+  status,
   setOpenedCardId,
 }: Feedback & {
   openedCardId?: string;
   setOpenedCardId: (id: string) => void;
 }) {
+  const queryClient = useQueryClient();
   const { projectId } = useContext(FeedbackContext);
 
   const isOpen = openedCardId === id;
   const uaParser = new UAParser(device);
   const ua = uaParser.getResult();
 
-  const archiveFeedback = useMutation<
-    undefined,
+  const updateFeedbackStatus = useMutation<
+    Feedback,
     ApiError,
-    ArchiveFeedbackVariables
+    UpdateFeedbackStatusVariables
   >({
     mutationFn: (variables) => fetchers.updateFeedbackStatus(variables),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["feedbacks", projectId],
+      });
+    },
   });
 
   return (
@@ -138,15 +146,21 @@ export function FeedbackCard({
                 size="sm"
                 variant="outline"
                 onClick={() => {
-                  archiveFeedback.mutate({
+                  updateFeedbackStatus.mutate({
+                    id,
                     projectId,
-                    status: FeedbackStatus.archived,
+                    status:
+                      status === FeedbackStatus.archived
+                        ? FeedbackStatus.new
+                        : FeedbackStatus.archived,
                   });
                 }}
               >
-                Archive
+                {status === FeedbackStatus.archived ? "Unarchive" : "Archive"}
               </Button>
-              <Button size="sm">Reply</Button>
+              {status === FeedbackStatus.new && (
+                <Button size="sm">Reply</Button>
+              )}
             </div>
           </>
         )}
