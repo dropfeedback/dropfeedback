@@ -46,6 +46,13 @@ async function main() {
     },
   });
 
+  const createDateBetweenLastThreeDays = () => {
+    const now = new Date();
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(now.getDate() - 3);
+    return faker.date.between({ from: threeDaysAgo, to: now });
+  };
+
   for (let i = 1; i <= 120; i++) {
     const randomMeta = Math.floor(Math.random() * 5) + 1;
     // if random is equal to 2, add a metadata to the feedback
@@ -68,6 +75,7 @@ async function main() {
         content: faker.lorem.paragraph({ min: 1, max: 3 }),
         device: faker.internet.userAgent(),
         origin: faker.internet.domainSuffix(),
+        createdAt: createDateBetweenLastThreeDays(),
       },
     });
   }
