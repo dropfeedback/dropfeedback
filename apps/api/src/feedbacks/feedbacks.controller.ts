@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -62,7 +63,7 @@ export class FeedbacksController {
     return this.feedbackService.getById({ id: param.feedbackId });
   }
 
-  @Post('/:feedbackId')
+  @Patch('/:feedbackId/status')
   @HttpCode(HttpStatus.CREATED)
   setStatus(@Body() dto: SetStatusDto, @Param() param: SetStatusParam) {
     return this.feedbackService.setStatus({ dto, id: param.feedbackId });
