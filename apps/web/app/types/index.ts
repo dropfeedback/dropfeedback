@@ -60,6 +60,12 @@ export type FeedbackQueryType = {
   countOther: number;
 };
 
+export type FeedbackFilter = {
+  category?: FeedbackCategory;
+  status?: FeedbackStatus;
+  search?: string;
+};
+
 export enum FeedbackCategory {
   other = "other",
   issue = "issue",
@@ -69,6 +75,10 @@ export enum FeedbackCategory {
 export enum FeedbackStatus {
   new = "new",
   archived = "archived",
+}
+
+export interface OrderBy {
+  [key: string]: "asc" | "desc";
 }
 
 export type ProjectInvite = {

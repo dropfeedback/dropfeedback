@@ -9,14 +9,22 @@ export function cn(...inputs: ClassValue[]) {
 export const getRelativeTime = (date: string) => {
   const now = new Date();
   const then = new Date(date);
+
   const diff = dateFns.differenceInDays(now, then);
-  if (diff === 0) {
-    return dateFns.formatDistanceToNow(then, { addSuffix: true });
-  } else if (diff === 1) {
-    return `yesterday ${dateFns.format(then, "HH:mm")}`;
-  } else {
-    return dateFns.format(then, "dd.mm.yyyy");
-  }
+  const isToday = dateFns.isToday(then);
+
+  if (diff === 0 && isToday)
+    return `${dateFns.format(
+      then,
+      "HH:mm",
+    )} (${dateFns.formatDistanceToNowStrict(then, { addSuffix: true })})`;
+
+  if (diff === 0)
+    return `${dateFns.format(
+      then,
+      "PP HH:mm",
+    )} (${dateFns.formatDistanceToNowStrict(then, { addSuffix: true })})`;
+  return `${dateFns.format(then, "PP HH:mm")}`;
 };
 
 export const getNameInitials = (name?: string, count = 2) => {

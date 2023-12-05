@@ -1,17 +1,32 @@
-import { useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
   CopyIcon,
   MagnifyingGlassIcon,
 } from "@radix-ui/react-icons";
+import debounce from "lodash.debounce";
 import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 import { FeedbackRadioGroup } from "./feedback-radio-group";
 import { FeedbackCollapsibleArea } from "./feedback-collapsible-area";
-import { Button } from "./ui/button";
+import { FeedbackContext } from "./feedback-provider";
 
-export function FeedbackFilter() {
-  const [orderBy, setOrderBy] = useState("desc");
+export function FeedbackSider() {
+  const [search, setSearch] = useState("");
+  const { setCurrentFilter, orderBy, setOrderBy } = useContext(FeedbackContext);
+
+  const debouncedSearch = useRef(
+    debounce((value) => {
+      setCurrentFilter((prev) => ({ ...prev, search: value }));
+    }, 300),
+  ).current;
+
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
 
   return (
     <div className="relative w-full shrink-0 border-r-0 md:w-[280px] md:border-r">
@@ -20,7 +35,14 @@ export function FeedbackFilter() {
           <FeedbackCollapsibleArea title="Filter">
             <div className="space-y-4 pr-0 md:pr-4">
               <div className="relative">
-                <Input placeholder="Search feedbacks" />
+                <Input
+                  placeholder="Search feedbacks"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    debouncedSearch(e.target.value);
+                  }}
+                />
                 <MagnifyingGlassIcon className="absolute right-2 top-1/2 -translate-y-1/2 transform" />
               </div>
               <FeedbackRadioGroup />
@@ -30,16 +52,16 @@ export function FeedbackFilter() {
             <div className="grid grid-cols-2 gap-1.5 pr-0 md:pr-4">
               <Button
                 className="px-2 text-muted-foreground hover:text-muted-foreground"
-                variant={orderBy === "desc" ? "outline" : "ghost"}
-                onClick={() => setOrderBy("desc")}
+                variant={orderBy.createdAt === "desc" ? "outline" : "ghost"}
+                onClick={() => setOrderBy({ createdAt: "desc" })}
               >
                 <ArrowDownIcon className="mr-1 h-4 w-4" />
                 Newest first
               </Button>
               <Button
                 className="px-2 text-muted-foreground hover:text-muted-foreground"
-                variant={orderBy === "asc" ? "outline" : "ghost"}
-                onClick={() => setOrderBy("asc")}
+                variant={orderBy.createdAt === "asc" ? "outline" : "ghost"}
+                onClick={() => setOrderBy({ createdAt: "asc" })}
               >
                 <ArrowUpIcon className="mr-1 h-4 w-4" />
                 Oldest first

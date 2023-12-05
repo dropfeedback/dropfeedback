@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { useContext, type ReactNode } from "react";
 import {
   DesktopIcon,
   FileIcon,
@@ -8,6 +8,7 @@ import {
 } from "@radix-ui/react-icons";
 import UAParser from "ua-parser-js";
 import { motion } from "framer-motion";
+import { useMutation } from "@tanstack/react-query";
 import { cn, getRelativeTime } from "~/lib/utils";
 import { Button } from "./ui/button";
 import {
@@ -16,7 +17,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { FeedbackCategory, type Feedback } from "~/types";
+import { FeedbackContext } from "./feedback-provider";
+import { fetchers } from "~/lib/fetchers";
+import { FeedbackCategory, type Feedback, FeedbackStatus } from "~/types";
+import { type ApiError } from "~/lib/axios";
+
+type ArchiveFeedbackVariables = {
+  projectId: string;
+  status: FeedbackStatus;
+};
 
 export function FeedbackCard({
   id,
@@ -31,16 +40,26 @@ export function FeedbackCard({
   openedCardId?: string;
   setOpenedCardId: (id: string) => void;
 }) {
+  const { projectId } = useContext(FeedbackContext);
+
   const isOpen = openedCardId === id;
   const uaParser = new UAParser(device);
   const ua = uaParser.getResult();
 
+  const archiveFeedback = useMutation<
+    undefined,
+    ApiError,
+    ArchiveFeedbackVariables
+  >({
+    mutationFn: (variables) => fetchers.updateFeedbackStatus(variables),
+  });
+
   return (
-    <motion.button
+    <motion.article
       aria-label="Open feedback card to see more details"
-      whileInView={{ opacity: 1, transition: { duration: 0.15 } }}
+      whileInView={{ opacity: 1, transition: { duration: 0.2 } }}
       className={cn(
-        "block w-full select-text border-b p-2 text-left opacity-0 transition-all last:border-none",
+        "block w-full cursor-pointer select-text border-b p-2 text-left opacity-0 transition-all last:border-none",
         {
           "cursor-auto bg-accent/70": isOpen,
         },
@@ -78,7 +97,7 @@ export function FeedbackCard({
         {isOpen && (
           <>
             <div className="border-b-2 border-dashed" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2">
+            <div className="grid grid-cols-1 gap-y-2 md:grid-cols-2">
               <div className="inline-flex items-center gap-2">
                 <SessionIcon tooltipDescription="Reporter">
                   <PersonIcon className="text-muted-foreground" />
@@ -115,7 +134,16 @@ export function FeedbackCard({
               </div>
             </div>
             <div className="flex justify-end gap-2">
-              <Button size="sm" variant="outline">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  archiveFeedback.mutate({
+                    projectId,
+                    status: FeedbackStatus.archived,
+                  });
+                }}
+              >
                 Archive
               </Button>
               <Button size="sm">Reply</Button>
@@ -123,7 +151,7 @@ export function FeedbackCard({
           </>
         )}
       </div>
-    </motion.button>
+    </motion.article>
   );
 }
 

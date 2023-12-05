@@ -1,41 +1,43 @@
-import { useState } from "react";
-import { Button } from "./ui/button";
-import { cn } from "~/lib/utils";
+import { useContext } from "react";
 import { DotFilledIcon, DotIcon } from "@radix-ui/react-icons";
+import { Button } from "./ui/button";
+import { FeedbackContext } from "./feedback-provider";
+import { Skeleton } from "./ui/skeleton";
+import { cn } from "~/lib/utils";
+import { FeedbackCategory, FeedbackStatus } from "~/types";
 
-const categories = [
+const categories: {
+  label: string;
+  value: "all" | "issue" | "idea" | "other" | "archive";
+}[] = [
   {
     label: "All",
     value: "all",
-    count: 42,
   },
   {
     label: "Issue",
     value: "issue",
-    count: 12,
   },
   {
     label: "Idea",
     value: "idea",
-    count: 20,
   },
   {
     label: "Other",
     value: "other",
-    count: 10,
   },
   {
     label: "Archive",
     value: "archive",
-    count: 0,
   },
 ];
 
 export function FeedbackRadioGroup() {
-  const [selected, setSelected] = useState("all");
+  const { counts, currentFilter, setCurrentFilter } =
+    useContext(FeedbackContext);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-1.5">
+    <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 md:grid-cols-1">
       {categories.map((category) => (
         <Button
           key={category.value}
@@ -44,18 +46,41 @@ export function FeedbackRadioGroup() {
             "justify-between px-1.5 font-semibold text-muted-foreground transition-colors duration-200 hover:text-muted-foreground",
             {
               "bg-blue-foreground text-blue hover:bg-blue-foreground hover:text-blue":
-                selected === "all" && selected === category.value,
+                currentFilter.category === undefined &&
+                category.value === "all" &&
+                currentFilter.status !== "archived",
               "bg-red-foreground text-red hover:bg-red-foreground hover:text-red":
-                selected === "issue" && selected === category.value,
+                currentFilter.category === "issue" &&
+                currentFilter.category === category.value,
               "bg-amber-foreground text-amber hover:bg-amber-foreground hover:text-amber":
-                selected === "idea" && selected === category.value,
+                currentFilter.category === "idea" &&
+                currentFilter.category === category.value,
               "bg-gray-foreground text-gray hover:bg-gray-foreground hover:text-gray":
-                selected === "other" && selected === category.value,
+                currentFilter.category === "other" &&
+                currentFilter.category === category.value,
               "bg-stone-100  hover:bg-stone-100  dark:bg-stone-800 hover:dark:bg-stone-800":
-                selected === "archive" && selected === category.value,
+                currentFilter.status === "archived" &&
+                category.value === "archive",
             },
           )}
-          onClick={() => setSelected(category.value)}
+          onClick={() => {
+            const value = category.value;
+
+            if (value === "archive") {
+              setCurrentFilter((prev) => ({
+                ...prev,
+                category: undefined,
+                status: FeedbackStatus.archived,
+              }));
+              return;
+            }
+
+            setCurrentFilter((prev) => ({
+              ...prev,
+              status: undefined,
+              category: value === "all" ? undefined : FeedbackCategory[value],
+            }));
+          }}
         >
           <div className="flex items-center">
             {category.value === "archive" ? (
@@ -72,7 +97,20 @@ export function FeedbackRadioGroup() {
             )}
             {category.label}
           </div>
-          <div className="tabular-nums">{category.count}</div>
+          {counts[category.value] === undefined ? (
+            <Skeleton className="h-6 w-8" />
+          ) : (
+            <div className="tabular-nums">
+              {category.value === "all"
+                ? currentFilter.search === undefined ||
+                  currentFilter.search === ""
+                  ? counts.all
+                  : (counts.idea ?? 0) +
+                    (counts.issue ?? 0) +
+                    (counts.other ?? 0)
+                : counts[category.value]}
+            </div>
+          )}
         </Button>
       ))}
     </div>
