@@ -48,7 +48,7 @@ export function DashboardHeader() {
           <Link to="/dashboard">
             <div className="flex items-center gap-2">
               <ChatBubbleIcon className="h-5 w-5" />
-              <span className="text-lg font-bold tracking-tight">
+              <span className="hidden text-lg font-bold tracking-tight sm:block">
                 DropFeedback
               </span>
             </div>
@@ -63,7 +63,7 @@ export function DashboardHeader() {
         </div>
       </div>
       <div className="flex items-center justify-end gap-2">
-        <Button variant="outline" className="font-normal text-muted-foreground hidden md:block">
+        <Button variant="outline" className="font-normal text-muted-foreground hidden sm:block">
           Feedback
         </Button>
         <Button

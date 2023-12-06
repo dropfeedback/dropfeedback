@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "@remix-run/react";
 import { useForm } from "react-hook-form";
-import { motion } from "framer-motion";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { CopyIcon, CheckIcon } from "@radix-ui/react-icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +27,7 @@ import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
 import { LoadingIndicator } from "~/components/loading-indicator";
-import { useCopyToClipboard } from "~/lib/hooks/useCopyToClipboard";
+import { CopyButton } from "~/components/copy-button";
 import { fetchers } from "~/lib/fetchers";
 import { type ApiError } from "~/lib/axios";
 import { type Project } from "~/types";
@@ -104,35 +102,17 @@ export default function Settings() {
     }
   }, [deleteMutation.isSuccess, navigate]);
 
-  const [copy] = useCopyToClipboard();
-  const [isCopied, setIsCopied] = useState(false);
-
   const onSubmit = (variables: Project) => {
     updateMutation.mutate({ name: variables.name.trim() });
   };
 
-  const copyProjectId = () => {
-    copy(form.getValues("id"));
-    setIsCopied(true);
-  };
-
-  useEffect(() => {
-    if (isCopied) {
-      const timer = setTimeout(() => {
-        setIsCopied(false);
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isCopied]);
-
   return (
-    <div className="h-full space-y-6 bg-background">
-      <div className="container p-10 pb-4">
+    <>
+      <div className="container py-10 pb-4">
         <h2 className="text-3xl tracking-wide">Project Settings</h2>
       </div>
       <Separator className="my-6" />
-      <div className="container">
+      <div className="container mb-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
@@ -148,24 +128,10 @@ export default function Settings() {
                     <FormControl>
                       <Input {...field} disabled />
                     </FormControl>
-                    <Button
-                      variant="ghost"
-                      size="icon"
+                    <CopyButton
                       className="absolute right-0 top-0"
-                      type="button"
-                      onClick={copyProjectId}
-                    >
-                      {isCopied ? (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                        >
-                          <CheckIcon />
-                        </motion.div>
-                      ) : (
-                        <CopyIcon />
-                      )}
-                    </Button>
+                      value={projectId}
+                    />
                   </div>
                 </FormItem>
               )}
@@ -184,7 +150,7 @@ export default function Settings() {
                       <Skeleton className="h-9 w-full" />
                     ) : (
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} autoComplete="false" />
                       </FormControl>
                     )}
                   </div>
@@ -231,6 +197,6 @@ export default function Settings() {
           </AlertDialog>
         </div>
       </div>
-    </div>
+    </>
   );
 }
