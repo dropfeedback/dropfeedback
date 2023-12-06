@@ -65,7 +65,7 @@ export function FeedbackList() {
           <div className="mb-6">
             {data.pages.map((page) => (
               <Fragment key={page.nextCursor}>
-                {page.data.map((feedback, index) => (
+                {page.data.map((feedback) => (
                   <FeedbackCard
                     key={feedback.id}
                     openedCardId={openedCardId}

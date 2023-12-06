@@ -7,10 +7,7 @@ import {
 } from "@radix-ui/react-icons";
 import UAParser from "ua-parser-js";
 import { motion } from "framer-motion";
-import {
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { cn, getRelativeTime } from "~/lib/utils";
 import { Button } from "./ui/button";
 import {
