@@ -8,6 +8,7 @@ export class SetStatusDto
       Feedback,
       | 'id'
       | 'createdAt'
+      | 'updatedAt'
       | 'userId'
       | 'device'
       | 'origin'
