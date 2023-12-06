@@ -1,41 +1,43 @@
-import { useState } from "react";
-import { Button } from "./ui/button";
-import { cn } from "~/lib/utils";
 import { DotFilledIcon, DotIcon } from "@radix-ui/react-icons";
+import { Button } from "./ui/button";
+import { useFeedbackContext } from "./feedback-provider";
+import { Skeleton } from "./ui/skeleton";
+import { cn } from "~/lib/utils";
+import { FeedbackCategory, FeedbackStatus } from "~/types";
 
-const categories = [
+const categories: {
+  label: string;
+  value: "all" | "issue" | "idea" | "other" | "archive";
+}[] = [
   {
     label: "All",
     value: "all",
-    count: 42,
   },
   {
     label: "Issue",
     value: "issue",
-    count: 12,
   },
   {
     label: "Idea",
     value: "idea",
-    count: 20,
   },
   {
     label: "Other",
     value: "other",
-    count: 10,
   },
   {
     label: "Archive",
     value: "archive",
-    count: 0,
   },
 ];
 
 export function FeedbackRadioGroup() {
-  const [selected, setSelected] = useState("all");
+  const { counts, filtersAndSorters, setFiltersAndSorters } =
+    useFeedbackContext();
+  const { filters } = filtersAndSorters;
 
   return (
-    <div className="-ml-3.5 flex flex-col gap-1.5">
+    <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 md:grid-cols-1">
       {categories.map((category) => (
         <Button
           key={category.value}
@@ -43,36 +45,80 @@ export function FeedbackRadioGroup() {
           className={cn(
             "justify-between px-1.5 font-semibold text-muted-foreground transition-colors duration-200 hover:text-muted-foreground",
             {
-              "border border-blue-500 bg-blue-50 text-blue-500 hover:bg-blue-50 hover:text-blue-500":
-                selected === "all" && selected === category.value,
-              "border border-red-500 bg-red-50 text-red-500 hover:bg-red-50 hover:text-red-500":
-                selected === "issue" && selected === category.value,
-              "border border-orange-500 bg-orange-50 text-orange-500 hover:bg-orange-50 hover:text-orange-500":
-                selected === "idea" && selected === category.value,
-              "border border-slate-500 bg-slate-50 text-slate-500 hover:bg-slate-50 hover:text-slate-500":
-                selected === "other" && selected === category.value,
-              "border border-stone-500 bg-stone-50 text-stone-500 hover:bg-stone-50 hover:text-stone-500":
-                selected === "archive" && selected === category.value,
+              "bg-blue-foreground text-blue hover:bg-blue-foreground hover:text-blue":
+                filters.category === undefined &&
+                category.value === "all" &&
+                filters.status !== "archived",
+              "bg-red-foreground text-red hover:bg-red-foreground hover:text-red":
+                filters.category === "issue" &&
+                filters.category === category.value,
+              "bg-amber-foreground text-amber hover:bg-amber-foreground hover:text-amber":
+                filters.category === "idea" &&
+                filters.category === category.value,
+              "bg-gray-foreground text-gray hover:bg-gray-foreground hover:text-gray":
+                filters.category === "other" &&
+                filters.category === category.value,
+              "bg-stone-100  hover:bg-stone-100  dark:bg-stone-800 hover:dark:bg-stone-800":
+                filters.status === "archived" && category.value === "archive",
             },
           )}
-          onClick={() => setSelected(category.value)}
+          onClick={() => {
+            const value = category.value;
+
+            if (value === "archive") {
+              setFiltersAndSorters((prev) => ({
+                sorters: {
+                  updatedAt: Object.values(prev.sorters)[0],
+                },
+                filters: {
+                  ...prev.filters,
+                  category: undefined,
+                  status: FeedbackStatus.archived,
+                },
+              }));
+              return;
+            }
+
+            setFiltersAndSorters((prev) => ({
+              sorters: {
+                createdAt: Object.values(prev.sorters)[0],
+              },
+              filters: {
+                ...prev.filters,
+                status: FeedbackStatus.new,
+                category: value === "all" ? undefined : FeedbackCategory[value],
+              },
+            }));
+          }}
         >
           <div className="flex items-center">
             {category.value === "archive" ? (
-              <DotIcon className="h-6 w-6 text-stone-500" />
+              <DotIcon className="h-6 w-6" />
             ) : (
               <DotFilledIcon
                 className={cn("h-6 w-6", {
-                  "text-blue-500": category.value === "all",
-                  "text-red-500": category.value === "issue",
-                  "text-orange-500": category.value === "idea",
-                  "text-slate-500": category.value === "other",
+                  "text-blue": category.value === "all",
+                  "text-red": category.value === "issue",
+                  "text-amber": category.value === "idea",
+                  "text-gray": category.value === "other",
                 })}
               />
             )}
             {category.label}
           </div>
-          <div className="tabular-nums">{category.count}</div>
+          {counts[category.value] === undefined ? (
+            <Skeleton className="h-6 w-8" />
+          ) : (
+            <div className="tabular-nums">
+              {category.value === "all"
+                ? filters.search === undefined || filters.search === ""
+                  ? counts.countNew
+                  : (counts.idea ?? 0) +
+                    (counts.issue ?? 0) +
+                    (counts.other ?? 0)
+                : counts[category.value]}
+            </div>
+          )}
         </Button>
       ))}
     </div>

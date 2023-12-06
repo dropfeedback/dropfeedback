@@ -20,18 +20,14 @@ import {
 } from "./ui/dropdown-menu";
 import { LoadingIndicator } from "./loading-indicator";
 import { fetchers } from "~/lib/fetchers";
-import { type ProjectInvite } from "~/types";
 import { type ApiError } from "~/lib/axios";
+import { type ProjectMemberInvite } from "~/types";
 
 type CancelInviteVariables = {
   inviteId: string;
 };
 
-export function TeamInviteActions({
-  invite,
-}: {
-  invite: Omit<ProjectInvite, "projectId" | "projectName">;
-}) {
+export function TeamInviteActions({ invite }: { invite: ProjectMemberInvite }) {
   const { projectId } = useParams<{ projectId: string }>();
   if (!projectId) throw new Error("Project ID is required");
 

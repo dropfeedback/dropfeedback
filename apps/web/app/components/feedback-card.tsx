@@ -1,4 +1,3 @@
-import { type ReactNode } from "react";
 import {
   DesktopIcon,
   FileIcon,
@@ -6,6 +5,9 @@ import {
   PersonIcon,
   SizeIcon,
 } from "@radix-ui/react-icons";
+import UAParser from "ua-parser-js";
+import { motion } from "framer-motion";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { cn, getRelativeTime } from "~/lib/utils";
 import { Button } from "./ui/button";
 import {
@@ -14,57 +16,82 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { FeedbackCategory, type Feedback } from "~/types";
-import UAParser from "ua-parser-js";
+import { fetchers } from "~/lib/fetchers";
+import { useFeedbackContext } from "./feedback-provider";
+import { FeedbackCategory, type Feedback, FeedbackStatus } from "~/types";
+import { type ApiError } from "~/lib/axios";
+
+type UpdateFeedbackStatusVariables = {
+  id: string;
+  projectId: string;
+  status: FeedbackStatus;
+};
 
 export function FeedbackCard({
   id,
   content,
   createdAt,
-  category,
   device,
   origin,
+  category,
   openedCardId,
+  status,
   setOpenedCardId,
 }: Feedback & {
-  category: FeedbackCategory;
   openedCardId?: string;
   setOpenedCardId: (id: string) => void;
 }) {
+  const queryClient = useQueryClient();
+  const { projectId, filtersAndSorters } = useFeedbackContext();
+
   const isOpen = openedCardId === id;
   const uaParser = new UAParser(device);
   const ua = uaParser.getResult();
 
+  const updateFeedbackStatus = useMutation<
+    Feedback,
+    ApiError,
+    UpdateFeedbackStatusVariables
+  >({
+    mutationFn: (variables) => fetchers.updateFeedbackStatus(variables),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["feedbacks", projectId, { ...filtersAndSorters }],
+      });
+    },
+  });
+
   return (
-    <button
+    <motion.article
       aria-label="Open feedback card to see more details"
+      whileInView={{ opacity: 1, transition: { duration: 0.2 } }}
       className={cn(
-        "block w-full select-text border-b p-2 text-left transition-all last:border-none",
+        "block w-full cursor-pointer select-text border-b p-2 text-left opacity-0 transition-all last:border-none",
         {
-          "my-4 cursor-auto rounded-md border-x border-t bg-accent/50": isOpen,
+          "cursor-auto bg-accent/70": isOpen,
         },
       )}
       onClick={() => setOpenedCardId(id)}
     >
       <div className="flex flex-col gap-2">
-        <div className="flex justify-between">
+        <div className="flex items-end justify-between">
+          <div className="text-xs text-muted-foreground">
+            {getRelativeTime(createdAt)}
+          </div>
           <div
             className={cn(
               "inline-flex select-none items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold",
               {
-                "border-orange-500 bg-orange-50 text-orange-500":
+                "border-amber bg-amber-foreground text-amber":
                   category === FeedbackCategory.idea,
-                "border-red-500 bg-red-50 text-red-500":
+                "border-red bg-red-foreground text-red":
                   category === FeedbackCategory.issue,
-                "border-slate-500 bg-slate-50 text-slate-500":
+                "border-gray bg-gray-foreground text-gray":
                   category === FeedbackCategory.other,
               },
             )}
           >
             {category}
-          </div>
-          <div className="text-xs text-muted-foreground">
-            {getRelativeTime(createdAt)}
           </div>
         </div>
         <p
@@ -76,7 +103,8 @@ export function FeedbackCard({
         </p>
         {isOpen && (
           <>
-            <div className="grid grid-cols-2 gap-y-2">
+            <div className="border-b-2 border-dashed" />
+            <div className="grid grid-cols-1 gap-y-2 md:grid-cols-2">
               <div className="inline-flex items-center gap-2">
                 <SessionIcon tooltipDescription="Reporter">
                   <PersonIcon className="text-muted-foreground" />
@@ -113,20 +141,35 @@ export function FeedbackCard({
               </div>
             </div>
             <div className="flex justify-end gap-2">
-              <Button size="sm" variant="outline">
-                Archive
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  updateFeedbackStatus.mutate({
+                    id,
+                    projectId,
+                    status:
+                      status === FeedbackStatus.archived
+                        ? FeedbackStatus.new
+                        : FeedbackStatus.archived,
+                  });
+                }}
+              >
+                {status === FeedbackStatus.archived ? "Unarchive" : "Archive"}
               </Button>
-              <Button size="sm">Reply</Button>
+              {status === FeedbackStatus.new && (
+                <Button size="sm">Reply</Button>
+              )}
             </div>
           </>
         )}
       </div>
-    </button>
+    </motion.article>
   );
 }
 
 const SessionIcon = (props: {
-  children: ReactNode;
+  children: React.ReactNode;
   tooltipDescription: string;
 }) => (
   <TooltipProvider>

@@ -80,11 +80,13 @@ export class AuthController {
       httpOnly: true,
       sameSite: 'none',
       secure: true,
+      path: '/',
     });
     res.clearCookie('refreshToken', {
       httpOnly: true,
       sameSite: 'none',
       secure: true,
+      path: '/',
     });
 
     return this.authService.logout(user.sub);
@@ -149,6 +151,7 @@ export class AuthController {
       httpOnly: true,
       sameSite: 'none',
       secure: true,
+      path: '/',
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
     });
 
@@ -156,6 +159,7 @@ export class AuthController {
       httpOnly: true,
       sameSite: 'none',
       secure: true,
+      path: '/',
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
     });
   }
