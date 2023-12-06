@@ -70,8 +70,9 @@ export function ProjectHeader() {
             variant="ghost"
             size="default"
             asChild
-            className={cn("relative font-normal", {
-              "active-tab text-primary": activeRoute.key === route.key,
+            className={cn("tab-button relative font-medium", {
+              "active-tab-button font-semibold text-primary":
+                activeRoute.key === route.key,
             })}
           >
             <Link to={route.path.replace(":projectId", params.projectId!)}>

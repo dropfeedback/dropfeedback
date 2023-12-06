@@ -108,6 +108,26 @@
   .container {
     @apply px-4 md:px-6;
   }
+
+  .tab-button::after {
+    content: "";
+    height: 100%;
+    left: 50%;
+    min-height: 48px;
+    position: absolute;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 100%;
+  }
+
+  .active-tab-button::before {
+    @apply absolute block h-0;
+    left: 9px;
+    right: 9px;
+    bottom: -9px;
+    border-bottom: 2px solid;
+    content: "";
+  }
 }
 
 @layer base {
@@ -117,13 +137,4 @@
   body {
     @apply bg-background text-sm text-primary;
   }
-}
-
-.active-tab::before {
-  @apply absolute block h-0;
-  left: 9px;
-  right: 9px;
-  bottom: -9px;
-  border-bottom: 2px solid;
-  content: "";
 }
