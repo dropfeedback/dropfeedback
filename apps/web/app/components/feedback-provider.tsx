@@ -1,10 +1,9 @@
 import { useParams } from "@remix-run/react";
-import React, { createContext, useState } from "react";
-import { type OrderBy, type FeedbackFilter, FeedbackStatus } from "~/types";
+import React, { createContext, useContext, useState } from "react";
+import { FeedbackStatus, type FiltersAndSorters } from "~/types";
 
 type Count = {
   all?: number;
-  current?: number;
   issue?: number;
   idea?: number;
   other?: number;
@@ -14,53 +13,54 @@ type Count = {
 
 type FeedbackContextType = {
   projectId: string;
-  currentFilter: FeedbackFilter;
-  setCurrentFilter: React.Dispatch<React.SetStateAction<FeedbackFilter>>;
+  filtersAndSorters: FiltersAndSorters;
+  setFiltersAndSorters: React.Dispatch<React.SetStateAction<FiltersAndSorters>>;
   counts: Count;
   setCounts: React.Dispatch<React.SetStateAction<Count>>;
-  orderBy: OrderBy;
-  setOrderBy: React.Dispatch<React.SetStateAction<OrderBy>>;
+};
+
+const defaultFiltersAndSorters: FiltersAndSorters = {
+  filters: { search: "", status: FeedbackStatus.new },
+  sorters: { createdAt: "desc" },
 };
 
 export const FeedbackContext = createContext<FeedbackContextType>({
   projectId: "",
-  currentFilter: {
-    search: "",
-    status: FeedbackStatus.new,
-  },
-  setCurrentFilter: () => {},
+  filtersAndSorters: defaultFiltersAndSorters,
+  setFiltersAndSorters: () => {},
   counts: {},
   setCounts: () => {},
-  orderBy: { createdAt: "desc" },
-  setOrderBy: () => {},
 });
 
 export function FeedbackProvider({ children }: { children: React.ReactNode }) {
   const { projectId } = useParams<{ projectId: string }>();
   if (!projectId) throw new Error("Project ID is required");
 
-  const [currentFilter, setCurrentFilter] = useState<FeedbackFilter>({
-    search: "",
-    status: FeedbackStatus.new,
-  });
   const [counts, setCounts] = useState<Count>({});
-  const [orderBy, setOrderBy] = useState<OrderBy>({
-    createdAt: "desc",
-  });
+
+  const [filtersAndSorters, setFiltersAndSorters] = useState<FiltersAndSorters>(
+    defaultFiltersAndSorters,
+  );
 
   return (
     <FeedbackContext.Provider
       value={{
         projectId,
-        currentFilter,
-        setCurrentFilter,
+        filtersAndSorters,
+        setFiltersAndSorters,
         counts,
         setCounts,
-        orderBy,
-        setOrderBy,
       }}
     >
       {children}
     </FeedbackContext.Provider>
   );
+}
+
+export function useFeedbackContext() {
+  const context = useContext(FeedbackContext);
+  if (!context) {
+    throw new Error("useFeedbackContext must be used within FeedbackProvider");
+  }
+  return context;
 }

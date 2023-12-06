@@ -1,24 +1,23 @@
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { FeedbackCardSkeleton } from "./feedback-card-skeleton";
 import { FeedbackCard } from "./feedback-card";
 import { LoadingIndicator } from "./loading-indicator";
+import { useFeedbackContext } from "./feedback-provider";
 import { fetchers } from "~/lib/fetchers";
 import { type FeedbackQueryType } from "~/types";
-import { FeedbackContext } from "./feedback-provider";
 
 const PAGE_SIZE = 10;
 
 export function FeedbackList() {
   const { ref, inView } = useInView();
   const [openedCardId, setOpenedCardId] = useState("");
-  const { projectId, currentFilter, setCounts, counts, orderBy } =
-    useContext(FeedbackContext);
+  const { projectId, filtersAndSorters, setCounts } = useFeedbackContext();
 
-  const { data, isPending, isError, fetchNextPage, hasNextPage, status } =
+  const { data, isPending, isError, isStale, fetchNextPage, hasNextPage, status } =
     useInfiniteQuery<FeedbackQueryType>({
-      queryKey: ["feedbacks", projectId, { ...currentFilter, ...orderBy }],
+      queryKey: ["feedbacks", projectId, { ...filtersAndSorters }],
       queryFn: ({ pageParam }) => {
         const cursor = (pageParam as string) ?? "";
 
@@ -26,10 +25,8 @@ export function FeedbackList() {
           projectId: projectId!,
           cursor,
           take: PAGE_SIZE,
-          category: currentFilter.category,
-          search: currentFilter.search ?? "",
-          status: currentFilter.status,
-          orderBy,
+          ...filtersAndSorters.filters,
+          orderBy: filtersAndSorters.sorters,
         });
       },
       enabled: !!projectId,
@@ -45,18 +42,17 @@ export function FeedbackList() {
   }, [fetchNextPage, inView]);
 
   useEffect(() => {
-    if (status === "success") {
+    if (status === "success" && !isStale) {
       setCounts({
-        all: data.pages[0].countAll,
-        countNew: data.pages[0].countNew,
-        current: data.pages[0].countCurrent,
-        issue: data.pages[0].countIssue,
-        idea: data.pages[0].countIdea,
-        other: data.pages[0].countOther,
-        archive: data.pages[0].countArchived,
+        all: data.pages[data.pages.length - 1].countAll,
+        countNew: data.pages[data.pages.length - 1].countNew,
+        issue: data.pages[data.pages.length - 1].countIssue,
+        idea: data.pages[data.pages.length - 1].countIdea,
+        other: data.pages[data.pages.length - 1].countOther,
+        archive: data.pages[data.pages.length - 1].countArchived,
       });
     }
-  }, [status, data, setCounts]);
+  }, [status, data, setCounts, isStale]);
 
   if (isError) return <p>Cound not load feedbacks</p>;
 
@@ -80,7 +76,7 @@ export function FeedbackList() {
               </Fragment>
             ))}
           </div>
-          {hasNextPage && (counts.current ?? 0) > PAGE_SIZE && (
+          {hasNextPage && data.pages[data.pages.length - 1].countCurrent > PAGE_SIZE && (
             <div ref={ref} className="mb-4 flex justify-center">
               <LoadingIndicator className="mr-2" />
             </div>

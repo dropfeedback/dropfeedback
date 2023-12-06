@@ -1,4 +1,3 @@
-import { useContext, type ReactNode } from "react";
 import {
   DesktopIcon,
   FileIcon,
@@ -8,7 +7,10 @@ import {
 } from "@radix-ui/react-icons";
 import UAParser from "ua-parser-js";
 import { motion } from "framer-motion";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { cn, getRelativeTime } from "~/lib/utils";
 import { Button } from "./ui/button";
 import {
@@ -17,8 +19,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { FeedbackContext } from "./feedback-provider";
 import { fetchers } from "~/lib/fetchers";
+import { useFeedbackContext } from "./feedback-provider";
 import { FeedbackCategory, type Feedback, FeedbackStatus } from "~/types";
 import { type ApiError } from "~/lib/axios";
 
@@ -43,7 +45,7 @@ export function FeedbackCard({
   setOpenedCardId: (id: string) => void;
 }) {
   const queryClient = useQueryClient();
-  const { projectId } = useContext(FeedbackContext);
+  const { projectId, filtersAndSorters } = useFeedbackContext();
 
   const isOpen = openedCardId === id;
   const uaParser = new UAParser(device);
@@ -57,7 +59,7 @@ export function FeedbackCard({
     mutationFn: (variables) => fetchers.updateFeedbackStatus(variables),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["feedbacks", projectId],
+        queryKey: ["feedbacks", projectId, { ...filtersAndSorters }],
       });
     },
   });
@@ -170,7 +172,7 @@ export function FeedbackCard({
 }
 
 const SessionIcon = (props: {
-  children: ReactNode;
+  children: React.ReactNode;
   tooltipDescription: string;
 }) => (
   <TooltipProvider>

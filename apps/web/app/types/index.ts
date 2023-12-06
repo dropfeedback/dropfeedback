@@ -66,6 +66,15 @@ export type FeedbackFilter = {
   search: string;
 };
 
+export type OrderBy = {
+  [key: string]: "asc" | "desc";
+};
+
+export type FiltersAndSorters = {
+  filters: FeedbackFilter;
+  sorters: OrderBy;
+};
+
 export enum FeedbackCategory {
   other = "other",
   issue = "issue",
@@ -75,10 +84,6 @@ export enum FeedbackCategory {
 export enum FeedbackStatus {
   new = "new",
   archived = "archived",
-}
-
-export interface OrderBy {
-  [key: string]: "asc" | "desc";
 }
 
 export type ProjectInvite = {
