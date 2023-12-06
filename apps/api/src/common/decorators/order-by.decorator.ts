@@ -7,13 +7,12 @@ export const GetOderBy = createParamDecorator(
   (data, ctx: ExecutionContext): OrderBy => {
     const req: Request = ctx.switchToHttp().getRequest();
 
-    const orderByFromQuery = req.query?.orderBy as
-      | OrderBy['orderBy']
-      | undefined;
+    const orderByFromQuery = req.query?.orderBy as OrderBy | undefined;
+
     if (!orderByFromQuery) return {};
 
     try {
-      return JSON.parse(orderByFromQuery);
+      return orderByFromQuery;
     } catch (error) {
       return {};
     }
