@@ -15,6 +15,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "~/components/ui/toaster";
@@ -94,6 +95,7 @@ export default function App() {
                 <ModalRoot />
               </main>
             </GoogleOAuthProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
           </QueryClientProvider>
         </ThemeProvider>
         <Toaster />

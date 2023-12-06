@@ -101,6 +101,7 @@ export class FeedbacksService {
             mode: 'insensitive',
           },
           category: 'idea',
+          status: 'new',
         },
       }),
       // get counts of issue with search
@@ -112,6 +113,7 @@ export class FeedbacksService {
             mode: 'insensitive',
           },
           category: 'issue',
+          status: 'new',
         },
       }),
       // get counts of other with search
@@ -123,6 +125,7 @@ export class FeedbacksService {
             mode: 'insensitive',
           },
           category: 'other',
+          status: 'new',
         },
       }),
     ]);
