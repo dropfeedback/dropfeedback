@@ -63,7 +63,10 @@ export function DashboardHeader() {
         </div>
       </div>
       <div className="flex items-center justify-end gap-2">
-        <Button variant="outline" className="font-normal text-muted-foreground hidden sm:block">
+        <Button
+          variant="outline"
+          className="hidden font-normal text-muted-foreground sm:block"
+        >
           Feedback
         </Button>
         <Button
@@ -97,11 +100,13 @@ export function DashboardHeader() {
               Theme
               <ThemeSwitcher />
             </div>
-            <DropdownMenuItem>
-              Settings
-              <MenubarShortcut>
-                <GearIcon />
-              </MenubarShortcut>
+            <DropdownMenuItem asChild>
+              <Link to="/dashboard/settings">
+                Settings
+                <MenubarShortcut>
+                  <GearIcon />
+                </MenubarShortcut>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem

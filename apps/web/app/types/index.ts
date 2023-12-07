@@ -21,7 +21,7 @@ export enum MemberInviteState {
 export type MeResponse = {
   id: string;
   email: string;
-  fullName?: string;
+  fullName: string;
   avatarUrl?: string;
 };
 
