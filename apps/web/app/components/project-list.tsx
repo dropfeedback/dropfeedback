@@ -15,8 +15,6 @@ export function ProjectList() {
     queryFn: () => fetchers.getProjects(),
   });
 
-  console.log({ projects, isPending, isError });
-
   if (isError) return <p>An error occurred while fetching your projects.</p>;
 
   if (isPending) {
