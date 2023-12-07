@@ -30,12 +30,6 @@ export class AuthController {
     private config: ConfigService,
   ) {}
 
-  @Get('/me')
-  @HttpCode(HttpStatus.OK)
-  async me(@GetCurrentUser() user: JwtPayload) {
-    return this.authService.me(user.sub);
-  }
-
   @Post('/local/signup')
   @Public()
   @HttpCode(HttpStatus.CREATED)
