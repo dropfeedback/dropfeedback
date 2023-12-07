@@ -77,7 +77,7 @@ describe('Feedbacks - e2e', () => {
         countIdea: 1,
         countIssue: 1,
         countNew: 3,
-        countOther: 2,
+        countOther: 1,
       });
     });
 
@@ -96,7 +96,7 @@ describe('Feedbacks - e2e', () => {
             countNew: 1,
             countIdea: 0,
             countIssue: 0,
-            countOther: 2,
+            countOther: 1,
           });
         });
 
@@ -134,7 +134,7 @@ describe('Feedbacks - e2e', () => {
             countIdea: 1,
             countIssue: 1,
             countNew: 3,
-            countOther: 2,
+            countOther: 1,
           });
         });
 
@@ -152,7 +152,7 @@ describe('Feedbacks - e2e', () => {
             countIdea: 1,
             countIssue: 1,
             countNew: 3,
-            countOther: 2,
+            countOther: 1,
           });
         });
 
@@ -170,7 +170,7 @@ describe('Feedbacks - e2e', () => {
             countIdea: 1,
             countIssue: 1,
             countNew: 3,
-            countOther: 2,
+            countOther: 1,
           });
         });
 
@@ -188,7 +188,7 @@ describe('Feedbacks - e2e', () => {
             countIdea: 1,
             countIssue: 1,
             countNew: 3,
-            countOther: 2,
+            countOther: 1,
           });
         });
 
