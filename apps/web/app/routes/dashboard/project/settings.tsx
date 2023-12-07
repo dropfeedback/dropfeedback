@@ -170,7 +170,7 @@ export default function Settings() {
         <div className="space-y-2">
           <h3 className="text-sm font-medium">Delete Project</h3>
           <p className="text-[0.8rem] text-muted-foreground">
-            The project will be permanently deleted, including its feedbacks.
+            The project will be permanently deleted, including its feedback.
             This action is irreversible and can not be undone.
           </p>
           <AlertDialog>
@@ -184,7 +184,7 @@ export default function Settings() {
                 <AlertDialogTitle>Delete Project</AlertDialogTitle>
                 <AlertDialogDescription>
                   This action cannot be undone. This will permanently delete
-                  your project and all its feedbacks.
+                  your project and all its feedback.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

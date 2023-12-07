@@ -7,8 +7,8 @@ import { cn } from "~/lib/utils";
 
 const ROUTES = [
   {
-    key: "feedbacks",
-    title: "Feedbacks",
+    key: "feedback",
+    title: "Feedback",
     path: "/dashboard/:projectId",
   },
   {
