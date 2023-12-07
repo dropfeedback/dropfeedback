@@ -49,7 +49,7 @@ const roles = [
   {
     value: "member",
     name: "Member",
-    description: "Can view the project and its feedbacks.",
+    description: "Can view the project and its feedback.",
   },
 ];
 

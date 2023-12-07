@@ -20,7 +20,7 @@ export function ProjectCard({ id, name, feedbackCount, createdAt }: Project) {
           <div className="mt-2 flex items-end justify-between">
             <div>
               <div className="font-bold">+{feedbackCount}</div>
-              <p className="text-xs text-muted-foreground">total feedbacks</p>
+              <p className="text-xs text-muted-foreground">total feedback</p>
             </div>
             <div className="text-right">
               <div className="text-xs">{localCreatedAt}</div>

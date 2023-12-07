@@ -45,7 +45,7 @@ export function FeedbackSider() {
             <div className="space-y-4 pr-0 md:pr-4">
               <div className="relative">
                 <Input
-                  placeholder="Search feedbacks"
+                  placeholder="Search feedback"
                   value={search}
                   onChange={(e) => {
                     setSearch(e.target.value);
