@@ -4,7 +4,10 @@ import { Feedback, FeedbackCategory, FeedbackStatus, Prisma } from 'src/prisma';
 
 export class CreateFeedbackDto
   implements
-    Omit<Feedback, 'id' | 'createdAt' | 'userId' | 'device' | 'origin'>
+    Omit<
+      Feedback,
+      'id' | 'createdAt' | 'updatedAt' | 'userId' | 'device' | 'origin'
+    >
 {
   @IsNotEmpty()
   @IsString()

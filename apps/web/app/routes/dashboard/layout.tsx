@@ -5,7 +5,7 @@ import {
   QueryClient,
   dehydrate,
 } from "@tanstack/react-query";
-import { DashboardHeader } from "~/components/dashboard-header";
+import { DashboardHeader } from "~/components/headers/dashboard-header";
 import { fetchers } from "~/lib/fetchers";
 
 export async function loader({ request }: LoaderFunctionArgs) {

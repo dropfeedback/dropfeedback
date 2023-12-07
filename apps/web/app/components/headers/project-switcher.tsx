@@ -11,17 +11,21 @@ import {
   CheckIcon,
   PlusCircledIcon,
 } from "@radix-ui/react-icons";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Button } from "./ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
+import { Button } from "~/components/ui/button";
 import {
   Command,
   CommandGroup,
   CommandItem,
   CommandSeparator,
-} from "./ui/command";
-import { Skeleton } from "./ui/skeleton";
-import { useToast } from "./ui/use-toast";
-import { ToastAction } from "./ui/toast";
+} from "~/components/ui/command";
+import { Skeleton } from "~/components/ui/skeleton";
+import { useToast } from "~/components/ui/use-toast";
+import { ToastAction } from "~/components/ui/toast";
 import { cn } from "~/lib/utils";
 import { fetchers } from "~/lib/fetchers";
 import { type Project } from "~/types";
@@ -46,7 +50,6 @@ export function ProjectSwitcher() {
     queryKey: ["project", selectedProjectId],
     queryFn: () => fetchers.getProject(selectedProjectId),
   });
-
 
   useEffect(() => {
     if (project.error) {
@@ -77,7 +80,12 @@ export function ProjectSwitcher() {
 
   return (
     <>
-      <Link to={`/dashboard/${project.data.id}`}>{project.data.name}</Link>
+      <Link
+        to={`/dashboard/${project.data.id}`}
+        className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap"
+      >
+        {project.data.name}
+      </Link>
 
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>

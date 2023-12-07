@@ -1,5 +1,11 @@
 import { axiosInstance } from "~/lib/axios";
-import { VerifyEmailPayload, type ProjectVariables } from "~/types";
+import {
+  type OrderBy,
+  type FeedbackCategory,
+  type FeedbackStatus,
+  type ProjectVariables,
+  type VerifyEmailPayload,
+} from "~/types";
 
 const getProjects = async () => {
   const { data } = await axiosInstance.get("/projects");
@@ -99,11 +105,27 @@ const getFeedbacks = async (params: {
   projectId: string;
   cursor: string;
   take: number;
+  search?: string;
+  category?: FeedbackCategory;
+  status?: FeedbackStatus;
+  orderBy?: OrderBy;
 }) => {
   const { data } = await axiosInstance.get("/feedbacks", {
     params,
   });
 
+  return data;
+};
+
+const updateFeedbackStatus = async (payload: {
+  id: string;
+  projectId: string;
+  status: FeedbackStatus;
+}) => {
+  const { data } = await axiosInstance.patch(
+    `/feedbacks/${payload.id}/status`,
+    payload,
+  );
   return data;
 };
 
@@ -160,6 +182,7 @@ export const fetchers = {
   refreshToken,
   googleLogin,
   getFeedbacks,
+  updateFeedbackStatus,
   getProjectMembers,
   inviteMember,
   deleteMember,

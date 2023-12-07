@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import { Link } from "@remix-run/react";
-import { ThemeSwitcher } from "~/components/theme-switcher";
+import { ThemeSwitcher } from "~/components/headers/theme-switcher";
 
 export const meta: MetaFunction = () => {
   return [

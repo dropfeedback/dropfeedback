@@ -6,6 +6,7 @@ export class GetOneParam
     Omit<
       Feedback,
       | 'createdAt'
+      | 'updatedAt'
       | 'userId'
       | 'device'
       | 'origin'
