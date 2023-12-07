@@ -1,7 +1,10 @@
 import axios, { type AxiosError } from "axios";
 import { fetchers } from "~/lib/fetchers";
 
-const BASE_URL = "http://localhost:8080";
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://feedbacky-production.up.railway.app"
+    : "http://localhost:8080";
 
 export type ApiError = AxiosError<{
   error: string;

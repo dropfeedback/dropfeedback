@@ -62,6 +62,21 @@ export type FeedbackQueryType = {
   countOther: number;
 };
 
+export type FeedbackFilter = {
+  category?: FeedbackCategory;
+  status: FeedbackStatus;
+  search: string;
+};
+
+export type OrderBy = {
+  [key: string]: "asc" | "desc";
+};
+
+export type FiltersAndSorters = {
+  filters: FeedbackFilter;
+  sorters: OrderBy;
+};
+
 export enum FeedbackCategory {
   other = "other",
   issue = "issue",
@@ -95,8 +110,15 @@ export type ProjectMember = {
   avatarUrl: string;
 };
 
+export type ProjectMemberInvite = {
+  id: string;
+  email: string;
+  role: ProjectMemberRole;
+  state: MemberInviteState;
+};
+
 export type ProjectTeam = {
-  invites: Omit<ProjectInvite, "projectId" | "projectName">[];
+  invites: ProjectMemberInvite[];
   members: ProjectMember[];
 };
 

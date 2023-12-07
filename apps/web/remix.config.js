@@ -27,14 +27,10 @@ export default {
       route("dashboard", "routes/dashboard/layout.tsx", () => {
         route("", "routes/dashboard/route.tsx", { index: true });
         route(":projectId", "routes/dashboard/project/layout.tsx", () => {
-          route("", "routes/dashboard/project/overview.tsx", { index: true });
-          route("feedbacks", "routes/dashboard/project/feedbacks.tsx", {
+          route("", "routes/dashboard/project/feedbacks.tsx", {
             index: true,
           });
           route("team", "routes/dashboard/project/team.tsx", { index: true });
-          route("integrations", "routes/dashboard/project/integrations.tsx", {
-            index: true,
-          });
           route("settings", "routes/dashboard/project/settings.tsx", {
             index: true,
           });

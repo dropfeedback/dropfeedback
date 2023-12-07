@@ -42,7 +42,7 @@ const roles = [
   { label: "Owner", value: "owner" },
 ];
 
-export function InviteMemberModal({ children }: { children: React.ReactNode }) {
+export function TeamInviteModal() {
   const { projectId } = useParams<{ projectId: string }>();
   if (!projectId) throw new Error("Project ID is required");
 
@@ -78,7 +78,9 @@ export function InviteMemberModal({ children }: { children: React.ReactNode }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild>
+        <Button>Invite Member</Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Invite your team members</DialogTitle>

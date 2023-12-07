@@ -74,7 +74,7 @@ export function CreateProject() {
         <DialogHeader>
           <DialogTitle>Create project</DialogTitle>
           <DialogDescription>
-            Add a new project to collect and manage feedbacks.
+            Add a new project to collect and manage feedback.
           </DialogDescription>
         </DialogHeader>
         <Separator />

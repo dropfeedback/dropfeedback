@@ -92,6 +92,7 @@ model Feedback {
   origin    String?          @db.VarChar(255)
   device    String?          @db.VarChar(255)
   createdAt DateTime         @default(now())
+  updatedAt DateTime          @default(now()) @updatedAt
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
