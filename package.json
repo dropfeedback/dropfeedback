@@ -20,7 +20,7 @@
     "turbo": "latest"
   },
   "name": "feedbacky",
-  "packageManager": "npm@8.12.1",
+  "packageManager": "npm@10.2.0",
   "workspaces": [
     "apps/*",
     "packages/*"
