@@ -7,8 +7,9 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
+import { json, type LinksFunction } from "@remix-run/node";
 import {
   MutationCache,
   QueryCache,
@@ -33,7 +34,16 @@ export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
 ];
 
+export async function loader() {
+  return json({
+    ENV: {
+      GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "",
+    },
+  });
+}
+
 export default function App() {
+  const data = useLoaderData<typeof loader>();
   const { toast } = useToast();
 
   const [queryClient] = useState(
@@ -89,7 +99,7 @@ export default function App() {
           disableTransitionOnChange
         >
           <QueryClientProvider client={queryClient}>
-            <GoogleOAuthProvider clientId="108576727290-r2vpjvnub36682vn3vig0rq1jvj9to2n.apps.googleusercontent.com">
+            <GoogleOAuthProvider clientId={data.ENV.GOOGLE_CLIENT_ID}>
               <main className="relative min-h-screen">
                 <Outlet />
                 <ModalRoot />
