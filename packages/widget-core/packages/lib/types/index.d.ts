@@ -9,7 +9,14 @@ export type IFeedback = IFeedbackForm & {
 	meta: Record<string, any>;
 };
 
-export type WidgetContext = {
+export type GlobalWidgetContext = {
+	projectId?: string;
+	position?: "left" | "right";
+	theme: Partial<ThemeProps>;
+	meta: Record<string, any>;
+};
+
+export type WidgetProps = {
 	projectId: string;
 	position: "left" | "right";
 	theme: ThemeProps;
@@ -31,4 +38,5 @@ export type ConfigContext = {
 	showPopper: Writable<boolean>;
 	currentStep: Writable<Steps>;
 	selectedCategory: Writable<Categories>;
+	props: WidgetProps;
 };
