@@ -32,6 +32,7 @@ export default {
             index: true,
           });
         });
+        route("settings", "routes/dashboard/settings.tsx", { index: true });
       });
     });
   },
