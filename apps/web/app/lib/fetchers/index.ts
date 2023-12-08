@@ -51,7 +51,7 @@ const rejectInvite = async ({ projectId }: { projectId: string }) => {
 };
 
 const me = async (cookie?: string) => {
-  const { data } = await axiosInstance.get("/auth/me", {
+  const { data } = await axiosInstance.get("/users/me", {
     headers: {
       Cookie: cookie,
     },
