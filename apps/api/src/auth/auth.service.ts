@@ -24,18 +24,6 @@ export class AuthService {
     private mailService: MailService,
   ) {}
 
-  async me(id: string) {
-    return this.prisma.user.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        email: true,
-        avatarUrl: true,
-        fullName: true,
-      },
-    });
-  }
-
   async signupLocal(dto: SignUpLocalDto) {
     const hashedPassword = await this.hashData(dto.password);
 
