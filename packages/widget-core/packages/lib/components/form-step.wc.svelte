@@ -3,12 +3,12 @@
 	import type { Writable } from "svelte/store";
 	import LoadingIcon from "./icons/loading.wc.svelte";
 	import { sendFeedback } from "../api";
-	import type { ConfigContext, WidgetContext } from "../types";
+	import type { ConfigContext } from "../types";
 
-	const { currentStep, selectedCategory } = getContext<ConfigContext>("config");
-	const widgetPropsContext = getContext<Writable<WidgetContext>>("widgetProps");
+	const { currentStep, selectedCategory, props } = getContext<ConfigContext>("config");
+		
 
-	const { projectId, meta } = $widgetPropsContext;
+	const { projectId, meta } = props;
 
 	let placeholder: string = "What's on your mind?";
 	let content = "";
