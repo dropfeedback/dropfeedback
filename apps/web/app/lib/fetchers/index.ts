@@ -60,6 +60,11 @@ const me = async (cookie?: string) => {
   return data;
 };
 
+const updateUser = async (payload: { fullName: string }) => {
+  const { data } = await axiosInstance.patch("/users/me", payload);
+  return data;
+};
+
 const signup = async (payload: { email: string; password: string }) => {
   const { data } = await axiosInstance.post("/auth/local/signup", payload);
   return data;
@@ -158,6 +163,7 @@ export const fetchers = {
   acceptInvite,
   rejectInvite,
   me,
+  updateUser,
   signup,
   signin,
   logout,

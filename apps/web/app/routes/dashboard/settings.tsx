@@ -13,31 +13,32 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
-import { Skeleton } from "~/components/ui/skeleton";
 import { LoadingIndicator } from "~/components/loading-indicator";
+import { useToast } from "~/components/ui/use-toast";
 import { useMe } from "~/data-hooks";
 import { fetchers } from "~/lib/fetchers";
 import { type ApiError } from "~/lib/axios";
 import { type MeResponse } from "~/types";
 
 type FormVariables = {
-  name: string;
+  fullName: string;
 };
 
 export default function Settings() {
   const queryClient = useQueryClient();
-
-  const form = useForm<FormVariables>({
-    defaultValues: {
-      name: "",
-    },
-  });
+  const { toast } = useToast();
 
   const user = useMe();
 
+  const form = useForm<FormVariables>({
+    defaultValues: {
+      fullName: user.data?.fullName ?? "",
+    },
+  });
+
   useEffect(() => {
     if (user.data) {
-      form.reset({ name: user.data.fullName });
+      form.reset({ fullName: user.data.fullName });
     }
   }, [user.data, form]);
 
@@ -46,15 +47,19 @@ export default function Settings() {
     ApiError,
     Pick<MeResponse, "fullName">
   >({
-    //TODO: Add mutationFn
+    mutationFn: fetchers.updateUser,
     onSuccess: (data) => {
       queryClient.setQueryData(["me"], data);
-      form.reset({ name: data.fullName });
+      form.reset({ fullName: data.fullName });
+      toast({
+        title: "Success!",
+        description: "Your account settings have been updated.",
+      });
     },
   });
 
   const onSubmit = (variables: FormVariables) => {
-    updateMutation.mutate({ fullName: variables.name.trim() });
+    updateMutation.mutate({ fullName: variables.fullName.trim() });
   };
 
   return (
@@ -68,7 +73,7 @@ export default function Settings() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name="name"
+              name="fullName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
@@ -76,13 +81,9 @@ export default function Settings() {
                     This is how your name will appear in the app.
                   </FormDescription>
                   <div className="w-[300px]">
-                    {user.isPending ? (
-                      <Skeleton className="h-9 w-full" />
-                    ) : (
-                      <FormControl>
-                        <Input {...field} autoComplete="false" />
-                      </FormControl>
-                    )}
+                    <FormControl>
+                      <Input {...field} autoComplete="false" />
+                    </FormControl>
                   </div>
                   <FormMessage />
                 </FormItem>
