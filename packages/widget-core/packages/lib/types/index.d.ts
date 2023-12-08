@@ -17,7 +17,7 @@ export type GlobalWidgetContext = {
 };
 
 export type WidgetProps = {
-	projectId: string;
+	projectId?: string;
 	position: "left" | "right";
 	theme: ThemeProps;
 	meta: Record<string, any>;
@@ -38,5 +38,5 @@ export type ConfigContext = {
 	showPopper: Writable<boolean>;
 	currentStep: Writable<Steps>;
 	selectedCategory: Writable<Categories>;
-	props: WidgetProps;
+	props: Writable<WidgetProps>;
 };

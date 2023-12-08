@@ -9,7 +9,7 @@
 	import SuccessStep from "./success-step.wc.svelte";
 	import CssVar from "./css-var.wc.svelte";
 	import seedToken from "../theme/seed";
-	import type { Categories, Steps, GlobalWidgetContext } from "../types";
+	import type { Categories, Steps, GlobalWidgetContext, WidgetProps } from "../types";
 
 	export let feedbackTriggerButton: HTMLButtonElement | undefined = undefined;
 
@@ -21,44 +21,70 @@
 	const buttonProperties = feedbackTriggerButton?.dataset ?? {};
 
 	const { colorPrimary, colorBgBase, colorTextBase } = seedToken;
-
-	const projectId = buttonProperties.projectId ?? $globalWidgetPropsContext.projectId;
-	const position = buttonProperties.position ?? $globalWidgetPropsContext.position ?? "right";
-	const theme = {
-		scheme: buttonProperties.scheme ?? $globalWidgetPropsContext.theme.scheme ?? "light",
-		primaryColor:
-			buttonProperties.primaryColor ?? $globalWidgetPropsContext.theme.primaryColor ?? colorPrimary,
-		backgroundColor:
-			buttonProperties.backgroundColor ??
-			$globalWidgetPropsContext.theme.backgroundColor ??
-			colorBgBase,
-		textColor:
-			buttonProperties.textColor ?? $globalWidgetPropsContext.theme.textColor ?? colorTextBase
-	};
-	const meta = {
-		...$globalWidgetPropsContext.meta,
-		...Object.entries(buttonProperties)
-			.filter(([key]) => key.startsWith("meta"))
-			.reduce((acc, [key, value]) => {
-				const newKey = key.replace("meta", "").toLocaleLowerCase();
-				acc[newKey] = value ?? "";
-				return acc;
-			}, {} as Record<string, string>)
-	};
-
-	setContext("config", {
-		currentStep,
-		showPopper,
-		selectedCategory,
-		props: {
-			projectId,
-			position,
-			theme,
-			meta
+	const props = writable<WidgetProps>({
+		projectId: buttonProperties.projectId ?? $globalWidgetPropsContext.projectId,
+		position: (buttonProperties.position as any) ?? $globalWidgetPropsContext.position ?? "right",
+		theme: {
+			scheme: (buttonProperties.scheme as any) ?? $globalWidgetPropsContext.theme.scheme ?? "light",
+			primaryColor:
+				buttonProperties.primaryColor ??
+				$globalWidgetPropsContext.theme.primaryColor ??
+				colorPrimary,
+			backgroundColor:
+				buttonProperties.backgroundColor ??
+				$globalWidgetPropsContext.theme.backgroundColor ??
+				colorBgBase,
+			textColor:
+				buttonProperties.textColor ?? $globalWidgetPropsContext.theme.textColor ?? colorTextBase
+		},
+		meta: {
+			...$globalWidgetPropsContext.meta,
+			...Object.entries(buttonProperties)
+				.filter(([key]) => key.startsWith("meta"))
+				.reduce((acc, [key, value]) => {
+					const newKey = key.replace("meta", "").toLocaleLowerCase();
+					acc[newKey] = value ?? "";
+					return acc;
+				}, {} as Record<string, string>)
 		}
 	});
 
-	if (projectId === undefined) {
+	const configContext = setContext("config", {
+		currentStep,
+		showPopper,
+		selectedCategory,
+		props
+	});
+
+	$: configContext.props.set({
+		projectId: buttonProperties.projectId ?? $globalWidgetPropsContext.projectId,
+		position: (buttonProperties.position as any) ?? $globalWidgetPropsContext.position ?? "right",
+		theme: {
+			scheme: (buttonProperties.scheme as any) ?? $globalWidgetPropsContext.theme.scheme ?? "light",
+			primaryColor:
+				buttonProperties.primaryColor ??
+				$globalWidgetPropsContext.theme.primaryColor ??
+				colorPrimary,
+			backgroundColor:
+				buttonProperties.backgroundColor ??
+				$globalWidgetPropsContext.theme.backgroundColor ??
+				colorBgBase,
+			textColor:
+				buttonProperties.textColor ?? $globalWidgetPropsContext.theme.textColor ?? colorTextBase
+		},
+		meta: {
+			...$globalWidgetPropsContext.meta,
+			...Object.entries(buttonProperties)
+				.filter(([key]) => key.startsWith("meta"))
+				.reduce((acc, [key, value]) => {
+					const newKey = key.replace("meta", "").toLocaleLowerCase();
+					acc[newKey] = value ?? "";
+					return acc;
+				}, {} as Record<string, string>)
+		}
+	});
+
+	if ($props.projectId === undefined) {
 		console.error("DropFeedback: Missing `projectId`");
 	}
 
@@ -124,8 +150,8 @@
 				$showPopper = !$showPopper;
 			}}
 			class="trigger-button"
-			class:trigger-button-right={position === "right"}
-			class:trigger-button-left={position === "left"}
+			class:trigger-button-right={$props.position === "right"}
+			class:trigger-button-left={$props.position === "left"}
 		>
 			feedbacky
 		</button>
@@ -136,10 +162,10 @@
 			id="popper"
 			class="popper"
 			use:popperContent={extraOpts}
-			use:updatePopperWhenPositionIsChanged={position}
+			use:updatePopperWhenPositionIsChanged={$props.position}
 			transition:fade={{ duration: 100 }}
 		>
-			{#if projectId === undefined}
+			{#if $props.projectId === undefined}
 				<p>Missing `projectId`</p>
 			{:else if $currentStep === "category"}
 				<PopperContent>

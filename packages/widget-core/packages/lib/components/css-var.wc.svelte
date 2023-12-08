@@ -17,7 +17,7 @@
 	let stringStyles: string;
 
 	afterUpdate(() => {
-		const { theme } = props;
+		const { theme } = $props;
 		const { scheme, primaryColor, backgroundColor, textColor } = theme;
 
 		primaryColors = generateColorPalettes(primaryColor, scheme);
