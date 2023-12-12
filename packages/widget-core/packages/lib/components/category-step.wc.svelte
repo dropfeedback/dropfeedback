@@ -3,9 +3,10 @@
 	import IdeaIcon from "./icons/idea.wc.svelte";
 	import IssueIcon from "./icons/issue.wc.svelte";
 	import OtherIcon from "./icons/other.wc.svelte";
-	import type { ConfigContext, Categories } from "../types";
+	import type { Categories, PopoverContext } from "../types";
+	import type { Writable } from "svelte/store";
 
-	const { currentStep, selectedCategory } = getContext<ConfigContext>("config");
+	const popoverContext = getContext<Writable<PopoverContext>>("popoverContext");
 
 	const BUTTONS: { label: string; value: Categories; icon: ComponentType }[] = [
 		{
@@ -31,8 +32,11 @@
 		<button
 			class="category-button"
 			on:click={() => {
-				$currentStep = "form";
-				$selectedCategory = button.value;
+				popoverContext.update((state) => ({
+					...state,
+					currentStep: "form",
+					selectedCategory: button.value
+				}));
 			}}
 		>
 			<svelte:component this={button.icon} />

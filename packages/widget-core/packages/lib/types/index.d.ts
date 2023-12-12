@@ -1,26 +1,22 @@
-import type { Writable } from "svelte/store";
-
-export type IFeedbackForm = {
+export type IFeedback = {
+	projectId: string;
 	content: string;
-};
-
-export type IFeedback = IFeedbackForm & {
-	projectId: string;
 	meta: Record<string, any>;
+	category: Categories;
 };
 
-export type GlobalWidgetContext = {
+export type WidgetContext = {
 	projectId?: string;
-	position?: "left" | "right";
-	theme: Partial<ThemeProps>;
-	meta: Record<string, any>;
-};
-
-export type WidgetProps = {
-	projectId: string;
-	position: "left" | "right";
+	defaultButton: DefaultButtonProps;
 	theme: ThemeProps;
 	meta: Record<string, any>;
+};
+
+export type DefaultButtonPosition = "left" | "right";
+
+export type DefaultButtonProps = {
+	position: DefaultButtonPosition;
+	enabled: boolean;
 };
 
 export type ThemeProps = {
@@ -30,13 +26,31 @@ export type ThemeProps = {
 	textColor: string;
 };
 
+export type PopoverContext = Omit<WidgetContext, "defaultButton"> & {
+	open: boolean;
+	side: PopoverSide;
+	sideOffset: number;
+	currentStep: Steps;
+	selectedCategory: Categories | null;
+};
+
+export type PopoverSide =
+	| "auto"
+	| "auto-start"
+	| "auto-end"
+	| "left"
+	| "right"
+	| "top"
+	| "bottom"
+	| "top-start"
+	| "top-end"
+	| "bottom-start"
+	| "bottom-end"
+	| "right-start"
+	| "right-end"
+	| "left-start"
+	| "left-end";
+
 export type Steps = "category" | "form" | "success";
 
-export type Categories = "issue" | "idea" | "other" | null;
-
-export type ConfigContext = {
-	showPopper: Writable<boolean>;
-	currentStep: Writable<Steps>;
-	selectedCategory: Writable<Categories>;
-	props: WidgetProps;
-};
+export type Categories = "issue" | "idea" | "other";
