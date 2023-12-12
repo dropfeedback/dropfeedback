@@ -91,13 +91,9 @@
 		outline: none;
 	}
 
-	.textarea:hover {
-		border-color: var(--color-primary-hover);
-	}
-
 	.textarea:active,
 	.textarea:focus {
-		border-color: var(--color-primary);
+		box-shadow: 0 0 0 0.5px var(--color-border);
 	}
 
 	.textarea::placeholder {
