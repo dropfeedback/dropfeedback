@@ -52,7 +52,7 @@
 </div>
 <slot />
 <div class="brand">
-	Widget by <span class="brand-name">Arkadaslar1234</span>
+	Widget by <span class="brand-name">DropFeedback</span>
 </div>
 
 <style>
