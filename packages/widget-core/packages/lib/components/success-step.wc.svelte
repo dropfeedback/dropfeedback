@@ -79,13 +79,11 @@
 	}
 
 	.button:hover {
-		border-color: var(--color-primary);
-		color: var(--color-primary);
+		background-color: var(--color-fill-tertiary);
 	}
 
 	.button:active {
-		color: var(--color-primary-active);
-		border-color: var(--color-primary-active);
+		background-color: var(--color-fill-tertiary);
 	}
 
 	.button:focus-visible {
