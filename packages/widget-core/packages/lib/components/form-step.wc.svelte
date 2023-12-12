@@ -3,12 +3,11 @@
 	import type { Writable } from "svelte/store";
 	import LoadingIcon from "./icons/loading.wc.svelte";
 	import { sendFeedback } from "../api";
-	import type { ConfigContext } from "../types";
+	import type { PopoverContext } from "../types";
 
-	const { currentStep, selectedCategory, props } = getContext<ConfigContext>("config");
-		
+	const popoverContext = getContext<Writable<PopoverContext>>("popoverContext");
 
-	const { projectId, meta } = props;
+	const { projectId, meta, selectedCategory } = $popoverContext;
 
 	let placeholder: string = "What's on your mind?";
 	let content = "";
@@ -16,11 +15,11 @@
 	let loading = false;
 	let duration: number;
 
-	$: if ($selectedCategory === "issue") {
+	$: if (selectedCategory === "issue") {
 		placeholder = "I noticed that...";
-	} else if ($selectedCategory === "idea") {
+	} else if (selectedCategory === "idea") {
 		placeholder = "I would love...";
-	} else if ($selectedCategory === "other") {
+	} else if (selectedCategory === "other") {
 		placeholder = "What's on your mind?";
 	}
 
@@ -31,9 +30,9 @@
 
 		try {
 			await sendFeedback({
-				// category: $selectedCategory,
+				category: selectedCategory ?? "other",
 				content,
-				projectId,
+				projectId: projectId!,
 				meta
 			});
 
@@ -42,7 +41,7 @@
 				await new Promise((resolve) => setTimeout(resolve, 1000 - requestDuration));
 			}
 
-			$currentStep = "success";
+			$popoverContext.currentStep = "success";
 			content = "";
 		} catch (err) {
 			if (err instanceof Error) {
@@ -92,13 +91,9 @@
 		outline: none;
 	}
 
-	.textarea:hover {
-		border-color: var(--color-primary-hover);
-	}
-
 	.textarea:active,
 	.textarea:focus {
-		border-color: var(--color-primary);
+		box-shadow: 0 0 0 0.5px var(--color-border);
 	}
 
 	.textarea::placeholder {
