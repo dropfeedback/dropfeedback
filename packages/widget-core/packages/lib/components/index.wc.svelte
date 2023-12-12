@@ -7,92 +7,147 @@
 				type: "String",
 				attribute: "project-id"
 			},
-			scheme: {
+			themeScheme: {
 				reflect: true,
 				type: "String",
 				attribute: "theme-scheme"
 			},
-			primaryColor: {
+			themePrimaryColor: {
 				reflect: true,
 				type: "String",
 				attribute: "theme-primary-color"
 			},
-			backgroundColor: {
+			themeBackgroundColor: {
 				reflect: true,
 				type: "String",
 				attribute: "theme-background-color"
 			},
-			textColor: {
+			themeTextColor: {
 				reflect: true,
 				type: "String",
 				attribute: "theme-text-color"
 			},
-			position: {
+			defaultButtonPosition: {
 				reflect: true,
 				type: "String",
-				attribute: "position"
+				attribute: "default-button-position"
+			},
+			defaultButtonEnabled: {
+				reflect: true,
+				type: "String",
+				attribute: "default-button-enabled"
 			}
 		}
 	}}
 />
 
 <script lang="ts">
-	import { setContext } from "svelte";
+	import { setContext, onMount } from "svelte";
 	import { writable } from "svelte/store";
-	import Popper from "./popper.wc.svelte";
-	import type { GlobalWidgetContext } from "../types";
+	import Popover from "./popover.wc.svelte";
+	import { stringToBoolean } from "../utils/stringToBoolean";
+	import seedToken from "../theme/seed";
+	import type { WidgetContext } from "../types";
 
 	export let projectId: string | undefined = undefined;
-	export let position: "right" | "left" | undefined = undefined;
-	export let scheme: "dark" | "light" | undefined = undefined;
-	export let primaryColor: string | undefined = undefined;
-	export let backgroundColor: string | undefined = undefined;
-	export let textColor: string | undefined = undefined;
+	export let defaultButtonPosition: "right" | "left" | undefined = undefined;
+	export let defaultButtonEnabled: string | undefined = undefined;
+	export let themeScheme: "dark" | "light" | undefined = undefined;
+	export let themePrimaryColor: string | undefined = undefined;
+	export let themeBackgroundColor: string | undefined = undefined;
+	export let themeTextColor: string | undefined = undefined;
 
-	const meta = Object.entries($$restProps)
+	$: meta = Object.entries($$restProps)
 		.filter(([key]) => key.startsWith("meta-"))
 		.reduce((acc, [key, value]) => {
 			acc[key.replace("meta-", "")] = value;
 			return acc;
 		}, {} as Record<string, string>);
 
-	const globalWidgetProps = writable<GlobalWidgetContext>({
+	const { colorPrimary, colorBgBase, colorTextBase } = seedToken;
+
+	const widgetContextState = writable<WidgetContext>({
 		projectId,
-		position,
-		meta,
+		defaultButton: {
+			position: defaultButtonPosition ?? "right",
+			enabled: stringToBoolean(defaultButtonEnabled) ?? true
+		},
 		theme: {
-			scheme,
-			primaryColor,
-			backgroundColor,
-			textColor
-		}
+			scheme: themeScheme ?? "light",
+			primaryColor: themePrimaryColor ?? colorPrimary,
+			backgroundColor: themeBackgroundColor ?? colorBgBase,
+			textColor: themeTextColor ?? colorTextBase
+		},
+		meta
 	});
 
-	const widgetPropsContext = setContext("globalWidgetProps", globalWidgetProps);
+	const widgetContext = setContext("widgetContext", widgetContextState);
 
-	$: widgetPropsContext.set({
+	$: widgetContext.set({
 		projectId,
-		position,
-		meta,
+		defaultButton: {
+			position: defaultButtonPosition ?? "right",
+			enabled: stringToBoolean(defaultButtonEnabled) ?? true
+		},
 		theme: {
-			scheme,
-			primaryColor,
-			backgroundColor,
-			textColor
-		}
+			scheme: themeScheme ?? "light",
+			primaryColor: themePrimaryColor ?? colorPrimary,
+			backgroundColor: themeBackgroundColor ?? colorBgBase,
+			textColor: themeTextColor ?? colorTextBase
+		},
+		meta
 	});
 
-	const feedbackTriggerButtons = document.querySelectorAll(
+	let popoverTriggerButtons = document.querySelectorAll(
 		"[data-feedback-button]"
 	) as NodeListOf<HTMLButtonElement>;
+
+	onMount(() => {
+		const observer = new MutationObserver((mutations) => {
+			mutations.forEach((mutation) => {
+				if (mutation.type === "attributes") {
+					popoverTriggerButtons = document.querySelectorAll(
+						"[data-feedback-button]"
+					) as NodeListOf<HTMLButtonElement>;
+				}
+			});
+		});
+
+		popoverTriggerButtons.forEach((popoverTriggerButton) => {
+			observer.observe(popoverTriggerButton, {
+				attributes: true
+			});
+		});
+
+		return () => observer.disconnect();
+	});
+
+	onMount(() => {
+		const observer = new MutationObserver((mutations) => {
+			mutations.forEach((mutation) => {
+				if (mutation.type === "childList") {
+					popoverTriggerButtons = document.querySelectorAll(
+						"[data-feedback-button]"
+					) as NodeListOf<HTMLButtonElement>;
+				}
+			});
+		});
+
+		observer.observe(document.body, {
+			childList: true,
+			subtree: true
+		});
+
+		return () => observer.disconnect();
+	});
 </script>
 
-{#each feedbackTriggerButtons as feedbackTriggerButton}
-	<Popper {feedbackTriggerButton} />
+{#each popoverTriggerButtons as popoverTriggerButton (popoverTriggerButton)}
+	<Popover {popoverTriggerButton} />
 {/each}
 
-{#if feedbackTriggerButtons.length === 0}
-	<Popper />
+{#if stringToBoolean(defaultButtonEnabled) ?? true}
+	<Popover defaultButtonPosition={defaultButtonPosition ?? "right"} />
 {/if}
 
 <style>

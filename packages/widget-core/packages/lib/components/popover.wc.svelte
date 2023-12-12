@@ -3,42 +3,68 @@
 	import { createPopperActions } from "svelte-popperjs";
 	import { writable, type Writable } from "svelte/store";
 	import { fade } from "svelte/transition";
-	import PopperContent from "./popper-content.wc.svelte";
+	import PopoverContent from "./popover-content.wc.svelte";
 	import CategoryStep from "./category-step.wc.svelte";
 	import FormStep from "./form-step.wc.svelte";
 	import SuccessStep from "./success-step.wc.svelte";
 	import CssVar from "./css-var.wc.svelte";
-	import seedToken from "../theme/seed";
-	import type { Categories, Steps, GlobalWidgetContext, WidgetProps } from "../types";
+	import type { DefaultButtonPosition, PopoverContext, PopoverSide, WidgetContext } from "../types";
+	import { stringToBoolean } from "../utils/stringToBoolean";
 
-	export let feedbackTriggerButton: HTMLButtonElement | undefined = undefined;
+	export let popoverTriggerButton: HTMLButtonElement | undefined = undefined;
+	export let defaultButtonPosition: DefaultButtonPosition | undefined = undefined;
 
-	const showPopper = writable(false);
-	const currentStep = writable<Steps>("category");
-	const selectedCategory = writable<Categories>(null);
+	const widgetContext = getContext<Writable<WidgetContext>>("widgetContext");
+	$: buttonProperties = popoverTriggerButton?.dataset ?? {};
 
-	const globalWidgetPropsContext = getContext<Writable<GlobalWidgetContext>>("globalWidgetProps");
-	const buttonProperties = feedbackTriggerButton?.dataset ?? {};
-
-	const { colorPrimary, colorBgBase, colorTextBase } = seedToken;
-	const props = writable<WidgetProps>({
-		projectId: buttonProperties.projectId ?? $globalWidgetPropsContext.projectId,
-		position: (buttonProperties.position as any) ?? $globalWidgetPropsContext.position ?? "right",
+	const popoverContextState = writable<PopoverContext>({
+		projectId: buttonProperties?.projectId ?? $widgetContext.projectId,
+		open:
+			stringToBoolean(buttonProperties?.defaultOpen) ?? buttonProperties?.defaultOpen === ""
+				? true
+				: false,
+		side: (buttonProperties?.side as PopoverSide) ?? "auto",
+		sideOffset: Number(buttonProperties?.sideOffset ?? 12),
 		theme: {
-			scheme: (buttonProperties.scheme as any) ?? $globalWidgetPropsContext.theme.scheme ?? "light",
-			primaryColor:
-				buttonProperties.primaryColor ??
-				$globalWidgetPropsContext.theme.primaryColor ??
-				colorPrimary,
+			scheme: (buttonProperties?.themeScheme as "light" | "dark") ?? $widgetContext.theme.scheme,
+			primaryColor: buttonProperties?.themePrimaryColor ?? $widgetContext.theme.primaryColor,
 			backgroundColor:
-				buttonProperties.backgroundColor ??
-				$globalWidgetPropsContext.theme.backgroundColor ??
-				colorBgBase,
-			textColor:
-				buttonProperties.textColor ?? $globalWidgetPropsContext.theme.textColor ?? colorTextBase
+				buttonProperties?.themeBackgroundColor ?? $widgetContext.theme.backgroundColor,
+			textColor: buttonProperties?.themeTextColor ?? $widgetContext.theme.textColor
 		},
 		meta: {
-			...$globalWidgetPropsContext.meta,
+			...$widgetContext.meta,
+			...Object.entries(buttonProperties ?? {})
+				.filter(([key]) => key.startsWith("meta"))
+				.reduce((acc, [key, value]) => {
+					const newKey = key.replace("meta", "").toLocaleLowerCase();
+					acc[newKey] = value ?? "";
+					return acc;
+				}, {} as Record<string, string>)
+		},
+		currentStep: "category",
+		selectedCategory: null
+	});
+
+	const popoverContext = setContext("popoverContext", popoverContextState);
+
+	$: popoverContext.set({
+		projectId: buttonProperties.projectId ?? $widgetContext.projectId,
+		open:
+			stringToBoolean(buttonProperties?.defaultOpen) ?? buttonProperties?.defaultOpen === ""
+				? true
+				: false,
+		side: (buttonProperties.side as PopoverSide) ?? "auto",
+		sideOffset: Number(buttonProperties.sideOffset ?? 12),
+		theme: {
+			scheme: (buttonProperties.themeScheme as "light" | "dark") ?? $widgetContext.theme.scheme,
+			primaryColor: buttonProperties.themePrimaryColor ?? $widgetContext.theme.primaryColor,
+			backgroundColor:
+				buttonProperties.themeBackgroundColor ?? $widgetContext.theme.backgroundColor,
+			textColor: buttonProperties.themeTextColor ?? $widgetContext.theme.textColor
+		},
+		meta: {
+			...$widgetContext.meta,
 			...Object.entries(buttonProperties)
 				.filter(([key]) => key.startsWith("meta"))
 				.reduce((acc, [key, value]) => {
@@ -46,74 +72,45 @@
 					acc[newKey] = value ?? "";
 					return acc;
 				}, {} as Record<string, string>)
-		}
-	});
-
-	const configContext = setContext("config", {
-		currentStep,
-		showPopper,
-		selectedCategory,
-		props
-	});
-
-	$: configContext.props.set({
-		projectId: buttonProperties.projectId ?? $globalWidgetPropsContext.projectId,
-		position: (buttonProperties.position as any) ?? $globalWidgetPropsContext.position ?? "right",
-		theme: {
-			scheme: (buttonProperties.scheme as any) ?? $globalWidgetPropsContext.theme.scheme ?? "light",
-			primaryColor:
-				buttonProperties.primaryColor ??
-				$globalWidgetPropsContext.theme.primaryColor ??
-				colorPrimary,
-			backgroundColor:
-				buttonProperties.backgroundColor ??
-				$globalWidgetPropsContext.theme.backgroundColor ??
-				colorBgBase,
-			textColor:
-				buttonProperties.textColor ?? $globalWidgetPropsContext.theme.textColor ?? colorTextBase
 		},
-		meta: {
-			...$globalWidgetPropsContext.meta,
-			...Object.entries(buttonProperties)
-				.filter(([key]) => key.startsWith("meta"))
-				.reduce((acc, [key, value]) => {
-					const newKey = key.replace("meta", "").toLocaleLowerCase();
-					acc[newKey] = value ?? "";
-					return acc;
-				}, {} as Record<string, string>)
-		}
+		currentStep: "category",
+		selectedCategory: null
 	});
 
-	if ($props.projectId === undefined) {
+	if ($popoverContext.projectId === undefined) {
 		console.error("DropFeedback: Missing `projectId`");
 	}
 
-	const [popperRef, popperContent, getInstance] = createPopperActions({
-		placement: "auto",
+	$: [popperRef, popperContent, getInstance] = createPopperActions({
+		placement: (buttonProperties?.side as PopoverSide) ?? "auto",
 		strategy: "fixed"
 	});
-	const extraOpts = {
-		modifiers: [{ name: "offset", options: { offset: [0, 12] } }]
+
+	$: extraOpts = {
+		modifiers: [
+			{ name: "offset", options: { offset: [0, Number(buttonProperties.sideOffset ?? 12)] } }
+		]
 	};
 
 	onMount(() => {
-		if (!feedbackTriggerButton) {
+		if (!popoverTriggerButton) {
 			return;
 		}
 
-		popperRef(feedbackTriggerButton);
+		popperRef(popoverTriggerButton);
 
 		const togglePopper = () => {
-			$showPopper = !$showPopper;
+			$popoverContext.open = !$popoverContext.open;
 		};
-		feedbackTriggerButton.addEventListener("click", togglePopper);
+
+		popoverTriggerButton.addEventListener("click", togglePopper);
 
 		return () => {
-			if (!feedbackTriggerButton) {
+			if (!popoverTriggerButton) {
 				return;
 			}
 
-			feedbackTriggerButton.removeEventListener("click", togglePopper);
+			popoverTriggerButton.removeEventListener("click", togglePopper);
 		};
 	});
 
@@ -130,12 +127,12 @@
 	}
 
 	const escapeListener = (event: KeyboardEvent) => {
-		if (!$showPopper) {
+		if (!$popoverContext.open) {
 			return;
 		}
 
 		if (event.key === "Escape") {
-			$showPopper = false;
+			$popoverContext.open = false;
 		}
 	};
 </script>
@@ -143,39 +140,39 @@
 <svelte:window on:keydown={escapeListener} />
 
 <CssVar>
-	{#if !feedbackTriggerButton}
+	{#if !popoverTriggerButton}
 		<button
 			use:popperRef
 			on:click={() => {
-				$showPopper = !$showPopper;
+				$popoverContext.open = !$popoverContext.open;
 			}}
 			class="trigger-button"
-			class:trigger-button-right={$props.position === "right"}
-			class:trigger-button-left={$props.position === "left"}
+			class:trigger-button-right={defaultButtonPosition === "right"}
+			class:trigger-button-left={defaultButtonPosition === "left"}
 		>
-			feedbacky
+			feedback
 		</button>
 	{/if}
 
-	{#if $showPopper}
+	{#if stringToBoolean(buttonProperties.permanentOpen) ?? buttonProperties.permanentOpen === "" ? true : false || $popoverContext.open}
 		<div
 			id="popper"
 			class="popper"
 			use:popperContent={extraOpts}
-			use:updatePopperWhenPositionIsChanged={$props.position}
+			use:updatePopperWhenPositionIsChanged={defaultButtonPosition || $popoverContext.side}
 			transition:fade={{ duration: 100 }}
 		>
-			{#if $props.projectId === undefined}
+			{#if $popoverContext.projectId === undefined}
 				<p>Missing `projectId`</p>
-			{:else if $currentStep === "category"}
-				<PopperContent>
+			{:else if $popoverContext.currentStep === "category"}
+				<PopoverContent>
 					<CategoryStep />
-				</PopperContent>
-			{:else if $currentStep === "form"}
-				<PopperContent>
+				</PopoverContent>
+			{:else if $popoverContext.currentStep === "form"}
+				<PopoverContent>
 					<FormStep />
-				</PopperContent>
-			{:else if $currentStep === "success"}
+				</PopoverContent>
+			{:else if $popoverContext.currentStep === "success"}
 				<SuccessStep />
 			{/if}
 			<div class="arrow" data-popper-arrow />
