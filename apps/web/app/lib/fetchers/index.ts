@@ -52,12 +52,17 @@ const rejectInvite = async ({ projectId }: { projectId: string }) => {
 };
 
 const me = async (cookie?: string) => {
-  const { data } = await axiosInstance.get("/auth/me", {
+  const { data } = await axiosInstance.get("/users/me", {
     headers: {
       Cookie: cookie,
     },
   });
 
+  return data;
+};
+
+const updateUser = async (payload: { fullName: string }) => {
+  const { data } = await axiosInstance.patch("/users/me", payload);
   return data;
 };
 
@@ -174,6 +179,7 @@ export const fetchers = {
   acceptInvite,
   rejectInvite,
   me,
+  updateUser,
   signup,
   signin,
   verifyEmail,

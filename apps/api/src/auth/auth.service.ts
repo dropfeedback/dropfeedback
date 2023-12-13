@@ -4,7 +4,6 @@ import {
   Injectable,
   BadRequestException,
   UnauthorizedException,
-  NotFoundException,
 } from '@nestjs/common';
 import { SignUpLocalDto, SignInLocalDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -24,22 +23,6 @@ export class AuthService {
     private config: ConfigService,
     private mailService: MailService,
   ) {}
-
-  async me(id: string) {
-    try {
-      return await this.prisma.user.findUniqueOrThrow({
-        where: { id },
-        select: {
-          id: true,
-          email: true,
-          avatarUrl: true,
-          fullName: true,
-        },
-      });
-    } catch (error) {
-      throw new NotFoundException('User not found');
-    }
-  }
 
   async signupLocal(dto: SignUpLocalDto) {
     const hashedPassword = await this.hashData(dto.password);

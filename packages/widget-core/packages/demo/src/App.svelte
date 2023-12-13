@@ -64,7 +64,7 @@
 	<img class={`arrow arrow-${position} arrow-${themeScheme}`} src="/arrow.svg" alt="Arrow" />
 
 	<feedbacky-widget
-		project-id="24320d3d-c5f2-44e1-83a1-13e1cb61fe1d"
+		project-id="b4dbbce7-92ae-47fa-840e-b696a9fb856b"
 		theme-scheme={themeScheme}
 		theme-primary-color={primaryColor}
 		theme-text-color={textColor}
