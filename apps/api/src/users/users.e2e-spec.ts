@@ -2,14 +2,17 @@ import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { MOCK_USER, getAuthCookie } from 'src/test/helpers/auth';
 import { createNestApp } from 'src/test/helpers/create-nest-app';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 describe('Users - e2e', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
   let authCookie: string[] = [];
 
   beforeAll(async () => {
     app = await createNestApp();
-    authCookie = await getAuthCookie(app);
+    prisma = await app.get(PrismaService);
+    authCookie = await getAuthCookie(app, prisma);
   });
 
   afterAll(async () => {
