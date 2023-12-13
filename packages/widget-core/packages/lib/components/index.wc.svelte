@@ -7,191 +7,147 @@
 				type: "String",
 				attribute: "project-id"
 			},
-			scheme: {
+			themeScheme: {
 				reflect: true,
 				type: "String",
 				attribute: "theme-scheme"
 			},
-			primaryColor: {
+			themePrimaryColor: {
 				reflect: true,
 				type: "String",
 				attribute: "theme-primary-color"
 			},
-			backgroundColor: {
+			themeBackgroundColor: {
 				reflect: true,
 				type: "String",
 				attribute: "theme-background-color"
 			},
-			textColor: {
+			themeTextColor: {
 				reflect: true,
 				type: "String",
 				attribute: "theme-text-color"
 			},
-			position: {
+			defaultButtonPosition: {
 				reflect: true,
 				type: "String",
-				attribute: "position"
+				attribute: "default-button-position"
+			},
+			defaultButtonEnabled: {
+				reflect: true,
+				type: "String",
+				attribute: "default-button-enabled"
 			}
 		}
 	}}
 />
 
 <script lang="ts">
-	import { onMount, setContext } from "svelte";
+	import { setContext, onMount } from "svelte";
 	import { writable } from "svelte/store";
-	import { fade } from "svelte/transition";
-	import { createPopperActions } from "svelte-popperjs";
-	import PopperContent from "./popper-content.wc.svelte";
-	import CategoryStep from "./category-step.wc.svelte";
-	import FormStep from "./form-step.wc.svelte";
-	import SuccessStep from "./success-step.wc.svelte";
-	import CssVar from "./css-var.wc.svelte";
+	import Popover from "./popover.wc.svelte";
+	import { stringToBoolean } from "../utils/stringToBoolean";
 	import seedToken from "../theme/seed";
-	import type { Steps, Categories, WidgetContext } from "../types";
+	import type { WidgetContext } from "../types";
 
-	const { colorPrimary, colorBgBase, colorTextBase } = seedToken;
+	export let projectId: string | undefined = undefined;
+	export let defaultButtonPosition: "right" | "left" | undefined = undefined;
+	export let defaultButtonEnabled: string | undefined = undefined;
+	export let themeScheme: "dark" | "light" | undefined = undefined;
+	export let themePrimaryColor: string | undefined = undefined;
+	export let themeBackgroundColor: string | undefined = undefined;
+	export let themeTextColor: string | undefined = undefined;
 
-	export let projectId: string;
-	export let position: "right" | "left" = "right";
-	export let scheme: "dark" | "light" = "light";
-	export let primaryColor: string = colorPrimary;
-	export let backgroundColor: string = colorBgBase;
-	export let textColor: string = colorTextBase;
-
-	const meta = Object.entries($$restProps)
+	$: meta = Object.entries($$restProps)
 		.filter(([key]) => key.startsWith("meta-"))
 		.reduce((acc, [key, value]) => {
 			acc[key.replace("meta-", "")] = value;
 			return acc;
 		}, {} as Record<string, string>);
 
-	const widgetProps = writable<WidgetContext>({
+	const { colorPrimary, colorBgBase, colorTextBase } = seedToken;
+
+	const widgetContextState = writable<WidgetContext>({
 		projectId,
-		position,
-		meta,
+		defaultButton: {
+			position: defaultButtonPosition ?? "right",
+			enabled: stringToBoolean(defaultButtonEnabled) ?? true
+		},
 		theme: {
-			scheme,
-			primaryColor,
-			backgroundColor,
-			textColor
-		}
-	});
-	const showPopper = writable(false);
-	const currentStep = writable<Steps>("category");
-	const selectedCategory = writable<Categories>(null);
-
-	const widgetPropsContext = setContext("widgetProps", widgetProps);
-	setContext("config", {
-		currentStep,
-		showPopper,
-		selectedCategory
+			scheme: themeScheme ?? "light",
+			primaryColor: themePrimaryColor ?? colorPrimary,
+			backgroundColor: themeBackgroundColor ?? colorBgBase,
+			textColor: themeTextColor ?? colorTextBase
+		},
+		meta
 	});
 
-	$: widgetPropsContext.set({
+	const widgetContext = setContext("widgetContext", widgetContextState);
+
+	$: widgetContext.set({
 		projectId,
-		position,
-		meta,
+		defaultButton: {
+			position: defaultButtonPosition ?? "right",
+			enabled: stringToBoolean(defaultButtonEnabled) ?? true
+		},
 		theme: {
-			scheme,
-			primaryColor,
-			backgroundColor,
-			textColor
-		}
+			scheme: themeScheme ?? "light",
+			primaryColor: themePrimaryColor ?? colorPrimary,
+			backgroundColor: themeBackgroundColor ?? colorBgBase,
+			textColor: themeTextColor ?? colorTextBase
+		},
+		meta
 	});
 
-	if (projectId === undefined) {
-		console.error("feedbacky: Missing projectId");
-	}
-
-	const customButton = document.querySelector("[data-feedback-button]") as HTMLButtonElement;
-
-	const [popperRef, popperContent, getInstance] = createPopperActions({
-		placement: customButton ? "bottom" : "auto",
-		strategy: "fixed"
-	});
-	const extraOpts = {
-		modifiers: [{ name: "offset", options: { offset: [0, 12] } }]
-	};
+	let popoverTriggerButtons = document.querySelectorAll(
+		"[data-feedback-button]"
+	) as NodeListOf<HTMLButtonElement>;
 
 	onMount(() => {
-		if (!customButton) {
-			return;
-		}
+		const observer = new MutationObserver((mutations) => {
+			mutations.forEach((mutation) => {
+				if (mutation.type === "attributes") {
+					popoverTriggerButtons = document.querySelectorAll(
+						"[data-feedback-button]"
+					) as NodeListOf<HTMLButtonElement>;
+				}
+			});
+		});
 
-		popperRef(customButton);
+		popoverTriggerButtons.forEach((popoverTriggerButton) => {
+			observer.observe(popoverTriggerButton, {
+				attributes: true
+			});
+		});
 
-		const togglePopper = () => {
-			$showPopper = !$showPopper;
-		};
-		customButton.addEventListener("click", togglePopper);
-
-		return () => customButton.removeEventListener("click", togglePopper);
+		return () => observer.disconnect();
 	});
 
-	async function refreshTooltip() {
-		await getInstance()?.update();
-	}
+	onMount(() => {
+		const observer = new MutationObserver((mutations) => {
+			mutations.forEach((mutation) => {
+				if (mutation.type === "childList") {
+					popoverTriggerButtons = document.querySelectorAll(
+						"[data-feedback-button]"
+					) as NodeListOf<HTMLButtonElement>;
+				}
+			});
+		});
 
-	function updatePopperWhenPositionIsChanged(_: HTMLElement, position: string) {
-		return {
-			update() {
-				refreshTooltip();
-			}
-		};
-	}
+		observer.observe(document.body, {
+			childList: true,
+			subtree: true
+		});
 
-	const escapeListener = (event: KeyboardEvent) => {
-		if (!$showPopper) {
-			return;
-		}
-
-		if (event.key === "Escape") {
-			$showPopper = false;
-		}
-	};
+		return () => observer.disconnect();
+	});
 </script>
 
-<svelte:window on:keydown={escapeListener} />
+{#each popoverTriggerButtons as popoverTriggerButton (popoverTriggerButton)}
+	<Popover {popoverTriggerButton} />
+{/each}
 
-{#if projectId !== undefined}
-	<CssVar>
-		{#if !customButton}
-			<button
-				use:popperRef
-				on:click={() => {
-					$showPopper = !$showPopper;
-				}}
-				class="trigger-button"
-				class:trigger-button-right={position === "right"}
-				class:trigger-button-left={position === "left"}
-			>
-				feedbacky
-			</button>
-		{/if}
-		{#if $showPopper}
-			<div
-				id="popper"
-				class="popper"
-				use:popperContent={extraOpts}
-				use:updatePopperWhenPositionIsChanged={position}
-				transition:fade={{ duration: 100 }}
-			>
-				{#if $currentStep === "category"}
-					<PopperContent>
-						<CategoryStep />
-					</PopperContent>
-				{:else if $currentStep === "form"}
-					<PopperContent>
-						<FormStep />
-					</PopperContent>
-				{/if}
-				{#if $currentStep === "success"}
-					<SuccessStep />
-				{/if}
-				<div class="arrow" data-popper-arrow />
-			</div>
-		{/if}
-	</CssVar>
+{#if stringToBoolean(defaultButtonEnabled) ?? true}
+	<Popover defaultButtonPosition={defaultButtonPosition ?? "right"} />
 {/if}
 
 <style>
@@ -201,96 +157,6 @@
 			"Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
 			"Noto Color Emoji";
 		box-sizing: border-box;
-	}
-
-	.popper {
-		display: flex;
-		flex-direction: column;
-		padding-right: 16px;
-		padding-left: 16px;
-		box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12),
-			0 9px 28px 8px rgba(0, 0, 0, 0.05);
-		background-color: var(--color-bg-container);
-		min-width: 320px;
-		border-radius: 8px;
-		min-height: 200px;
-		z-index: 99999;
-	}
-
-	.arrow,
-	.arrow::before {
-		position: absolute;
-		width: 8px;
-		height: 8px;
-		background-color: var(--color-bg-container);
-	}
-
-	.arrow {
-		text-align: left;
-		visibility: hidden;
-		box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
-	}
-
-	:global(#popper[data-popper-placement^="bottom"] .arrow) {
-		top: -4px;
-	}
-	:global(#popper[data-popper-placement^="top"] .arrow) {
-		bottom: -4px;
-	}
-	:global(#popper[data-popper-placement^="left"] .arrow) {
-		right: -4px;
-	}
-	:global(#popper[data-popper-placement^="right"] .arrow) {
-		left: -4px;
-	}
-
-	.arrow::before {
-		visibility: visible;
-		content: "";
-		transform: rotate(45deg);
-	}
-
-	.trigger-button {
-		top: 50%;
-		position: fixed;
-		padding: 6px 16px 6px 16px;
-		white-space: nowrap;
-		z-index: 99999;
-		border-radius: 6px 6px 0 0;
-		background-color: var(--color-primary);
-		color: #fff;
-		font-size: 14px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: background-color 0.2s var(--motion-ease-in-out);
-		user-select: none;
-		margin-top: -14.25px;
-	}
-
-	.trigger-button:hover {
-		background-color: var(--color-primary-hover);
-	}
-
-	.trigger-button:active {
-		background-color: var(--color-primary-active);
-	}
-
-	.trigger-button:not([disabled]):focus-visible {
-		outline: 4px solid var(--color-primary-border);
-		outline-offset: 1px;
-		transition: outline-offset 0s, outline 0s;
-	}
-
-	.trigger-button-right {
-		right: 0px;
-		transform: rotate(-90deg) translate(50%, -50%);
-		transform-origin: 100% 50%;
-	}
-
-	.trigger-button-left {
-		left: 0px;
-		transform: rotate(90deg) translate(-50%, -50%);
-		transform-origin: 0% 50%;
 	}
 
 	/* Reset button */

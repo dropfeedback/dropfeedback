@@ -39,6 +39,7 @@ export default {
           "email-verification",
           "routes/dashboard/email-verification/route.tsx",
         );
+        route("settings", "routes/dashboard/settings.tsx", { index: true });
       });
     });
   },

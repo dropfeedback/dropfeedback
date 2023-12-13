@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   ForbiddenException,
-  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -34,18 +33,6 @@ export class AuthController {
     private authService: AuthService,
     private config: ConfigService,
   ) {}
-
-  @Get('/me')
-  @EmailVerificationIsNotRequired()
-  @HttpCode(HttpStatus.OK)
-  async me(@GetCurrentUser() jwtPayload: JwtPayload) {
-    const user = await this.authService.me(jwtPayload.sub);
-    return {
-      ...user,
-      provider: jwtPayload.provider,
-      isEmailVerified: jwtPayload.isEmailVerified,
-    };
-  }
 
   @Post('/local/signup')
   @Public()
