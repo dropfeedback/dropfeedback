@@ -4,6 +4,7 @@ import {
   type FeedbackCategory,
   type FeedbackStatus,
   type ProjectVariables,
+  type VerifyEmailPayload,
 } from "~/types";
 
 const getProjects = async () => {
@@ -72,6 +73,21 @@ const signup = async (payload: { email: string; password: string }) => {
 
 const signin = async (payload: { email: string; password: string }) => {
   const { data } = await axiosInstance.post("/auth/local/signin", payload);
+  return data;
+};
+
+const verifyEmail = async (payload: VerifyEmailPayload) => {
+  const { data } = await axiosInstance.post(
+    "/auth/local/verify-email",
+    payload,
+  );
+  return data;
+};
+
+const resendVerificationEmail = async () => {
+  const { data } = await axiosInstance.post(
+    "/auth/local/send-verification-email",
+  );
   return data;
 };
 
@@ -166,6 +182,8 @@ export const fetchers = {
   updateUser,
   signup,
   signin,
+  verifyEmail,
+  resendVerificationEmail,
   logout,
   refreshToken,
   googleLogin,

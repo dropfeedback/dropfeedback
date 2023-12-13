@@ -13,7 +13,7 @@ describe('Feedbacks - e2e', () => {
   beforeAll(async () => {
     app = await createNestApp();
     prisma = await app.get(PrismaService);
-    authCookie = await getAuthCookie(app);
+    authCookie = await getAuthCookie(app, prisma);
   });
 
   afterAll(async () => {

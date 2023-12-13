@@ -50,12 +50,16 @@ export class AuthService {
         },
       });
 
-      const tokens = await this.signToken({
+      const tokens = await this.signAuthToken({
         email: user.email,
         sub: user.id,
         provider: UserProviderType.internal,
+        isEmailVerified: false,
+        iss: 'dropfeedback.com',
       } satisfies JwtPayload);
-      await this.mailService.sendVerificationMail({ email: user.email });
+
+      this.sendVerificationMail({ email: user.email });
+
       return { tokens, id: user.id };
     } else {
       const newUser = await this.prisma.user.create({
@@ -71,12 +75,16 @@ export class AuthService {
         },
       });
 
-      const tokens = await this.signToken({
+      const tokens = await this.signAuthToken({
         email: newUser.email,
         sub: newUser.id,
         provider: UserProviderType.internal,
+        isEmailVerified: false,
+        iss: 'dropfeedback.com',
       } satisfies JwtPayload);
-      await this.mailService.sendVerificationMail({ email: newUser.email });
+
+      this.sendVerificationMail({ email: newUser.email });
+
       return { tokens, id: newUser.id };
     }
   }
@@ -107,10 +115,12 @@ export class AuthService {
     if (!isPasswordMatches)
       throw new BadRequestException('Invalid credentials');
 
-    const tokens = await this.signToken({
+    const tokens = await this.signAuthToken({
       sub: user.id,
       email: user.email,
       provider: UserProviderType.internal,
+      isEmailVerified: internalProvider?.emailVerified || false,
+      iss: 'dropfeedback.com',
     });
 
     return { tokens, id: user.id };
@@ -149,6 +159,14 @@ export class AuthService {
           not: null,
         },
       },
+      include: {
+        UserProvider: {
+          select: {
+            type: true,
+            emailVerified: true,
+          },
+        },
+      },
     });
     if (!user) throw new UnauthorizedException('Invalid refresh token');
 
@@ -159,12 +177,16 @@ export class AuthService {
     if (!isRefreshTokenMatches)
       throw new UnauthorizedException('Invalid refresh token');
 
+    const internalProvider = user?.UserProvider?.find(
+      (provider) => provider.type === UserProviderType.internal,
+    );
     const decodedToken = this.jwtService.decode(refreshToken) as JwtPayload;
-
-    const tokens = await this.signToken({
+    const tokens = await this.signAuthToken({
       sub: user.id,
       email: user.email,
       provider: decodedToken.provider,
+      isEmailVerified: internalProvider?.emailVerified || false,
+      iss: 'dropfeedback.com',
     });
 
     return { tokens, id: user.id };
@@ -205,6 +227,8 @@ export class AuthService {
       email: '',
       sub: '',
       provider: UserProviderType.google,
+      isEmailVerified: true,
+      iss: 'dropfeedback.com',
     };
 
     if (user) {
@@ -240,23 +264,26 @@ export class AuthService {
       tokenPayload.email = newUser.email;
     }
 
-    const tokens = await this.signToken(tokenPayload);
+    const tokens = await this.signAuthToken(tokenPayload);
     return { tokens, id: tokenPayload.sub };
   }
-  async signToken({ sub, email, provider }: JwtPayload) {
+
+  async signAuthToken({ sub, email, provider, isEmailVerified }: JwtPayload) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
-        { sub, email, provider },
+        { sub, email, provider, isEmailVerified },
         {
           expiresIn: this.config.get<number>('ACCESS_TOKEN_EXPIRES_IN'),
           secret: this.config.get<string>('ACCESS_TOKEN_SECRET'),
+          issuer: 'dropfeedback.com',
         },
       ),
       this.jwtService.signAsync(
-        { sub, email, provider },
+        { sub, email, provider, isEmailVerified },
         {
           expiresIn: this.config.get<number>('REFRESH_TOKEN_EXPIRES_IN'),
           secret: this.config.get<string>('REFRESH_TOKEN_SECRET'),
+          issuer: 'dropfeedback.com',
         },
       ),
     ]);
@@ -267,13 +294,36 @@ export class AuthService {
     };
   }
 
-  async emailVerification(token: string) {
-    const email = await this.decodeAndVerifyEmailToken(token);
+  async sendVerificationMail({ email }: { email: string }) {
+    return await this.mailService.sendVerificationMail({ email });
+  }
+
+  async verifyEmail(token: string) {
+    const decodedToken: JwtPayload = this.jwtService.decode(token);
+    if (!decodedToken) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    try {
+      await this.jwtService.verify(token, {
+        secret: this.config.get<string>('EMAIL_TOKEN_SECRET'),
+        jwtid: decodedToken.email,
+        complete: true,
+      });
+    } catch (error) {
+      throw new ForbiddenException('Invalid token');
+    }
 
     const user = await this.prisma.user.findUnique({
-      where: { email },
+      where: { email: decodedToken.email },
       include: {
-        UserProvider: true,
+        UserProvider: {
+          select: {
+            id: true,
+            type: true,
+            emailVerified: true,
+          },
+        },
       },
     });
 
@@ -290,31 +340,14 @@ export class AuthService {
     }
 
     if (internalProvider.emailVerified) {
-      throw new BadRequestException('Email already verified');
+      return user;
     }
 
     await this.prisma.userProvider.update({
       where: { id: internalProvider.id },
       data: { emailVerified: true },
     });
-  }
 
-  private async decodeAndVerifyEmailToken(token: string) {
-    const decodedToken = this.jwtService.decode(token);
-
-    if (!decodedToken) {
-      throw new BadRequestException('Invalid token');
-    }
-
-    try {
-      await this.jwtService.verify(token, {
-        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${
-          decodedToken.email
-        }`,
-      });
-    } catch {
-      throw new ForbiddenException('Invalid token');
-    }
-    return decodedToken.email;
+    return user;
   }
 }
