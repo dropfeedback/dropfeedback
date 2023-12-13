@@ -34,12 +34,22 @@ axiosInstance.interceptors.response.use(
     const status = response?.status;
     const message = response?.data?.message;
 
-    // API returns 401 and message is "Invalid refresh token". redirect to login
-    if (status === 401 && message === "Invalid refresh token") {
-      if (window.location.pathname !== "/login") {
-        window.location.replace("/login");
+    if (typeof window !== "undefined") {
+      // API returns 401 and message is "Invalid refresh token". redirect to login
+      if (status === 401 && message === "Invalid refresh token") {
+        if (window.location.pathname !== "/login") {
+          window.location.replace("/login");
+        }
+        return Promise.reject(error);
       }
-      return Promise.reject(error);
+
+      // API returns 403 and message is "Email is not verified". redirect to /email-verification
+      if (status === 403 && message === "Email is not verified") {
+        if (window.location.pathname !== "/dashboard/email-verification") {
+          window.location.replace("/dashboard/email-verification");
+        }
+        return Promise.reject(error);
+      }
     }
 
     const originalRequest = error.config as typeof error.config & {

@@ -29,6 +29,7 @@ async function main() {
         create: {
           type: UserProviderType.internal,
           hash: await bcrypt.hash(DEMO_USER.password, 10),
+          emailVerified: true,
         },
       },
     },

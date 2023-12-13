@@ -87,7 +87,9 @@ export class MailService {
       { email },
       {
         expiresIn: this.config.get<number>('EMAIL_TOKEN_EXPIRES_IN'),
-        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}-${email}`,
+        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}`,
+        jwtid: email,
+        issuer: 'dropfeedback.com',
       },
     );
     const html = render(VerificationEmail({ token }));

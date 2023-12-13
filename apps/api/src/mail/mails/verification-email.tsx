@@ -19,7 +19,9 @@ import { config } from '../../config';
 
 export const VerificationEmail = ({ token }: { token: string }) => {
   const acceptVerificationLink =
-    config().WEB_URL + '/verification?emailVerificationToken=' + token;
+    config().WEB_URL +
+    '/dashboard/email-verification?emailVerificationToken=' +
+    token;
   return (
     <Html>
       <Head />
@@ -39,15 +41,15 @@ export const VerificationEmail = ({ token }: { token: string }) => {
               Welcome to <strong>DropFeedBack</strong>
             </Heading>
             <Text className="text-black text-[14px] leading-[24px]">
-              Hello, you invited to the team on Vercel.{' '}
-              <strong>DropFeedBack</strong>.
+              We are excited to have you on board. First, you need to confirm
+              your email address. Just press the button below.
             </Text>
             <Section className="text-center mt-[32px] mb-[32px]">
               <Button
-                className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center"
+                className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center p-4"
                 href={acceptVerificationLink}
               >
-                Join the team
+                Confirm
               </Button>
             </Section>
             <Text className="text-black text-[14px] leading-[24px]">
@@ -63,8 +65,8 @@ export const VerificationEmail = ({ token }: { token: string }) => {
             <Text className="text-[#666666] text-[12px] leading-[24px]">
               This invitation was sended from DropFeedBack service. If you were
               not expecting this invitation, you can ignore this email. If you
-              are concerned about your account's safety, please get in touch
-              with us.
+              are concerned about your account&apos;s safety, please get in
+              touch with us.
             </Text>
           </Container>
         </Body>
