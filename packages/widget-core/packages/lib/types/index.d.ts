@@ -5,13 +5,6 @@ export type IFeedback = {
 	category: Categories;
 };
 
-export type WidgetContext = {
-	projectId?: string;
-	defaultButton: DefaultButtonProps;
-	theme: ThemeProps;
-	meta: Record<string, any>;
-};
-
 export type DefaultButtonPosition = "left" | "right";
 
 export type DefaultButtonProps = {
@@ -20,18 +13,10 @@ export type DefaultButtonProps = {
 };
 
 export type ThemeProps = {
-	scheme: "light" | "dark";
+	scheme: string;
 	primaryColor: string;
 	backgroundColor: string;
 	textColor: string;
-};
-
-export type PopoverContext = Omit<WidgetContext, "defaultButton"> & {
-	open: boolean;
-	side: PopoverSide;
-	sideOffset: number;
-	currentStep: Steps;
-	selectedCategory: Categories | null;
 };
 
 export type PopoverSide =

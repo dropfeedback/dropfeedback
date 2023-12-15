@@ -1,40 +1,41 @@
 <script lang="ts">
-	import { getContext } from "svelte";
 	import CloseIcon from "./icons/close.wc.svelte";
 	import BackIcon from "./icons/back.wc.svelte";
 	import IssueIcon from "./icons/issue.wc.svelte";
 	import IdeaIcon from "./icons/idea.wc.svelte";
-	import type { PopoverContext } from "../types";
+	import type { Categories, PopoverContext, Steps } from "../types";
 	import type { Writable } from "svelte/store";
 
-	const popoverContext = getContext<Writable<PopoverContext>>("popoverContext");
+	export let selectedCategory: Writable<Categories | null>;
+	export let currentStep: Writable<Steps>;
+	export let openState: Writable<boolean>;
 </script>
 
 <div class="container">
-	{#if $popoverContext.selectedCategory}
+	{#if $selectedCategory}
 		<button
 			aria-label="Back"
 			class="back-button"
 			on:click={() => {
-				$popoverContext.currentStep = "category";
-				$popoverContext.selectedCategory = null;
+				$currentStep = "category";
+				$selectedCategory = null;
 			}}
 		>
 			<BackIcon />
 		</button>
 	{/if}
 
-	{#if $popoverContext.selectedCategory === "issue"}
+	{#if $selectedCategory === "issue"}
 		<div class="title">
 			<IssueIcon size={24} />
 			<h1 class="text">Report an issue</h1>
 		</div>
-	{:else if $popoverContext.selectedCategory === "idea"}
+	{:else if $selectedCategory === "idea"}
 		<div class="title">
 			<IdeaIcon size={24} />
 			<h1 class="text">Share an idea</h1>
 		</div>
-	{:else if $popoverContext.selectedCategory === "other"}
+	{:else if $selectedCategory === "other"}
 		<h1 class="text">Tell us anything!</h1>
 	{:else}
 		<h1 class="text">What's on your mind?</h1>
@@ -44,7 +45,7 @@
 		aria-label="Close"
 		class="close-button"
 		on:click={() => {
-			$popoverContext.open = false;
+			$openState = false;
 		}}
 	>
 		<CloseIcon />

@@ -24,9 +24,9 @@ export interface ColorNeutralMapToken {
 	colorBgContainer: string;
 }
 
-export type GenerateColorMap = (baseColor: string, scheme: "dark" | "light") => ColorMap;
+export type GenerateColorMap = (baseColor: string, scheme: string) => ColorMap;
 export type GenerateNeutralColorMap = (
 	bgBaseColor: string,
 	textBaseColor: string,
-	scheme: "dark" | "light"
+	scheme: string
 ) => ColorNeutralMapToken;

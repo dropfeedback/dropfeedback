@@ -1,95 +1,38 @@
 <script lang="ts">
-	import { getContext, onMount, setContext } from "svelte";
+	import { onMount } from "svelte";
 	import { createPopperActions } from "svelte-popperjs";
-	import { writable, type Writable } from "svelte/store";
+	import { writable } from "svelte/store";
 	import { fade } from "svelte/transition";
 	import PopoverContent from "./popover-content.wc.svelte";
 	import CategoryStep from "./category-step.wc.svelte";
 	import FormStep from "./form-step.wc.svelte";
 	import SuccessStep from "./success-step.wc.svelte";
 	import CssVar from "./css-var.wc.svelte";
-	import type { DefaultButtonPosition, PopoverContext, PopoverSide, WidgetContext } from "../types";
-	import { stringToBoolean } from "../utils/stringToBoolean";
+	import type { Categories, DefaultButtonProps, PopoverSide, Steps, ThemeProps } from "../types";
 
 	export let popoverTriggerButton: HTMLButtonElement | undefined = undefined;
-	export let defaultButtonPosition: DefaultButtonPosition | undefined = undefined;
+	export let projectId: string | undefined = undefined;
+	export let theme: ThemeProps;
+	export let defaultButton: DefaultButtonProps;
+	export let side: string;
+	export let sideOffset: number;
+	export let open: boolean;
+	export let permanentOpen: boolean;
 
-	const widgetContext = getContext<Writable<WidgetContext>>("widgetContext");
-	$: buttonProperties = popoverTriggerButton?.dataset ?? {};
+	const currentStep = writable<Steps>("category");
+	const selectedCategory = writable<Categories | null>(null);
+	$: openState = writable<boolean>(open);
 
-	const popoverContextState = writable<PopoverContext>({
-		projectId: buttonProperties?.projectId ?? $widgetContext.projectId,
-		open:
-			stringToBoolean(buttonProperties?.defaultOpen) ?? buttonProperties?.defaultOpen === ""
-				? true
-				: false,
-		side: (buttonProperties?.side as PopoverSide) ?? "auto",
-		sideOffset: Number(buttonProperties?.sideOffset ?? 12),
-		theme: {
-			scheme: (buttonProperties?.themeScheme as "light" | "dark") ?? $widgetContext.theme.scheme,
-			primaryColor: buttonProperties?.themePrimaryColor ?? $widgetContext.theme.primaryColor,
-			backgroundColor:
-				buttonProperties?.themeBackgroundColor ?? $widgetContext.theme.backgroundColor,
-			textColor: buttonProperties?.themeTextColor ?? $widgetContext.theme.textColor
-		},
-		meta: {
-			...$widgetContext.meta,
-			...Object.entries(buttonProperties ?? {})
-				.filter(([key]) => key.startsWith("meta"))
-				.reduce((acc, [key, value]) => {
-					const newKey = key.replace("meta", "").toLocaleLowerCase();
-					acc[newKey] = value ?? "";
-					return acc;
-				}, {} as Record<string, string>)
-		},
-		currentStep: "category",
-		selectedCategory: null
-	});
-
-	const popoverContext = setContext("popoverContext", popoverContextState);
-
-	$: popoverContext.set({
-		projectId: buttonProperties.projectId ?? $widgetContext.projectId,
-		open:
-			stringToBoolean(buttonProperties?.defaultOpen) ?? buttonProperties?.defaultOpen === ""
-				? true
-				: false,
-		side: (buttonProperties.side as PopoverSide) ?? "auto",
-		sideOffset: Number(buttonProperties.sideOffset ?? 12),
-		theme: {
-			scheme: (buttonProperties.themeScheme as "light" | "dark") ?? $widgetContext.theme.scheme,
-			primaryColor: buttonProperties.themePrimaryColor ?? $widgetContext.theme.primaryColor,
-			backgroundColor:
-				buttonProperties.themeBackgroundColor ?? $widgetContext.theme.backgroundColor,
-			textColor: buttonProperties.themeTextColor ?? $widgetContext.theme.textColor
-		},
-		meta: {
-			...$widgetContext.meta,
-			...Object.entries(buttonProperties)
-				.filter(([key]) => key.startsWith("meta"))
-				.reduce((acc, [key, value]) => {
-					const newKey = key.replace("meta", "").toLocaleLowerCase();
-					acc[newKey] = value ?? "";
-					return acc;
-				}, {} as Record<string, string>)
-		},
-		currentStep: "category",
-		selectedCategory: null
-	});
-
-	if ($popoverContext.projectId === undefined) {
+	if (projectId === undefined) {
 		console.error("DropFeedback: Missing `projectId`");
 	}
 
-	$: [popperRef, popperContent, getInstance] = createPopperActions({
-		placement: (buttonProperties?.side as PopoverSide) ?? "auto",
+	const [popperRef, popperContent, getInstance] = createPopperActions({
 		strategy: "fixed"
 	});
-
 	$: extraOpts = {
-		modifiers: [
-			{ name: "offset", options: { offset: [0, Number(buttonProperties.sideOffset ?? 12)] } }
-		]
+		modifiers: [{ name: "offset", options: { offset: [0, sideOffset] } }],
+		placement: side as PopoverSide
 	};
 
 	onMount(() => {
@@ -100,7 +43,7 @@
 		popperRef(popoverTriggerButton);
 
 		const togglePopper = () => {
-			$popoverContext.open = !$popoverContext.open;
+			$openState = !$openState;
 		};
 
 		popoverTriggerButton.addEventListener("click", togglePopper);
@@ -114,66 +57,64 @@
 		};
 	});
 
-	async function refreshTooltip() {
-		await getInstance()?.update();
-	}
-
-	function updatePopperWhenPositionIsChanged(_: HTMLElement, position: string) {
+	function updatePopper(_: HTMLElement, params: Record<string, any>) {
 		return {
 			update() {
-				refreshTooltip();
+				getInstance()?.update();
 			}
 		};
 	}
 
 	const escapeListener = (event: KeyboardEvent) => {
-		if (!$popoverContext.open) {
+		if (!$openState) {
 			return;
 		}
 
 		if (event.key === "Escape") {
-			$popoverContext.open = false;
+			$openState = false;
 		}
 	};
 </script>
 
 <svelte:window on:keydown={escapeListener} />
 
-<CssVar>
+<CssVar {theme}>
 	{#if !popoverTriggerButton}
 		<button
 			use:popperRef
 			on:click={() => {
-				$popoverContext.open = !$popoverContext.open;
+				$openState = !$openState;
 			}}
 			class="trigger-button"
-			class:trigger-button-right={defaultButtonPosition === "right"}
-			class:trigger-button-left={defaultButtonPosition === "left"}
+			class:trigger-button-right={defaultButton.position === "right"}
+			class:trigger-button-left={defaultButton.position === "left"}
 		>
 			feedback
 		</button>
 	{/if}
 
-	{#if stringToBoolean(buttonProperties.permanentOpen) ?? buttonProperties.permanentOpen === "" ? true : false || $popoverContext.open}
+	{#if permanentOpen || $openState}
 		<div
 			id="popper"
 			class="popper"
 			use:popperContent={extraOpts}
-			use:updatePopperWhenPositionIsChanged={defaultButtonPosition || $popoverContext.side}
+			use:updatePopper={{
+				position: defaultButton.position
+			}}
 			transition:fade={{ duration: 100 }}
 		>
-			{#if $popoverContext.projectId === undefined}
+			{#if projectId === undefined}
 				<p>Missing `projectId`</p>
-			{:else if $popoverContext.currentStep === "category"}
-				<PopoverContent>
-					<CategoryStep />
+			{:else if $currentStep === "category"}
+				<PopoverContent {openState} {selectedCategory} {currentStep}>
+					<CategoryStep {selectedCategory} {currentStep} />
 				</PopoverContent>
-			{:else if $popoverContext.currentStep === "form"}
-				<PopoverContent>
-					<FormStep />
+			{:else if $currentStep === "form"}
+				<PopoverContent {openState} {selectedCategory} {currentStep}>
+					<FormStep {projectId} {selectedCategory} {currentStep} />
 				</PopoverContent>
-			{:else if $popoverContext.currentStep === "success"}
-				<SuccessStep />
+			{:else if $currentStep === "success"}
+				<SuccessStep {selectedCategory} {currentStep} />
 			{/if}
 			<div class="arrow" data-popper-arrow />
 		</div>

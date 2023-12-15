@@ -1,16 +1,14 @@
 <script lang="ts">
-	import { getContext, onMount } from "svelte";
+	import { onMount } from "svelte";
 	import type { Writable } from "svelte/store";
-	import type { PopoverContext } from "../types";
+	import type { Categories, Steps } from "../types";
 
-	const popoverContext = getContext<Writable<PopoverContext>>("popoverContext");
+	export let selectedCategory: Writable<Categories | null>;
+	export let currentStep: Writable<Steps>;
 
 	const finish = () => {
-		popoverContext.update((state) => ({
-			...state,
-			currentStep: "category",
-			selectedCategory: null
-		}));
+		$currentStep = "category";
+		$selectedCategory = null;
 	};
 
 	onMount(() => {

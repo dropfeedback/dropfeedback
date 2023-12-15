@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { getContext } from "svelte";
 	import type { Writable } from "svelte/store";
 	import LoadingIcon from "./icons/loading.wc.svelte";
 	import { sendFeedback } from "../api";
-	import type { PopoverContext } from "../types";
+	import type { Categories, Steps } from "../types";
 
-	const popoverContext = getContext<Writable<PopoverContext>>("popoverContext");
-
-	const { projectId, meta, selectedCategory } = $popoverContext;
+	export let selectedCategory: Writable<Categories | null>;
+	export let currentStep: Writable<Steps>;
+	export let projectId: string;
 
 	let placeholder: string = "What's on your mind?";
 	let content = "";
@@ -15,11 +14,11 @@
 	let loading = false;
 	let duration: number;
 
-	$: if (selectedCategory === "issue") {
+	$: if ($selectedCategory === "issue") {
 		placeholder = "I noticed that...";
-	} else if (selectedCategory === "idea") {
+	} else if ($selectedCategory === "idea") {
 		placeholder = "I would love...";
-	} else if (selectedCategory === "other") {
+	} else if ($selectedCategory === "other") {
 		placeholder = "What's on your mind?";
 	}
 
@@ -30,10 +29,10 @@
 
 		try {
 			await sendFeedback({
-				category: selectedCategory ?? "other",
+				category: $selectedCategory ?? "other",
 				content,
 				projectId: projectId!,
-				meta
+				meta: {}
 			});
 
 			const requestDuration = Date.now() - duration;
@@ -41,7 +40,7 @@
 				await new Promise((resolve) => setTimeout(resolve, 1000 - requestDuration));
 			}
 
-			$popoverContext.currentStep = "success";
+			$currentStep = "success";
 			content = "";
 		} catch (err) {
 			if (err instanceof Error) {
