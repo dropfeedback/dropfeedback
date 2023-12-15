@@ -1,24 +1,19 @@
 <script lang="ts">
-	import { afterUpdate, getContext } from "svelte";
-	import type { Writable } from "svelte/store";
 	import { generateColorPalettes, generateNeutralColorPalettes } from "../theme/colors";
 	import { cssObjectToString } from "../utils/cssObjectToString";
 	import seedToken from "../theme/seed";
-	import type { PopoverContext } from "../types";
+	import type { ThemeProps } from "../types";
 
 	const { borderRadius, motionEaseInOut } = seedToken;
 
-	const popoverContext = getContext<Writable<PopoverContext>>("popoverContext");
+	export let theme: ThemeProps;
 
-	$: primaryColors = generateColorPalettes(
-		$popoverContext.theme.primaryColor,
-		$popoverContext.theme.scheme
-	);
+	$: primaryColors = generateColorPalettes(theme.primaryColor, theme.scheme);
 
 	$: neutralColors = generateNeutralColorPalettes(
-		$popoverContext.theme.backgroundColor,
-		$popoverContext.theme.textColor,
-		$popoverContext.theme.scheme
+		theme.backgroundColor,
+		theme.textColor,
+		theme.scheme
 	);
 
 	$: styles = {

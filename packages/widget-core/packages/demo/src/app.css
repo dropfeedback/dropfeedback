@@ -6,8 +6,8 @@
 	line-height: 24px;
 	font-weight: 400;
 
-	color: #213547;
-	background-color: #ffffff;
+	color: #fff;
+	background-color: #213547;
 
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
@@ -16,15 +16,33 @@
 	-webkit-text-size-adjust: 100%;
 }
 
+main {
+	padding-left: 32px;
+	padding-right: 32px;
+	margin-bottom: 300px;
+}
+
+.center {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 .dark {
 	color: rgba(255, 255, 255, 0.87);
 	background-color: #242424;
 }
 
-body {
+.flex-row {
 	display: flex;
+	flex-wrap: wrap;
 	justify-content: center;
-	margin: 100px auto 0px auto;
+	gap: 1rem;
+	align-items: center;
+}
+
+.text-center {
+	text-align: center;
 }
 
 input {

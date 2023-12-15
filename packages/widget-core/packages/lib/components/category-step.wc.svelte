@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { getContext, type ComponentType } from "svelte";
+	import { type ComponentType } from "svelte";
 	import IdeaIcon from "./icons/idea.wc.svelte";
 	import IssueIcon from "./icons/issue.wc.svelte";
 	import OtherIcon from "./icons/other.wc.svelte";
-	import type { Categories, PopoverContext } from "../types";
+	import type { Categories, Steps } from "../types";
 	import type { Writable } from "svelte/store";
-
-	const popoverContext = getContext<Writable<PopoverContext>>("popoverContext");
 
 	const BUTTONS: { label: string; value: Categories; icon: ComponentType }[] = [
 		{
@@ -25,6 +23,9 @@
 			icon: OtherIcon
 		}
 	];
+
+	export let selectedCategory: Writable<Categories | null>;
+	export let currentStep: Writable<Steps>;
 </script>
 
 <div class="container">
@@ -32,11 +33,8 @@
 		<button
 			class="category-button"
 			on:click={() => {
-				popoverContext.update((state) => ({
-					...state,
-					currentStep: "form",
-					selectedCategory: button.value
-				}));
+				$currentStep = "form";
+				$selectedCategory = button.value;
 			}}
 		>
 			<svelte:component this={button.icon} />

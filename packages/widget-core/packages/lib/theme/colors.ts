@@ -4,7 +4,7 @@ import type { GenerateColorMap, GenerateNeutralColorMap } from "../types/theme";
 
 export const generateColorPalettes: GenerateColorMap = (
 	baseColor: string,
-	scheme: "dark" | "light"
+	scheme: string,
 ) => {
 	if (scheme === "dark") {
 		const colors = generate(baseColor, { theme: "dark" });
@@ -40,7 +40,7 @@ export const generateColorPalettes: GenerateColorMap = (
 export const generateNeutralColorPalettes: GenerateNeutralColorMap = (
 	bgBaseColor: string,
 	textBaseColor: string,
-	scheme: "dark" | "light"
+	scheme: string,
 ) => {
 	if (scheme === "dark") {
 		const colorBgBase = bgBaseColor || "#000";

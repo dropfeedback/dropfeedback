@@ -42,12 +42,10 @@
 />
 
 <script lang="ts">
-	import { setContext, onMount } from "svelte";
-	import { writable } from "svelte/store";
 	import Popover from "./popover.wc.svelte";
 	import { stringToBoolean } from "../utils/stringToBoolean";
 	import seedToken from "../theme/seed";
-	import type { WidgetContext } from "../types";
+	import { onMount } from "svelte";
 
 	export let projectId: string | undefined = undefined;
 	export let defaultButtonPosition: "right" | "left" | undefined = undefined;
@@ -57,46 +55,7 @@
 	export let themeBackgroundColor: string | undefined = undefined;
 	export let themeTextColor: string | undefined = undefined;
 
-	$: meta = Object.entries($$restProps)
-		.filter(([key]) => key.startsWith("meta-"))
-		.reduce((acc, [key, value]) => {
-			acc[key.replace("meta-", "")] = value;
-			return acc;
-		}, {} as Record<string, string>);
-
 	const { colorPrimary, colorBgBase, colorTextBase } = seedToken;
-
-	const widgetContextState = writable<WidgetContext>({
-		projectId,
-		defaultButton: {
-			position: defaultButtonPosition ?? "right",
-			enabled: stringToBoolean(defaultButtonEnabled) ?? true
-		},
-		theme: {
-			scheme: themeScheme ?? "light",
-			primaryColor: themePrimaryColor ?? colorPrimary,
-			backgroundColor: themeBackgroundColor ?? colorBgBase,
-			textColor: themeTextColor ?? colorTextBase
-		},
-		meta
-	});
-
-	const widgetContext = setContext("widgetContext", widgetContextState);
-
-	$: widgetContext.set({
-		projectId,
-		defaultButton: {
-			position: defaultButtonPosition ?? "right",
-			enabled: stringToBoolean(defaultButtonEnabled) ?? true
-		},
-		theme: {
-			scheme: themeScheme ?? "light",
-			primaryColor: themePrimaryColor ?? colorPrimary,
-			backgroundColor: themeBackgroundColor ?? colorBgBase,
-			textColor: themeTextColor ?? colorTextBase
-		},
-		meta
-	});
 
 	let popoverTriggerButtons = document.querySelectorAll(
 		"[data-feedback-button]"
@@ -105,7 +64,7 @@
 	onMount(() => {
 		const observer = new MutationObserver((mutations) => {
 			mutations.forEach((mutation) => {
-				if (mutation.type === "attributes") {
+				if (mutation.type === "attributes" || mutation.type === "childList") {
 					popoverTriggerButtons = document.querySelectorAll(
 						"[data-feedback-button]"
 					) as NodeListOf<HTMLButtonElement>;
@@ -113,26 +72,14 @@
 			});
 		});
 
+		// Observe existing popover trigger buttons
 		popoverTriggerButtons.forEach((popoverTriggerButton) => {
 			observer.observe(popoverTriggerButton, {
 				attributes: true
 			});
 		});
 
-		return () => observer.disconnect();
-	});
-
-	onMount(() => {
-		const observer = new MutationObserver((mutations) => {
-			mutations.forEach((mutation) => {
-				if (mutation.type === "childList") {
-					popoverTriggerButtons = document.querySelectorAll(
-						"[data-feedback-button]"
-					) as NodeListOf<HTMLButtonElement>;
-				}
-			});
-		});
-
+		// Observe body for new popover trigger buttons
 		observer.observe(document.body, {
 			childList: true,
 			subtree: true
@@ -143,11 +90,55 @@
 </script>
 
 {#each popoverTriggerButtons as popoverTriggerButton (popoverTriggerButton)}
-	<Popover {popoverTriggerButton} />
+	{@const dataset = popoverTriggerButton?.dataset}
+	{@const preferedProjectId = popoverTriggerButton?.dataset?.projectId ?? projectId}
+	{@const theme = {
+		scheme: dataset?.themeScheme ?? themeScheme ?? "light" ,
+		primaryColor: dataset?.themePrimaryColor ?? themePrimaryColor ?? colorPrimary,
+		backgroundColor: dataset?.themeBackgroundColor ?? themeBackgroundColor ?? colorBgBase,
+		textColor: dataset?.themeTextColor ?? themeTextColor ?? colorTextBase
+	}}
+	{@const defaultButton = {
+		position: defaultButtonPosition ?? "right",
+		enabled: stringToBoolean(defaultButtonEnabled) ?? true
+	}}
+	{@const side = dataset?.side ?? "auto"}
+	{@const sideOffset = Number(dataset?.sideOffset ?? 12)}
+	{@const open = stringToBoolean(dataset?.open) ?? false}
+	{@const permanentOpen =
+		stringToBoolean(dataset?.permanentOpen) ?? dataset?.permanentOpen === "" ? true : false}
+	<Popover
+		{popoverTriggerButton}
+		projectId={preferedProjectId}
+		{theme}
+		{defaultButton}
+		{side}
+		{sideOffset}
+		{open}
+		{permanentOpen}
+	/>
 {/each}
 
 {#if stringToBoolean(defaultButtonEnabled) ?? true}
-	<Popover defaultButtonPosition={defaultButtonPosition ?? "right"} />
+	{@const defaultButton = {
+		position: defaultButtonPosition ?? "right",
+		enabled: stringToBoolean(defaultButtonEnabled) ?? true
+	}}
+	{@const theme = {
+		scheme: themeScheme ?? "light",
+		primaryColor: themePrimaryColor ?? colorPrimary,
+		backgroundColor: themeBackgroundColor ?? colorBgBase,
+		textColor: themeTextColor ?? colorTextBase
+	}}
+	<Popover
+		{projectId}
+		{theme}
+		{defaultButton}
+		open={false}
+		side="auto"
+		sideOffset={12}
+		permanentOpen={false}
+	/>
 {/if}
 
 <style>
