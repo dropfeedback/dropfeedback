@@ -28,6 +28,21 @@ export class FeedbacksService {
     pagination?: CursorPagination;
     orderBy?: OrderBy;
   }) {
+    try {
+      // find project by id
+      await this.prisma.project.findUniqueOrThrow({
+        where: {
+          id: projectId,
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Project not found');
+      }
+
+      throw new NotFoundException(error.message);
+    }
+
     const [
       data,
       countAll,
@@ -159,7 +174,7 @@ export class FeedbacksService {
         throw new NotFoundException('Feedback not found');
       }
 
-      throw new BadRequestException(error.message);
+      throw new NotFoundException(error.message);
     }
   }
 

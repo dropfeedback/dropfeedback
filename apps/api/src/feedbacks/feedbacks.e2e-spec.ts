@@ -207,7 +207,7 @@ describe('Feedbacks - e2e', () => {
         .get('/feedbacks')
         .query({ projectId: '12345' })
         .set('Cookie', authCookie)
-        .expect(400);
+        .expect(404);
 
       await request(app.getHttpServer())
         .get('/feedbacks')
@@ -256,7 +256,7 @@ describe('Feedbacks - e2e', () => {
       await request(app.getHttpServer())
         .get('/feedbacks/12345')
         .set('Cookie', authCookie)
-        .expect(400);
+        .expect(404);
 
       await request(app.getHttpServer())
         .get('/feedbacks/')

@@ -149,7 +149,7 @@ describe('Feedbacks - e2e', () => {
       await request(app.getHttpServer())
         .get('/projects/12345')
         .set('Cookie', authCookie)
-        .expect(400);
+        .expect(404);
 
       await request(app.getHttpServer())
         .get('/projects/b6ec9022-8d13-11ee-b9d1-0242ac120002')
