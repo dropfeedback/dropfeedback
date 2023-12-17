@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                 String   @id @default(dbgenerated("gen_random_uuid()"))
   email              String   @unique
   fullName           String?
   avatarUrl          String?
@@ -26,8 +26,8 @@ model User {
 }
 
 model UserProvider {
-  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId        String           @db.Uuid
+  id            String           @id @default(dbgenerated("gen_random_uuid()"))
+  userId        String
   type          UserProviderType
   // It's only for internal users
   hash          String?
@@ -40,7 +40,7 @@ model UserProvider {
 }
 
 model Project {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id        String   @id @default(dbgenerated("gen_random_uuid()"))
   name      String   @db.VarChar(255)
   createdAt DateTime @default(now())
 
@@ -52,10 +52,10 @@ model Project {
 }
 
 model ProjectMember {
-  id        String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id        String            @id @default(dbgenerated("gen_random_uuid()"))
   role      ProjectMemberRole @default(member)
-  userId    String            @db.Uuid
-  projectId String            @db.Uuid
+  userId    String
+  projectId String
   createdAt DateTime          @default(now())
   updatedAt DateTime          @default(now()) @updatedAt
 
@@ -67,10 +67,10 @@ model ProjectMember {
 }
 
 model MemberInvite {
-  id   String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id   String           @id @default(dbgenerated("gen_random_uuid()"))
   role MemberInviteRole @default(member)
 
-  projectId String            @db.Uuid
+  projectId String
   email     String
   state     MemberInviteState @default(pending)
   createdAt DateTime          @default(now())
@@ -83,8 +83,8 @@ model MemberInvite {
 }
 
 model Feedback {
-  id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  projectId String           @db.Uuid
+  id        String           @id @default(dbgenerated("gen_random_uuid()"))
+  projectId String
   content   String           @db.Text
   category  FeedbackCategory @default(other)
   status    FeedbackStatus   @default(new)
@@ -92,7 +92,7 @@ model Feedback {
   origin    String?          @db.VarChar(255)
   device    String?          @db.VarChar(255)
   createdAt DateTime         @default(now())
-  updatedAt DateTime          @default(now()) @updatedAt
+  updatedAt DateTime         @default(now()) @updatedAt
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 

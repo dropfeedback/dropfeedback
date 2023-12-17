@@ -18,7 +18,7 @@ CREATE TYPE "FeedbackStatus" AS ENUM ('new', 'archived');
 
 -- CreateTable
 CREATE TABLE "users" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
     "email" TEXT NOT NULL,
     "fullName" TEXT,
     "avatarUrl" TEXT,
@@ -31,8 +31,8 @@ CREATE TABLE "users" (
 
 -- CreateTable
 CREATE TABLE "user_providers" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "userId" UUID NOT NULL,
+    "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
+    "userId" TEXT NOT NULL,
     "type" "UserProviderType" NOT NULL,
     "hash" TEXT,
     "emailVerified" BOOLEAN NOT NULL DEFAULT false,
@@ -42,7 +42,7 @@ CREATE TABLE "user_providers" (
 
 -- CreateTable
 CREATE TABLE "projects" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
     "name" VARCHAR(255) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -51,10 +51,10 @@ CREATE TABLE "projects" (
 
 -- CreateTable
 CREATE TABLE "project_members" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
     "role" "ProjectMemberRole" NOT NULL DEFAULT 'member',
-    "userId" UUID NOT NULL,
-    "projectId" UUID NOT NULL,
+    "userId" TEXT NOT NULL,
+    "projectId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -63,9 +63,9 @@ CREATE TABLE "project_members" (
 
 -- CreateTable
 CREATE TABLE "member_invites" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
     "role" "MemberInviteRole" NOT NULL DEFAULT 'member',
-    "projectId" UUID NOT NULL,
+    "projectId" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "state" "MemberInviteState" NOT NULL DEFAULT 'pending',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -76,8 +76,8 @@ CREATE TABLE "member_invites" (
 
 -- CreateTable
 CREATE TABLE "feedbacks" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "projectId" UUID NOT NULL,
+    "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
+    "projectId" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "category" "FeedbackCategory" NOT NULL DEFAULT 'other',
     "status" "FeedbackStatus" NOT NULL DEFAULT 'new',
