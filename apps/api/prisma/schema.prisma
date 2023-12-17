@@ -83,16 +83,18 @@ model MemberInvite {
 }
 
 model Feedback {
-  id        String           @id @default(dbgenerated("gen_random_uuid()"))
-  projectId String
-  content   String           @db.Text
-  category  FeedbackCategory @default(other)
-  status    FeedbackStatus   @default(new)
-  meta      Json?            @db.Json
-  origin    String?          @db.VarChar(255)
-  device    String?          @db.VarChar(255)
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @default(now()) @updatedAt
+  id               String           @id @default(dbgenerated("gen_random_uuid()"))
+  projectId        String
+  content          String           @db.Text
+  category         FeedbackCategory @default(other)
+  status           FeedbackStatus   @default(new)
+  meta             Json?            @db.Json
+  origin           String?          @db.VarChar(255)
+  device           String?          @db.VarChar(255)
+  reportIdentifier String?          @db.VarChar(255)
+  resolution       String?          @db.VarChar(255)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @default(now()) @updatedAt
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 

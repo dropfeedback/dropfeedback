@@ -84,6 +84,8 @@ CREATE TABLE "feedbacks" (
     "meta" JSON,
     "origin" VARCHAR(255),
     "device" VARCHAR(255),
+    "reportIdentifier" VARCHAR(255),
+    "resolution" VARCHAR(255),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

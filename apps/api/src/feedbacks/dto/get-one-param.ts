@@ -16,6 +16,8 @@ export class GetOneParam
       | 'projectId'
       | 'status'
       | 'id'
+      | 'resolution'
+      | 'reportIdentifier'
     >
 {
   @IsNotEmpty()

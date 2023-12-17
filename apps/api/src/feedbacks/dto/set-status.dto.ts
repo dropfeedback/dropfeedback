@@ -15,6 +15,8 @@ export class SetStatusDto
       | 'content'
       | 'meta'
       | 'category'
+      | 'resolution'
+      | 'reportIdentifier'
     >
 {
   @IsNotEmpty()

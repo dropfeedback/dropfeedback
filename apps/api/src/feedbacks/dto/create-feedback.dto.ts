@@ -6,7 +6,14 @@ export class CreateFeedbackDto
   implements
     Omit<
       Feedback,
-      'id' | 'createdAt' | 'updatedAt' | 'userId' | 'device' | 'origin'
+      | 'id'
+      | 'createdAt'
+      | 'updatedAt'
+      | 'userId'
+      | 'device'
+      | 'origin'
+      | 'resolution'
+      | 'reportIdentifier'
     >
 {
   @IsNotEmpty()
