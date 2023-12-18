@@ -7,6 +7,7 @@
 	export let selectedCategory: Writable<Categories | null>;
 	export let currentStep: Writable<Steps>;
 	export let projectId: string;
+	export let meta: Record<string, any>;
 
 	let placeholder: string = "What's on your mind?";
 	let content = "";
@@ -26,13 +27,29 @@
 		error = "";
 		loading = true;
 		duration = Date.now();
+		let widgetMeta = {};
+
+		const widget = document.querySelector("feedbacky-widget");
+		if (widget) {
+			widgetMeta = widget.getAttributeNames().reduce((acc, name) => {
+				if (name.startsWith("meta-")) {
+					const newKey = name.replace("meta-", "").replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+					acc[newKey] = widget.getAttribute(name);
+				}
+
+				return acc;
+			}, {} as Record<string, any>);
+		}
 
 		try {
 			await sendFeedback({
 				category: $selectedCategory ?? "other",
 				content,
 				projectId: projectId!,
-				meta: {}
+				meta: {
+					...widgetMeta,
+					...meta
+				}
 			});
 
 			const requestDuration = Date.now() - duration;

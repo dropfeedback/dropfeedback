@@ -158,7 +158,7 @@
 		theme-background-color={backgroundColor}
 		default-button-position={defaultButtonPosition}
 		default-button-enabled={defaultButtonEnabled}
-		meta-customerId={metaCustomerId}
+		meta-customer-id={metaCustomerId}
 		meta-role={metaRole}
 	/>
 
@@ -176,6 +176,8 @@
 			data-side-offset={customButtonSideOffset}
 			data-open={customButtonDefaultOpen}
 			data-permanent-open={customButtonPermanentOpen}
+			data-meta-customer-id={customButtonMetaCustomerId}
+			data-meta-location={customButtonMetaLocation}
 		>
 			custom feedback button
 		</button>
@@ -323,4 +325,6 @@
 			<button data-feedback-button> custom feedback button </button>
 		</div>
 	{/if}
+
+	<!-- <button data-feedback-button data-side="bottom">custom feedback button 2</button> -->
 </main>
