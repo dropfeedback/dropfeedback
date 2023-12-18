@@ -6,8 +6,8 @@
 	line-height: 24px;
 	font-weight: 400;
 
-	color: #fff;
-	background-color: #213547;
+	color: #171717;
+	background-color: #fff;
 
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
@@ -29,8 +29,8 @@ main {
 }
 
 .dark {
-	color: rgba(255, 255, 255, 0.87);
-	background-color: #242424;
+	color: #ededed;
+	background-color: #0a0a0a;
 }
 
 .flex-row {

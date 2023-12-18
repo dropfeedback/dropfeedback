@@ -6,7 +6,7 @@
 	let themeScheme = "light";
 	let primaryColor = "#1677ff";
 	let textColor = "#171717";
-	let backgroundColor = "#fafafa";
+	let backgroundColor = "#fff";
 	let defaultButtonPosition = "right";
 	let defaultButtonEnabled = true;
 	let metaCustomerId = "123";
@@ -17,7 +17,7 @@
 	let customButtonThemeScheme = "dark";
 	let customButtonPrimaryColor = "#683194";
 	let customButtonTextColor = "#ededed";
-	let customButtonBackgroundColor = "#000000";
+	let customButtonBackgroundColor = "#0a0a0a";
 	let customButtonSide = "right";
 	let customButtonSideOffset = 12;
 	let customButtonDefaultOpen = false;
@@ -34,10 +34,10 @@
 	$: {
 		if (themeScheme === "light") {
 			textColor = "#171717";
-			backgroundColor = "#fafafa";
+			backgroundColor = "#fff";
 		} else {
 			textColor = "#ededed";
-			backgroundColor = "#000000";
+			backgroundColor = "#0a0a0a";
 		}
 	}
 </script>
@@ -153,9 +153,6 @@
 	<feedbacky-widget
 		project-id={projectId}
 		theme-scheme={themeScheme}
-		theme-primary-color={primaryColor}
-		theme-text-color={textColor}
-		theme-background-color={backgroundColor}
 		default-button-position={defaultButtonPosition}
 		default-button-enabled={defaultButtonEnabled}
 		meta-customer-id={metaCustomerId}
@@ -169,9 +166,6 @@
 			data-feedback-button
 			data-project-id={customButtonProjectId}
 			data-theme-scheme={customButtonThemeScheme}
-			data-theme-primary-color={customButtonPrimaryColor}
-			data-theme-text-color={customButtonTextColor}
-			data-theme-background-color={customButtonBackgroundColor}
 			data-side={customButtonSide}
 			data-side-offset={customButtonSideOffset}
 			data-open={customButtonDefaultOpen}

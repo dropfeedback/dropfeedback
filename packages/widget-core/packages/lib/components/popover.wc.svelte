@@ -117,7 +117,6 @@
 			{:else if $currentStep === "success"}
 				<SuccessStep {selectedCategory} {currentStep} />
 			{/if}
-			<div class="arrow" data-popper-arrow />
 		</div>
 	{/if}
 </CssVar>
@@ -128,46 +127,12 @@
 		flex-direction: column;
 		padding-right: 16px;
 		padding-left: 16px;
-		box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12),
-			0 9px 28px 8px rgba(0, 0, 0, 0.05);
+		box-shadow: var(--shadow-menu);
 		background-color: var(--color-bg-container);
 		min-width: 320px;
 		border-radius: 8px;
 		min-height: 200px;
 		z-index: 99999;
-	}
-
-	.arrow,
-	.arrow::before {
-		position: absolute;
-		width: 8px;
-		height: 8px;
-		background-color: var(--color-bg-container);
-	}
-
-	.arrow {
-		text-align: left;
-		visibility: hidden;
-		box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
-	}
-
-	:global(#popper[data-popper-placement^="bottom"] .arrow) {
-		top: -4px;
-	}
-	:global(#popper[data-popper-placement^="top"] .arrow) {
-		bottom: -4px;
-	}
-	:global(#popper[data-popper-placement^="left"] .arrow) {
-		right: -4px;
-	}
-	:global(#popper[data-popper-placement^="right"] .arrow) {
-		left: -4px;
-	}
-
-	.arrow::before {
-		visibility: visible;
-		content: "";
-		transform: rotate(45deg);
 	}
 
 	.trigger-button {
