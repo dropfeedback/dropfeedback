@@ -54,6 +54,7 @@
 	export let themePrimaryColor: string | undefined = undefined;
 	export let themeBackgroundColor: string | undefined = undefined;
 	export let themeTextColor: string | undefined = undefined;
+	$$restProps;
 
 	const { colorPrimary, colorBgBase, colorTextBase } = seedToken;
 	const initialMeta = {} as Record<string, string>;

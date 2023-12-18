@@ -19,96 +19,96 @@
 		<g transform="translate(0 1)">
 			<g>
 				<path
-					style="fill:var(--color-fill);"
+					style="fill:var(--color-icon);"
 					d="M405.333,340.333c-2.56,0-4.267-0.853-5.973-2.56c-3.413-3.413-3.413-8.533,0-11.947l17.067-17.067 c3.413-3.413,8.533-3.413,11.947,0c3.413,3.413,3.413,8.533,0,11.947l-17.067,17.067 C409.6,339.48,407.893,340.333,405.333,340.333z"
 				/>
 				<path
-					style="fill:var(--color-fill);"
+					style="fill:var(--color-icon);"
 					d="M448,374.467h-25.6c-5.12,0-8.533-3.413-8.533-8.533s3.413-8.533,8.533-8.533H448 c5.12,0,8.533,3.413,8.533,8.533S453.12,374.467,448,374.467z"
 				/>
 				<path
-					style="fill:var(--color-fill);"
+					style="fill:var(--color-icon);"
 					d="M422.4,425.667c-2.56,0-4.267-0.853-5.973-2.56L399.36,406.04c-3.413-3.413-3.413-8.533,0-11.947 c3.413-3.413,8.533-3.413,11.947,0l17.067,17.067c3.413,3.413,3.413,8.533,0,11.947C426.667,424.813,424.96,425.667,422.4,425.667 z"
 				/>
 			</g>
 			<g>
 				<path
-					style="fill:var(--color-fill-secondary);"
+					style="fill:var(--color-icon-secondary);"
 					d="M174.933,58.733V33.987c0-14.507-11.947-26.453-26.453-26.453l-24.747,8.533 c-11.947,0-17.067,0.853-17.067,12.8v29.867c0,5.12,4.267,8.533,8.533,8.533h51.2C170.667,67.267,174.933,63,174.933,58.733"
-				/> <path style="fill:var(--color-fill-secondary);" d="M106.667,220.867h68.267v-85.333h-68.267V220.867z" />
+				/> <path style="fill:var(--color-icon-secondary);" d="M106.667,220.867h68.267v-85.333h-68.267V220.867z" />
 				<path
-					style="fill:var(--color-fill-secondary);"
+					style="fill:var(--color-icon-secondary);"
 					d="M345.6,67.267V20.333c0-6.827-5.973-12.8-12.8-12.8h-42.667c-6.827,0-12.8,5.973-12.8,12.8v46.933 H345.6z"
-				/> <path style="fill:var(--color-fill-secondary);" d="M277.333,220.867H345.6v-85.333h-68.267V220.867z" />
-			</g> <path style="fill:var(--color-fill);" d="M320,220.867h25.6v-85.333H320V220.867z" />
-			<path style="fill:var(--color-fill-secondary);" d="M277.333,331.8H345.6v-42.667h-68.267V331.8z" />
-			<path style="fill:var(--color-fill);" d="M320,331.8h25.6v-42.667H320V331.8z" />
+				/> <path style="fill:var(--color-icon-secondary);" d="M277.333,220.867H345.6v-85.333h-68.267V220.867z" />
+			</g> <path style="fill:var(--color-icon);" d="M320,220.867h25.6v-85.333H320V220.867z" />
+			<path style="fill:var(--color-icon-secondary);" d="M277.333,331.8H345.6v-42.667h-68.267V331.8z" />
+			<path style="fill:var(--color-icon);" d="M320,331.8h25.6v-42.667H320V331.8z" />
 			<path
-				style="fill:var(--color-fill-secondary);"
+				style="fill:var(--color-icon-secondary);"
 				d="M277.333,442.733v46.933c0,6.827,5.973,12.8,12.8,12.8h18.773c20.48,0,36.693-16.213,36.693-36.693 v-23.04H277.333z"
 			/>
 			<g>
 				<path
-					style="fill:var(--color-fill);"
+					style="fill:var(--color-icon);"
 					d="M320,442.733v59.733h1.707c13.653,0,23.893-11.093,23.893-23.893v-35.84H320z"
 				/>
 				<path
-					style="fill:var(--color-fill);"
+					style="fill:var(--color-icon);"
 					d="M320,20.333v46.933h25.6V20.333c0-6.827-5.973-12.8-12.8-12.8S320,13.507,320,20.333"
 				/>
-			</g> <path style="fill:var(--color-fill-quaternary);" d="M106.667,220.867h25.6v-85.333h-25.6V220.867z" />
-			<path style="fill:var(--color-fill-secondary);" d="M106.667,374.467h68.267v-85.333h-68.267V374.467z" />
-			<path style="fill:var(--color-fill-quaternary);" d="M106.667,374.467h25.6v-85.333h-25.6V374.467z" />
+			</g> <path style="fill:var(--color-icon-quaternary);" d="M106.667,220.867h25.6v-85.333h-25.6V220.867z" />
+			<path style="fill:var(--color-icon-secondary);" d="M106.667,374.467h68.267v-85.333h-68.267V374.467z" />
+			<path style="fill:var(--color-icon-quaternary);" d="M106.667,374.467h25.6v-85.333h-25.6V374.467z" />
 			<path
-				style="fill:var(--color-fill-secondary);"
+				style="fill:var(--color-icon-secondary);"
 				d="M106.667,425.667v49.493c0,15.36,11.947,27.307,27.307,27.307h21.333 c11.093,0,19.627-8.533,19.627-19.627v-40.107L106.667,425.667z"
 			/>
 			<g>
 				<path
-					style="fill:var(--color-fill-quaternary);"
+					style="fill:var(--color-icon-quaternary);"
 					d="M106.667,425.667v51.2c0,14.507,11.093,25.6,25.6,25.6v-76.8H106.667z"
-				/> <path style="fill:var(--color-fill-quaternary);" d="M106.667,20.333v46.933h25.6V7.533L106.667,20.333z" />
+				/> <path style="fill:var(--color-icon-quaternary);" d="M106.667,20.333v46.933h25.6V7.533L106.667,20.333z" />
 			</g>
 			<g>
 				<path
-					style="fill:var(--color-fill);"
+					style="fill:var(--color-icon);"
 					d="M365.227,289.133H85.333c-6.827,0-12.8-5.973-12.8-12.8v-42.667c0-6.827,5.973-12.8,12.8-12.8 h279.893c7.68,0,14.507,6.827,14.507,14.507v39.253C379.733,282.307,373.76,289.133,365.227,289.133"
 				/>
 				<path
-					style="fill:var(--color-fill);"
+					style="fill:var(--color-icon);"
 					d="M366.933,135.533h-281.6c-6.827,0-12.8-5.973-12.8-12.8V80.067c0-6.827,5.973-12.8,12.8-12.8h281.6 c6.827,0,12.8,5.973,12.8,12.8v42.667C379.733,129.56,373.76,135.533,366.933,135.533"
 				/>
 			</g>
 			<g>
 				<path
-					style="fill:var(--color-fill);"
+					style="fill:var(--color-icon);"
 					d="M362.667,74.093v55.467c0,3.413,2.56,6.827,6.827,6.827c10.24,0,18.773-8.533,18.773-18.773v-30.72 c0-11.093-8.533-19.627-18.773-19.627C366.08,67.267,362.667,69.827,362.667,74.093"
 				/>
 				<path
-					style="fill:var(--color-fill);"
+					style="fill:var(--color-icon);"
 					d="M362.667,225.133v58.88c0,2.56,1.707,4.267,4.267,4.267h1.707c10.24,0,18.773-8.533,18.773-18.773 V239.64c0-10.24-8.533-18.773-18.773-18.773h-1.707C365.227,220.867,362.667,222.573,362.667,225.133"
 				/>
 			</g>
 			<g>
 				<path
-					style="fill:var(--color-fill-quaternary);"
+					style="fill:var(--color-icon-quaternary);"
 					d="M64,85.187v32.427c0,10.24,8.533,17.92,17.92,17.92h2.56c2.56,0,5.12-2.56,5.12-5.12V72.387 c0-2.56-2.56-5.12-5.12-5.12h-2.56C72.533,67.267,64,74.947,64,85.187"
 				/>
 				<path
-					style="fill:var(--color-fill-quaternary);"
+					style="fill:var(--color-icon-quaternary);"
 					d="M64,240.493v29.867c0,10.24,8.533,18.773,19.627,18.773c3.413,0,5.973-2.56,5.973-5.973v-55.467 c0-4.267-2.56-6.827-5.973-6.827C72.533,220.867,64,229.4,64,240.493"
 				/>
 			</g>
 			<path
-				style="fill:var(--color-fill);"
+				style="fill:var(--color-icon);"
 				d="M347.307,468.333L81.92,423.107c-6.827-1.707-11.093-8.533-10.24-15.36l8.533-41.813 c1.707-6.827,8.533-11.093,15.36-10.24l266.24,45.227c6.827,1.707,11.093,8.533,10.24,15.36l-8.533,41.813 C360.96,464.92,354.987,469.187,347.307,468.333"
 			/>
 			<path
-				style="fill:var(--color-fill);"
+				style="fill:var(--color-icon);"
 				d="M366.08,406.04l-11.947,58.027c-0.853,2.56,0.853,5.12,3.413,5.12l3.413,0.853 c9.387,1.707,18.773-4.267,20.48-13.653l6.827-33.28c1.707-9.387-4.267-18.773-13.653-20.48l-3.413,0 C368.64,402.627,366.08,403.48,366.08,406.04"
 			/>
 			<path
-				style="fill:var(--color-fill-quaternary);"
+				style="fill:var(--color-icon-quaternary);"
 				d="M69.973,362.52L64,391.533c-1.707,10.24,4.267,20.48,15.36,22.187 c3.413,0.853,6.827-1.707,7.68-5.12l11.093-53.76c0.853-3.413-1.707-6.827-5.12-7.68C82.773,345.453,72.533,351.427,69.973,362.52"
 			/>
 			<path

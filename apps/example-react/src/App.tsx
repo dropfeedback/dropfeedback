@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Feedbacky } from "@feedbacky/widget-react";
+import { DropFeedback } from "@feedbacky/widget-react";
 
 import arrowLogo from "./assets/arrow.svg";
 
@@ -119,9 +119,12 @@ function App() {
         alt="Arrow"
       />
 
-      <Feedbacky
+      <DropFeedback
         projectId="24320d3d-c5f2-44e1-83a1-13e1cb61fe1d"
-        position={position}
+        defaultButton={{
+          position,
+          enabled: true,
+        }}
         theme={{
           scheme,
           primaryColor,
@@ -129,7 +132,7 @@ function App() {
           backgroundColor,
         }}
         meta={{
-          customerId: "123",
+          "customer-id": "123",
           role: "admin",
         }}
       />
