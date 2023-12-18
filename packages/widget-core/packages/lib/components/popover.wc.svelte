@@ -18,6 +18,7 @@
 	export let sideOffset: number;
 	export let open: boolean;
 	export let permanentOpen: boolean;
+	export let meta: Record<string, any> = {};
 
 	const currentStep = writable<Steps>("category");
 	const selectedCategory = writable<Categories | null>(null);
@@ -111,7 +112,7 @@
 				</PopoverContent>
 			{:else if $currentStep === "form"}
 				<PopoverContent {openState} {selectedCategory} {currentStep}>
-					<FormStep {projectId} {selectedCategory} {currentStep} />
+					<FormStep {projectId} {selectedCategory} {currentStep} {meta} />
 				</PopoverContent>
 			{:else if $currentStep === "success"}
 				<SuccessStep {selectedCategory} {currentStep} />

@@ -3,7 +3,7 @@
 	import BackIcon from "./icons/back.wc.svelte";
 	import IssueIcon from "./icons/issue.wc.svelte";
 	import IdeaIcon from "./icons/idea.wc.svelte";
-	import type { Categories, PopoverContext, Steps } from "../types";
+	import type { Categories, Steps } from "../types";
 	import type { Writable } from "svelte/store";
 
 	export let selectedCategory: Writable<Categories | null>;
