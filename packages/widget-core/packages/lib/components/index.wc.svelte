@@ -56,6 +56,7 @@
 	export let themeTextColor: string | undefined = undefined;
 
 	const { colorPrimary, colorBgBase, colorTextBase } = seedToken;
+	const initialMeta = {} as Record<string, string>;
 
 	let popoverTriggerButtons = document.querySelectorAll(
 		"[data-feedback-button]"
@@ -93,7 +94,7 @@
 	{@const dataset = popoverTriggerButton?.dataset}
 	{@const preferedProjectId = popoverTriggerButton?.dataset?.projectId ?? projectId}
 	{@const theme = {
-		scheme: dataset?.themeScheme ?? themeScheme ?? "light" ,
+		scheme: dataset?.themeScheme ?? themeScheme ?? "light",
 		primaryColor: dataset?.themePrimaryColor ?? themePrimaryColor ?? colorPrimary,
 		backgroundColor: dataset?.themeBackgroundColor ?? themeBackgroundColor ?? colorBgBase,
 		textColor: dataset?.themeTextColor ?? themeTextColor ?? colorTextBase
@@ -103,10 +104,18 @@
 		enabled: stringToBoolean(defaultButtonEnabled) ?? true
 	}}
 	{@const side = dataset?.side ?? "auto"}
-	{@const sideOffset = Number(dataset?.sideOffset ?? 12)}
-	{@const open = stringToBoolean(dataset?.open) ?? false}
+	{@const sideOffset = dataset?.sideOffset === "" ? 12 : Number(dataset?.sideOffset ?? 12)}
+	{@const open = stringToBoolean(dataset?.open) ?? dataset?.open === "" ?? false}
 	{@const permanentOpen =
 		stringToBoolean(dataset?.permanentOpen) ?? dataset?.permanentOpen === "" ? true : false}
+	{@const meta = Object.entries(dataset)
+		.filter(([key]) => key.startsWith("meta"))
+		.reduce((acc, [key, value]) => {
+			const keyWithoutMetaPrefix = key.replace("meta", "");
+			const newKey = keyWithoutMetaPrefix.charAt(0).toLowerCase() + keyWithoutMetaPrefix.slice(1);
+			acc[newKey] = value ?? "";
+			return acc;
+		}, initialMeta)}
 	<Popover
 		{popoverTriggerButton}
 		projectId={preferedProjectId}
@@ -116,6 +125,7 @@
 		{sideOffset}
 		{open}
 		{permanentOpen}
+		{meta}
 	/>
 {/each}
 
