@@ -1,9 +1,6 @@
-"use client";
-
-import React from "react";
 import "@feedbacky/widget-core";
 
-export interface FeedbackyProps {
+export interface DropFeedbackProps {
   projectId: string;
   theme?: {
     scheme?: "light" | "dark";
@@ -11,7 +8,10 @@ export interface FeedbackyProps {
     backgroundColor?: string;
     textColor?: string;
   };
-  position?: "left" | "right";
+  defaultButton?: {
+    position?: "left" | "right";
+    enabled?: boolean;
+  };
   meta?: Record<string, any>;
 }
 
@@ -19,23 +19,24 @@ declare global {
   namespace JSX {
     interface IntrinsicElements {
       "feedbacky-widget": {
-        "project-id": string;
+        "project-id"?: string;
         "theme-scheme"?: "light" | "dark";
         "theme-primary-color"?: string;
         "theme-background-color"?: string;
         "theme-text-color"?: string;
-        position?: "left" | "right";
+        "default-button-position"?: "left" | "right";
+        "default-button-enabled"?: boolean;
       };
     }
   }
 }
 
-export const Feedbacky = ({
+export const DropFeedback = ({
   projectId,
-  position,
   theme,
+  defaultButton = {},
   meta = {},
-}: FeedbackyProps) => {
+}: DropFeedbackProps) => {
   const metaProps = Object.keys(meta).reduce(
     (acc, key) => {
       acc[`meta-${key}`] = meta[key];
@@ -47,10 +48,11 @@ export const Feedbacky = ({
   return (
     <feedbacky-widget
       project-id={projectId}
-      position={position}
       theme-scheme={theme?.scheme}
       theme-primary-color={theme?.primaryColor}
       theme-background-color={theme?.backgroundColor}
+      default-button-position={defaultButton?.position}
+      default-button-enabled={defaultButton?.enabled}
       theme-text-color={theme?.textColor}
       {...metaProps}
     />
