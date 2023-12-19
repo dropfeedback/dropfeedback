@@ -1,19 +1,19 @@
 version: '3.8'
 
 services:
-  feedbacky_db:
+  dropfeedback_db:
     restart: always
     image: postgres:14.1-alpine
-    container_name: feedbacky_db
+    container_name: dropfeedback_db
     environment:
-      POSTGRES_DB: feedbacky_db
+      POSTGRES_DB: dropfeedback_db
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_PORT: 5432
     ports:
       - '5432:5432'
     volumes:
-      - feedbacky_db:/var/lib/postgresql/data
+      - dropfeedback_db:/var/lib/postgresql/data
     networks:
       - postgres
   test_db:
@@ -35,4 +35,4 @@ networks:
     driver: bridge
 
 volumes:
-  feedbacky_db:
+  dropfeedback_db:

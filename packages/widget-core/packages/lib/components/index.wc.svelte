@@ -1,6 +1,6 @@
 <svelte:options
 	customElement={{
-		tag: "feedbacky-widget",
+		tag: "drop-feedback",
 		props: {
 			projectId: {
 				reflect: true,
