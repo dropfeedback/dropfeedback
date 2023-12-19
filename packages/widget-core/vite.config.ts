@@ -10,7 +10,7 @@ export default defineConfig({
 		lib: {
 			entry: "./index.ts",
 			fileName: "index",
-			name: "feedbacky",
+			name: "dropfeedback",
 			formats: ["es", "cjs"]
 		}
 	},

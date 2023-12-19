@@ -29,7 +29,7 @@
 		duration = Date.now();
 		let widgetMeta = {};
 
-		const widget = document.querySelector("feedbacky-widget");
+		const widget = document.querySelector("drop-feedback");
 		if (widget) {
 			widgetMeta = widget.getAttributeNames().reduce((acc, name) => {
 				if (name.startsWith("meta-")) {

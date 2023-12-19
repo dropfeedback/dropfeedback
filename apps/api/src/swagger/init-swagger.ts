@@ -5,10 +5,10 @@ import metadata from './metadata';
 
 export const initSwagger = async (app: INestApplication) => {
   const config = new DocumentBuilder()
-    .setTitle('feedbacky')
-    .setDescription('The feedbacky API')
+    .setTitle('dropfeedback')
+    .setDescription('The dropfeedback API')
     .setVersion('1.0')
-    .addTag('feedbacky')
+    .addTag('dropfeedback')
     .addBearerAuth(
       {
         description: `Please enter token in following format: Bearer "JWT"`,

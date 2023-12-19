@@ -1,6 +1,6 @@
 {
-  "name": "@feedbacky/api",
-  "version": "0.0.1",
+  "name": "api",
+  "version": "0.0.0",
   "description": "",
   "author": "",
   "private": true,

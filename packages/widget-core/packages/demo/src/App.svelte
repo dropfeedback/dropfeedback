@@ -150,7 +150,7 @@
 		</div>
 	</div>
 
-	<feedbacky-widget
+	<drop-feedback
 		project-id={projectId}
 		theme-scheme={themeScheme}
 		default-button-position={defaultButtonPosition}
