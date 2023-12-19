@@ -1,31 +1,28 @@
 {
   "private": true,
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
+    "build": "lerna run build --include-dependencies",
+    "dev": "lerna run dev --stream --parallel --include-dependencies",
+    "lint": "eslint --fix \"**/*.{ts,tsx}\"",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "test": "turbo test",
-    "docker": "docker compose down && docker compose up -d",
-    "build-widget": "turbo run build-widget --filter=@dropfeedback/widget",
-    "db:generate": "turbo run db:generate --filter=@dropfeedback/api",
-    "db:push": "turbo run db:push --filter=@dropfeedback/api",
-    "db:seed": "turbo run db:seed --filter=@dropfeedback/api",
-    "api:start": "turbo run start:prod --filter=@dropfeedback/api"
+    "test": "lerna run test --stream",
+    "clean": "lerna clean --yes",
+    "docker": "docker compose down && docker compose up -d"
   },
   "devDependencies": {
-    "@turbo/gen": "^1.10.12",
-    "eslint": "^8.28.0",
-    "prettier": "^3.0.0",
-    "turbo": "latest"
+    "eslint": "^8.56.0",
+    "lerna": "^8.0.0",
+    "prettier": "^3.0.0"
   },
   "name": "dropfeedback",
   "packageManager": "npm@10.2.0",
   "workspaces": [
-    "apps/*",
+    "examples/*",
     "packages/*"
   ],
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
     "character-parser": "^4.0.0",
     "is-whitespace": "^0.3.0",
     "preview-email": "^3.0.19"
