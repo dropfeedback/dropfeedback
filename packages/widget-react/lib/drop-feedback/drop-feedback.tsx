@@ -1,4 +1,4 @@
-import "@feedbacky/widget-core";
+import "@dropfeedback/core";
 
 export interface DropFeedbackProps {
   projectId: string;
@@ -18,7 +18,7 @@ export interface DropFeedbackProps {
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      "feedbacky-widget": {
+      "drop-feedback": {
         "project-id"?: string;
         "theme-scheme"?: "light" | "dark";
         "theme-primary-color"?: string;
@@ -46,7 +46,7 @@ export const DropFeedback = ({
   );
 
   return (
-    <feedbacky-widget
+    <drop-feedback
       project-id={projectId}
       theme-scheme={theme?.scheme}
       theme-primary-color={theme?.primaryColor}

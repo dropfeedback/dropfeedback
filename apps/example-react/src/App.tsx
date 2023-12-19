@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DropFeedback } from "@feedbacky/widget-react";
+import { DropFeedback } from "@dropfeedback/react";
 
 import arrowLogo from "./assets/arrow.svg";
 

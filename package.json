@@ -7,11 +7,11 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "turbo test",
     "docker": "docker compose down && docker compose up -d",
-    "build-widget": "turbo run build-widget --filter=@feedbacky/widget",
-    "db:generate": "turbo run db:generate --filter=@feedbacky/api",
-    "db:push": "turbo run db:push --filter=@feedbacky/api",
-    "db:seed": "turbo run db:seed --filter=@feedbacky/api",
-    "api:start": "turbo run start:prod --filter=@feedbacky/api"
+    "build-widget": "turbo run build-widget --filter=@dropfeedback/widget",
+    "db:generate": "turbo run db:generate --filter=@dropfeedback/api",
+    "db:push": "turbo run db:push --filter=@dropfeedback/api",
+    "db:seed": "turbo run db:seed --filter=@dropfeedback/api",
+    "api:start": "turbo run start:prod --filter=@dropfeedback/api"
   },
   "devDependencies": {
     "@turbo/gen": "^1.10.12",
@@ -19,7 +19,7 @@
     "prettier": "^3.0.0",
     "turbo": "latest"
   },
-  "name": "feedbacky",
+  "name": "dropfeedback",
   "packageManager": "npm@10.2.0",
   "workspaces": [
     "apps/*",

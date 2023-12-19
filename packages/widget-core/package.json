@@ -1,6 +1,6 @@
 {
-	"name": "@feedbacky/widget-core",
-	"description": "A base template for building a shareable web components library with Vite + Svelte",
+	"name": "@dropfeedback/core",
+	"description": "A web component for collecting feedback from users.",
 	"version": "0.0.0",
 	"type": "module",
 	"module": "./dist/index.js",
