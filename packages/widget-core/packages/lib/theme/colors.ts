@@ -63,6 +63,9 @@ export const generateNeutralColorPalettes: GenerateNeutralColorMap = (
 			colorBgContainer: getSolidColor(colorBgBase, 0, "dark"),
 
 			colorBorder: getSolidColor(colorBgBase, 26, "dark"),
+			colorError: "#ff6166",
+			
+			shadow: `0 0 0 1px hsla(0, 0%, 100%, 0.145), 0px 1px 2px rgba(0, 0, 0, 0.16);`,
 			shadowMenu: `0 0 0 1px hsla(0, 0%, 100%, 0.145), 0px 1px 1px rgba(0, 0, 0, 0.02),
 			0px 4px 8px -4px rgba(0, 0, 0, 0.04), 0px 16px 24px -8px rgba(0, 0, 0, 0.06);`
 		};
@@ -80,7 +83,7 @@ export const generateNeutralColorPalettes: GenerateNeutralColorMap = (
 		colorFill: getAlphaColor(colorTextBase, 0.15),
 		colorFillSecondary: getAlphaColor(colorTextBase, 0.06),
 		colorFillTertiary: getAlphaColor(colorTextBase, 0.04),
-		colorFillQuaternary: getAlphaColor(colorTextBase, 0.02),
+		colorFillQuaternary: getAlphaColor(colorTextBase, 0.03),
 
 		colorIcon: getAlphaColor(colorTextBase, 0.15),
 		colorIconSecondary: getAlphaColor(colorTextBase, 0.06),
@@ -91,7 +94,11 @@ export const generateNeutralColorPalettes: GenerateNeutralColorMap = (
 		colorBgContainer: getSolidColor(colorBgBase, 0, "light"),
 
 		colorBorder: getSolidColor(colorBgBase, 15, "light"),
+		colorError: "#cb2a2f",
+
+		shadow: `0 0 0 1px rgba(0, 0, 0, 0.08), 0px 2px 2px rgba(0, 0, 0, 0.04)`,
 		shadowMenu: `0 0 0 1px rgba(0, 0, 0, 0.08), 0px 1px 1px rgba(0, 0, 0, 0.02),
-		0px 4px 8px -4px rgba(0, 0, 0, 0.04), 0px 16px 24px -8px rgba(0, 0, 0, 0.06)`
+		0px 4px 8px -4px rgba(0, 0, 0, 0.04), 0px 16px 24px -8px rgba(0, 0, 0, 0.06)`,
+
 	};
 };

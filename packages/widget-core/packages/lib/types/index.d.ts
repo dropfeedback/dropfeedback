@@ -38,4 +38,6 @@ export type PopoverSide =
 
 export type Steps = "category" | "form" | "success";
 
+export type InlineSteps =  "form" | "success";
+
 export type Categories = "issue" | "idea" | "other";

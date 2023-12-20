@@ -73,6 +73,7 @@
 
 		if (event.key === "Escape") {
 			$openState = false;
+			event.stopImmediatePropagation();
 		}
 	};
 </script>
@@ -163,7 +164,9 @@
 	.trigger-button:not([disabled]):focus-visible {
 		outline: 4px solid var(--color-primary-border);
 		outline-offset: 1px;
-		transition: outline-offset 0s, outline 0s;
+		transition:
+			outline-offset 0s,
+			outline 0s;
 	}
 
 	.trigger-button-right {

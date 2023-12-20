@@ -42,10 +42,11 @@
 />
 
 <script lang="ts">
+	import { onMount } from "svelte";
 	import Popover from "./popover.wc.svelte";
+	import Inline from "./inline.wc.svelte";
 	import { stringToBoolean } from "../utils/stringToBoolean";
 	import seedToken from "../theme/seed";
-	import { onMount } from "svelte";
 
 	export let projectId: string | undefined = undefined;
 	export let defaultButtonPosition: "right" | "left" | undefined = undefined;
@@ -62,6 +63,9 @@
 	let popoverTriggerButtons = document.querySelectorAll(
 		"[data-feedback-button]"
 	) as NodeListOf<HTMLButtonElement>;
+	let feedbackInputs = document.querySelectorAll(
+		"[data-feedback-input]"
+	) as NodeListOf<HTMLTextAreaElement>;
 
 	onMount(() => {
 		const observer = new MutationObserver((mutations) => {
@@ -151,6 +155,16 @@
 		permanentOpen={false}
 	/>
 {/if}
+
+{#each feedbackInputs as feedbackInput (feedbackInput)}
+	{@const theme = {
+		scheme: themeScheme ?? "light",
+		primaryColor: themePrimaryColor ?? colorPrimary,
+		backgroundColor: themeBackgroundColor ?? colorBgBase,
+		textColor: themeTextColor ?? colorTextBase
+	}}
+	<Inline {projectId} {theme} {feedbackInput} />
+{/each}
 
 <style>
 	:host,

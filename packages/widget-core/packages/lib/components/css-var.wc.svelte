@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { generateColorPalettes, generateNeutralColorPalettes } from "../theme/colors";
-	import { cssObjectToString } from "../utils/cssObjectToString";
 	import seedToken from "../theme/seed";
+	import { cssObjectToString } from "../utils/cssObjectToString";
 	import type { ThemeProps } from "../types";
 
 	const { borderRadius, motionEaseInOut } = seedToken;
@@ -19,6 +19,7 @@
 	$: styles = {
 		...neutralColors,
 
+		colorPrimaryBg: primaryColors[1],
 		colorPrimaryBorder: primaryColors[3],
 		colorPrimaryHover: primaryColors[5],
 		colorPrimary: primaryColors[6],
@@ -34,3 +35,9 @@
 <aside style={stringStyles}>
 	<slot />
 </aside>
+
+<style>
+	aside {
+		display: inline-block;
+	}
+</style>
