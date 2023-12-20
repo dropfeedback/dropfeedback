@@ -3,15 +3,15 @@
 	import { writable } from "svelte/store";
 	import { fly, slide } from "svelte/transition";
 	import { createPopperActions } from "svelte-popperjs";
-	import CssVar from "./css-var.wc.svelte";
-	import IdeaIcon from "./icons/idea.wc.svelte";
-	import IssueIcon from "./icons/issue.wc.svelte";
-	import OtherIcon from "./icons/other.wc.svelte";
-	import LoadingIcon from "./icons/loading.wc.svelte";
-	import CheckIcon from "./icons/check.wc.svelte";
-	import { sendFeedback } from "../api";
-	import { cssObjectToString } from "../utils/cssObjectToString";
-	import type { Categories, InlineSteps, ThemeProps } from "../types";
+	import CssVar from "../css-var.wc.svelte";
+	import IdeaIcon from "../icons/idea.wc.svelte";
+	import IssueIcon from "../icons/issue.wc.svelte";
+	import OtherIcon from "../icons/other.wc.svelte";
+	import LoadingIcon from "../icons/loading.wc.svelte";
+	import CheckIcon from "../icons/check.wc.svelte";
+	import { sendFeedback } from "../../api";
+	import { cssObjectToString } from "../../utils/cssObjectToString";
+	import type { Categories, InlineSteps, ThemeProps } from "../../types";
 
 	export let feedbackInput: HTMLElement;
 	export let projectId: string | undefined = undefined;
@@ -169,6 +169,7 @@
 					<p class="text">Give feedback</p>
 					<div class="button-wrapper">
 						{#each CATEGORIES as category (category)}
+							{@const label = category.charAt(0) + category.slice(1)}
 							<button
 								class="category-button"
 								class:active-category-button={$selectedCategory === category}
@@ -181,15 +182,15 @@
 										openState.set(true);
 									}
 								}}
-								title={category.charAt(0).toUpperCase() + category.slice(1)}
+								title={label}
 								aria-label={`Select ${category} category`}
 							>
 								{#if category === "issue"}
-									<IssueIcon size={20} />
+									<IssueIcon size={16} />
 								{:else if category === "idea"}
-									<IdeaIcon size={20} />
+									<IdeaIcon size={16} />
 								{:else if category === "other"}
-									<OtherIcon size={20} />
+									<OtherIcon size={16} />
 								{/if}
 							</button>
 						{/each}

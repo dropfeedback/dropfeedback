@@ -3,12 +3,12 @@
 	import { createPopperActions } from "svelte-popperjs";
 	import { writable } from "svelte/store";
 	import { fade } from "svelte/transition";
-	import PopoverContent from "./popover-content.wc.svelte";
+	import Layout from "./layout.wc.svelte";
 	import CategoryStep from "./category-step.wc.svelte";
 	import FormStep from "./form-step.wc.svelte";
-	import SuccessStep from "./success-step.wc.svelte";
-	import CssVar from "./css-var.wc.svelte";
-	import type { Categories, DefaultButtonProps, PopoverSide, Steps, ThemeProps } from "../types";
+	import SuccessStep from "../success-step.wc.svelte";
+	import CssVar from "../css-var.wc.svelte";
+	import type { Categories, DefaultButtonProps, PopoverSide, Steps, ThemeProps } from "../../types";
 
 	export let popoverTriggerButton: HTMLButtonElement | undefined = undefined;
 	export let projectId: string | undefined = undefined;
@@ -108,13 +108,13 @@
 			{#if projectId === undefined}
 				<p>Missing `projectId`</p>
 			{:else if $currentStep === "category"}
-				<PopoverContent {openState} {selectedCategory} {currentStep}>
+				<Layout {openState} {selectedCategory} {currentStep}>
 					<CategoryStep {selectedCategory} {currentStep} />
-				</PopoverContent>
+				</Layout>
 			{:else if $currentStep === "form"}
-				<PopoverContent {openState} {selectedCategory} {currentStep}>
+				<Layout {openState} {selectedCategory} {currentStep}>
 					<FormStep {projectId} {selectedCategory} {currentStep} {meta} />
-				</PopoverContent>
+				</Layout>
 			{:else if $currentStep === "success"}
 				<SuccessStep {selectedCategory} {currentStep} />
 			{/if}

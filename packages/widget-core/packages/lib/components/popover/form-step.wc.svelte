@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Writable } from "svelte/store";
-	import LoadingIcon from "./icons/loading.wc.svelte";
-	import { sendFeedback } from "../api";
-	import type { Categories, Steps } from "../types";
+	import LoadingIcon from "../icons/loading.wc.svelte";
+	import { sendFeedback } from "../../api";
+	import type { Categories, Steps } from "../../types";
 
 	export let selectedCategory: Writable<Categories | null>;
 	export let currentStep: Writable<Steps>;

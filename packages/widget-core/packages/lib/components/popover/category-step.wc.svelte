@@ -1,44 +1,36 @@
 <script lang="ts">
-	import { type ComponentType } from "svelte";
-	import IdeaIcon from "./icons/idea.wc.svelte";
-	import IssueIcon from "./icons/issue.wc.svelte";
-	import OtherIcon from "./icons/other.wc.svelte";
-	import type { Categories, Steps } from "../types";
 	import type { Writable } from "svelte/store";
+	import IdeaIcon from "../icons/idea.wc.svelte";
+	import IssueIcon from "../icons/issue.wc.svelte";
+	import OtherIcon from "../icons/other.wc.svelte";
+	import type { Categories, Steps } from "../../types";
 
-	const BUTTONS: { label: string; value: Categories; icon: ComponentType }[] = [
-		{
-			label: "Issue",
-			value: "issue",
-			icon: IssueIcon
-		},
-		{
-			label: "Idea",
-			value: "idea",
-			icon: IdeaIcon
-		},
-		{
-			label: "Other",
-			value: "other",
-			icon: OtherIcon
-		}
-	];
+	const CATEGORIES: Categories[] = ["idea", "issue", "other"];
 
 	export let selectedCategory: Writable<Categories | null>;
 	export let currentStep: Writable<Steps>;
 </script>
 
 <div class="container">
-	{#each BUTTONS as button (button.value)}
+	{#each CATEGORIES as category (category)}
+		{@const label = category.charAt(0) + category.slice(1)}
 		<button
 			class="category-button"
+			title={label}
+			aria-label={`Select ${label} category`}
 			on:click={() => {
 				$currentStep = "form";
-				$selectedCategory = button.value;
+				$selectedCategory = category;
 			}}
 		>
-			<svelte:component this={button.icon} />
-			<span>{button.label}</span>
+			{#if category === "idea"}
+				<IdeaIcon />
+			{:else if category === "issue"}
+				<IssueIcon />
+			{:else if category === "other"}
+				<OtherIcon />
+			{/if}
+			<span>{label}</span>
 		</button>
 	{/each}
 </div>
@@ -67,12 +59,15 @@
 	}
 
 	.category-button:hover {
-		background-color: var(--color-fill-secondary);
+		color: var(--color-primary);
+		background-color: var(--color-primary-bg);
 	}
 
 	.category-button:focus-visible {
 		outline: 4px solid var(--color-primary-border);
 		outline-offset: 1px;
-		transition: outline-offset 0s, outline 0s;
+		transition:
+			outline-offset 0s,
+			outline 0s;
 	}
 </style>
