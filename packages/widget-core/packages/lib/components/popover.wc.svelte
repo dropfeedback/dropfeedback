@@ -1,17 +1,14 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { createPopperActions } from "svelte-popperjs";
-	import { writable } from "svelte/store";
 	import { fade, fly } from "svelte/transition";
 	import CssVar from "./css-var.wc.svelte";
-	import IdeaIcon from "./icons/idea.wc.svelte";
-	import IssueIcon from "./icons/issue.wc.svelte";
-	import OtherIcon from "./icons/other.wc.svelte";
+	import CategorySwitcher from "./category-switcher.wc.svelte";
+	import SuccessStep from "./success-step.wc.svelte";
 	import LoadingIcon from "./icons/loading.wc.svelte";
+	import { getWidgetMeta } from "../utils/getWidgetMeta";
 	import { sendFeedback } from "../api";
 	import type { Categories, PopoverSide, Steps, ThemeProps } from "../types";
-
-	const CATEGORIES: Categories[] = ["issue", "idea", "other"];
 
 	export let popoverTriggerButton: HTMLButtonElement;
 	export let projectId: string | undefined = undefined;
@@ -22,25 +19,25 @@
 	export let permanentOpen: boolean;
 	export let meta: Record<string, any> = {};
 
-	let placeholder: string = "What's on your mind?";
+	let placeholder: string = "Your feedback...";
 	let content = "";
 	let error = "";
 	let loading = false;
 	let duration: number;
 	let currentStep: Steps = "form";
-	const selectedCategory = writable<Categories | null>(null);
-	$: openState = writable<boolean>(open);
+	let selectedCategory: Categories | null = null;
+	let openState: boolean = open;
 
 	if (projectId === undefined) {
 		console.error("DropFeedback: Missing `projectId`");
 	}
 
-	$: if ($selectedCategory === "issue") {
-		placeholder = "I noticed that...";
-	} else if ($selectedCategory === "idea") {
-		placeholder = "I would love...";
-	} else if ($selectedCategory === "other") {
-		placeholder = "What's on your mind?";
+	$: if (selectedCategory === "issue") {
+		placeholder = "[Issue]: I noticed that...";
+	} else if (selectedCategory === "idea") {
+		placeholder = "[Idea]: I would love...";
+	} else if (selectedCategory === "other") {
+		placeholder = "[Other]: What's on your mind?";
 	}
 
 	const [popperRef, popperContent] = createPopperActions({
@@ -55,7 +52,7 @@
 		popperRef(popoverTriggerButton);
 
 		const togglePopper = () => {
-			$openState = !$openState;
+			openState = !openState;
 		};
 
 		popoverTriggerButton.addEventListener("click", togglePopper);
@@ -64,7 +61,7 @@
 	});
 
 	const submit = async () => {
-		if (!$selectedCategory) {
+		if (!selectedCategory) {
 			error = "Please select a category";
 			return;
 		}
@@ -76,28 +73,12 @@
 		error = "";
 		loading = true;
 		duration = Date.now();
-		let widgetMeta = {};
 
-		const widget = document.querySelector("drop-feedback");
-		if (widget) {
-			widgetMeta = widget.getAttributeNames().reduce(
-				(acc, name) => {
-					if (name.startsWith("meta-")) {
-						const newKey = name
-							.replace("meta-", "")
-							.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-						acc[newKey] = widget.getAttribute(name);
-					}
-
-					return acc;
-				},
-				{} as Record<string, any>
-			);
-		}
+		const widgetMeta = getWidgetMeta();
 
 		try {
 			await sendFeedback({
-				category: $selectedCategory ?? "other",
+				category: selectedCategory,
 				content,
 				projectId: projectId!,
 				meta: {
@@ -125,21 +106,36 @@
 	};
 
 	const escapeListener = (event: KeyboardEvent) => {
-		if (!$openState) {
+		if (!openState) {
 			return;
 		}
 
 		if (event.key === "Escape") {
-			$openState = false;
+			openState = false;
 			event.stopImmediatePropagation();
 		}
+	};
+
+	const onCategoryChange = (event: CustomEvent<Categories>) => {
+		if (selectedCategory === event.detail) {
+			selectedCategory = null;
+			openState = false;
+		} else {
+			selectedCategory = event.detail;
+			openState = true;
+		}
+	};
+
+	const onFinished = () => {
+		currentStep = "form";
+		selectedCategory = null;
 	};
 </script>
 
 <svelte:window on:keydown={escapeListener} />
 
 <CssVar {theme}>
-	{#if permanentOpen || $openState}
+	{#if permanentOpen || openState}
 		<div
 			id="popper"
 			class="popper"
@@ -159,34 +155,7 @@
 					{/if}
 				</div>
 				<div class="footer">
-					<div class="button-wrapper">
-						{#each CATEGORIES as category (category)}
-							{@const label = category.charAt(0) + category.slice(1)}
-							<button
-								class="category-button"
-								class:active-category-button={$selectedCategory === category}
-								on:click={() => {
-									if ($selectedCategory === category) {
-										selectedCategory.set(null);
-										openState.set(false);
-									} else {
-										selectedCategory.set(category);
-										openState.set(true);
-									}
-								}}
-								title={label}
-								aria-label={`Select ${category} category`}
-							>
-								{#if category === "issue"}
-									<IssueIcon size={16} />
-								{:else if category === "idea"}
-									<IdeaIcon size={16} />
-								{:else if category === "other"}
-									<OtherIcon size={16} />
-								{/if}
-							</button>
-						{/each}
-					</div>
+					<CategorySwitcher {selectedCategory} on:change={onCategoryChange} />
 					<button class="submit-button" class:loading-button={loading} on:click={submit}>
 						{#if loading}
 							<LoadingIcon />
@@ -195,7 +164,7 @@
 					</button>
 				</div>
 			{:else if currentStep === "success"}
-				<!-- <SuccessStep {selectedCategory} {currentStep} /> -->
+				<SuccessStep on:finish={onFinished} />
 			{/if}
 		</div>
 	{/if}
@@ -249,36 +218,6 @@
 		border-top: 1px solid var(--color-border);
 		background-color: var(--color-fill-quaternary);
 		padding: 8px;
-	}
-
-	.button-wrapper {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 1px;
-	}
-
-	.category-button {
-		width: 32px;
-		height: 32px;
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border: none;
-		cursor: pointer;
-		transition: all 0.2s var(--motion-ease-in-out);
-		color: var(--color-text-secondary);
-	}
-
-	.category-button:hover {
-		color: var(--color-primary);
-		background-color: var(--color-primary-bg);
-	}
-
-	.active-category-button {
-		background-color: var(--color-primary-bg);
-		color: var(--color-primary);
 	}
 
 	.submit-button {
