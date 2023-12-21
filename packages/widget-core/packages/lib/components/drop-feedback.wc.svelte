@@ -26,16 +26,6 @@
 				reflect: true,
 				type: "String",
 				attribute: "theme-text-color"
-			},
-			defaultButtonPosition: {
-				reflect: true,
-				type: "String",
-				attribute: "default-button-position"
-			},
-			defaultButtonEnabled: {
-				reflect: true,
-				type: "String",
-				attribute: "default-button-enabled"
 			}
 		}
 	}}
@@ -49,8 +39,6 @@
 	import seedToken from "../theme/seed";
 
 	export let projectId: string | undefined = undefined;
-	export let defaultButtonPosition: "right" | "left" | undefined = undefined;
-	export let defaultButtonEnabled: string | undefined = undefined;
 	export let themeScheme: "dark" | "light" | undefined = undefined;
 	export let themePrimaryColor: string | undefined = undefined;
 	export let themeBackgroundColor: string | undefined = undefined;
@@ -104,10 +92,6 @@
 		backgroundColor: dataset?.themeBackgroundColor ?? themeBackgroundColor ?? colorBgBase,
 		textColor: dataset?.themeTextColor ?? themeTextColor ?? colorTextBase
 	}}
-	{@const defaultButton = {
-		position: defaultButtonPosition ?? "right",
-		enabled: stringToBoolean(defaultButtonEnabled) ?? true
-	}}
 	{@const side = dataset?.side ?? "auto"}
 	{@const sideOffset = dataset?.sideOffset === "" ? 12 : Number(dataset?.sideOffset ?? 12)}
 	{@const open = stringToBoolean(dataset?.open) ?? dataset?.open === "" ?? false}
@@ -125,7 +109,6 @@
 		{popoverTriggerButton}
 		projectId={preferedProjectId}
 		{theme}
-		{defaultButton}
 		{side}
 		{sideOffset}
 		{open}
@@ -133,28 +116,6 @@
 		{meta}
 	/>
 {/each}
-
-{#if stringToBoolean(defaultButtonEnabled) ?? true}
-	{@const defaultButton = {
-		position: defaultButtonPosition ?? "right",
-		enabled: stringToBoolean(defaultButtonEnabled) ?? true
-	}}
-	{@const theme = {
-		scheme: themeScheme ?? "light",
-		primaryColor: themePrimaryColor ?? colorPrimary,
-		backgroundColor: themeBackgroundColor ?? colorBgBase,
-		textColor: themeTextColor ?? colorTextBase
-	}}
-	<Popover
-		{projectId}
-		{theme}
-		{defaultButton}
-		open={false}
-		side="auto"
-		sideOffset={12}
-		permanentOpen={false}
-	/>
-{/if}
 
 {#each feedbackInputs as feedbackInput (feedbackInput)}
 	{@const theme = {

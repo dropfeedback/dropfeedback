@@ -8,12 +8,11 @@
 	import FormStep from "./form-step.wc.svelte";
 	import SuccessStep from "../success-step.wc.svelte";
 	import CssVar from "../css-var.wc.svelte";
-	import type { Categories, DefaultButtonProps, PopoverSide, Steps, ThemeProps } from "../../types";
+	import type { Categories, PopoverSide, Steps, ThemeProps } from "../../types";
 
-	export let popoverTriggerButton: HTMLButtonElement | undefined = undefined;
+	export let popoverTriggerButton: HTMLButtonElement;
 	export let projectId: string | undefined = undefined;
 	export let theme: ThemeProps;
-	export let defaultButton: DefaultButtonProps;
 	export let side: string;
 	export let sideOffset: number;
 	export let open: boolean;
@@ -37,10 +36,6 @@
 	};
 
 	onMount(() => {
-		if (!popoverTriggerButton) {
-			return;
-		}
-
 		popperRef(popoverTriggerButton);
 
 		const togglePopper = () => {
@@ -49,22 +44,8 @@
 
 		popoverTriggerButton.addEventListener("click", togglePopper);
 
-		return () => {
-			if (!popoverTriggerButton) {
-				return;
-			}
-
-			popoverTriggerButton.removeEventListener("click", togglePopper);
-		};
+		return () => popoverTriggerButton.removeEventListener("click", togglePopper);
 	});
-
-	function updatePopper(_: HTMLElement, params: Record<string, any>) {
-		return {
-			update() {
-				getInstance()?.update();
-			}
-		};
-	}
 
 	const escapeListener = (event: KeyboardEvent) => {
 		if (!$openState) {
@@ -81,28 +62,11 @@
 <svelte:window on:keydown={escapeListener} />
 
 <CssVar {theme}>
-	{#if !popoverTriggerButton}
-		<button
-			use:popperRef
-			on:click={() => {
-				$openState = !$openState;
-			}}
-			class="trigger-button"
-			class:trigger-button-right={defaultButton.position === "right"}
-			class:trigger-button-left={defaultButton.position === "left"}
-		>
-			feedback
-		</button>
-	{/if}
-
 	{#if permanentOpen || $openState}
 		<div
 			id="popper"
 			class="popper"
 			use:popperContent={extraOpts}
-			use:updatePopper={{
-				position: defaultButton.position
-			}}
 			transition:fade={{ duration: 100 }}
 		>
 			{#if projectId === undefined}
@@ -134,50 +98,5 @@
 		border-radius: 8px;
 		min-height: 200px;
 		z-index: 99999;
-	}
-
-	.trigger-button {
-		top: 50%;
-		position: fixed;
-		padding: 6px 16px 6px 16px;
-		white-space: nowrap;
-		z-index: 99999;
-		border-radius: 6px 6px 0 0;
-		background-color: var(--color-primary);
-		color: #fff;
-		font-size: 14px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: background-color 0.2s var(--motion-ease-in-out);
-		user-select: none;
-		margin-top: -14.25px;
-	}
-
-	.trigger-button:hover {
-		background-color: var(--color-primary-hover);
-	}
-
-	.trigger-button:active {
-		background-color: var(--color-primary-active);
-	}
-
-	.trigger-button:not([disabled]):focus-visible {
-		outline: 4px solid var(--color-primary-border);
-		outline-offset: 1px;
-		transition:
-			outline-offset 0s,
-			outline 0s;
-	}
-
-	.trigger-button-right {
-		right: 0px;
-		transform: rotate(-90deg) translate(50%, -50%);
-		transform-origin: 100% 50%;
-	}
-
-	.trigger-button-left {
-		left: 0px;
-		transform: rotate(90deg) translate(-50%, -50%);
-		transform-origin: 0% 50%;
 	}
 </style>
