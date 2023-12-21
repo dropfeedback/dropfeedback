@@ -33,8 +33,8 @@
 
 <script lang="ts">
 	import { onMount } from "svelte";
-	import Popover from "./popover/index.wc.svelte";
-	import Inline from "./inline/index.wc.svelte";
+	import Popover from "./popover.wc.svelte";
+	import Inline from "./inline.wc.svelte";
 	import { stringToBoolean } from "../utils/stringToBoolean";
 	import seedToken from "../theme/seed";
 

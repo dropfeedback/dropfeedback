@@ -1,5 +1,5 @@
 <script>
-	export let size = 36;
+	export let size = 16;
 	$: sizePx = `${size}px`;
 </script>
 

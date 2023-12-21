@@ -1,48 +1,38 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { writable } from "svelte/store";
-	import { fly, slide } from "svelte/transition";
 	import { createPopperActions } from "svelte-popperjs";
-	import CssVar from "../css-var.wc.svelte";
-	import IdeaIcon from "../icons/idea.wc.svelte";
-	import IssueIcon from "../icons/issue.wc.svelte";
-	import OtherIcon from "../icons/other.wc.svelte";
-	import LoadingIcon from "../icons/loading.wc.svelte";
-	import CheckIcon from "../icons/check.wc.svelte";
-	import { sendFeedback } from "../../api";
-	import { cssObjectToString } from "../../utils/cssObjectToString";
-	import type { Categories, InlineSteps, ThemeProps } from "../../types";
+	import { writable } from "svelte/store";
+	import { fade, fly } from "svelte/transition";
+	import CssVar from "./css-var.wc.svelte";
+	import IdeaIcon from "./icons/idea.wc.svelte";
+	import IssueIcon from "./icons/issue.wc.svelte";
+	import OtherIcon from "./icons/other.wc.svelte";
+	import LoadingIcon from "./icons/loading.wc.svelte";
+	import { sendFeedback } from "../api";
+	import type { Categories, PopoverSide, Steps, ThemeProps } from "../types";
 
-	export let feedbackInput: HTMLElement;
-	export let projectId: string | undefined = undefined;
-	export let theme: ThemeProps;
-	export let meta: Record<string, any> = {};
-
-	const CLOSED_HEIGHT = 48;
-	const OPEN_HEIGHT = 205;
-	const CLOSED_WIDTH = 223;
-	const OPEN_WIDTH = 340;
 	const CATEGORIES: Categories[] = ["issue", "idea", "other"];
 
-	let placeholder: string = "";
+	export let popoverTriggerButton: HTMLButtonElement;
+	export let projectId: string | undefined = undefined;
+	export let theme: ThemeProps;
+	export let side: string;
+	export let sideOffset: number;
+	export let open: boolean;
+	export let permanentOpen: boolean;
+	export let meta: Record<string, any> = {};
+
+	let placeholder: string = "What's on your mind?";
 	let content = "";
 	let error = "";
 	let loading = false;
 	let duration: number;
-	let currentStep: InlineSteps = "form";
+	let currentStep: Steps = "form";
 	const selectedCategory = writable<Categories | null>(null);
-	const openState = writable<boolean>(false);
+	$: openState = writable<boolean>(open);
 
 	if (projectId === undefined) {
 		console.error("DropFeedback: Missing `projectId`");
-	}
-
-	$: {
-		if ($openState) {
-			feedbackInput.style.width = `${OPEN_WIDTH}px`;
-		} else {
-			feedbackInput.style.width = `${CLOSED_WIDTH}px`;
-		}
 	}
 
 	$: if ($selectedCategory === "issue") {
@@ -54,43 +44,30 @@
 	}
 
 	const [popperRef, popperContent] = createPopperActions({
-		strategy: "fixed",
-		placement: "bottom"
+		strategy: "fixed"
 	});
-	const extraOpts = {
-		modifiers: [
-			{ name: "offset", options: { offset: [0, -CLOSED_HEIGHT] } },
-			{
-				name: "flip",
-				enabled: false
-			},
-			{
-				name: "computeStyles",
-				options: {
-					gpuAcceleration: false,
-					adaptive: false,
-					roundOffsets: false
-				}
-			}
-		]
+	$: extraOpts = {
+		modifiers: [{ name: "offset", options: { offset: [0, sideOffset] } }],
+		placement: side as PopoverSide
 	};
 
 	onMount(() => {
-		feedbackInput.style.height = `${CLOSED_HEIGHT}px`;
-		feedbackInput.style.width = `${CLOSED_WIDTH}px`;
-		popperRef(feedbackInput);
+		popperRef(popoverTriggerButton);
+
+		const togglePopper = () => {
+			$openState = !$openState;
+		};
+
+		popoverTriggerButton.addEventListener("click", togglePopper);
+
+		return () => popoverTriggerButton.removeEventListener("click", togglePopper);
 	});
 
-	$: styles = {
-		inlineClosedHeight: `${CLOSED_HEIGHT}px`,
-		inlineOpenHeight: `${OPEN_HEIGHT}px`,
-		inlineClosedWidth: `${CLOSED_WIDTH}px`,
-		inlineOpenWidth: `${OPEN_WIDTH}px`
-	};
-
-	$: stringStyles = cssObjectToString(styles);
-
 	const submit = async () => {
+		if (!$selectedCategory) {
+			error = "Please select a category";
+			return;
+		}
 		if (content.trim() === "") {
 			error = "Please enter your feedback";
 			return;
@@ -153,7 +130,7 @@
 		}
 
 		if (event.key === "Escape") {
-			openState.set(false);
+			$openState = false;
 			event.stopImmediatePropagation();
 		}
 	};
@@ -161,12 +138,27 @@
 
 <svelte:window on:keydown={escapeListener} />
 
-<div use:popperContent={extraOpts}>
-	<CssVar {theme}>
-		<div class="container" class:active-container={$openState} style={stringStyles}>
-			{#if currentStep === "form"}
-				<div class="widget-wrapper">
-					<p class="text">Give feedback</p>
+<CssVar {theme}>
+	{#if permanentOpen || $openState}
+		<div
+			id="popper"
+			class="popper"
+			use:popperContent={extraOpts}
+			transition:fade={{ duration: 100 }}
+		>
+			{#if projectId === undefined}
+				<p>Missing `projectId`</p>
+			{:else if currentStep === "form"}
+				<div class="container">
+					<!-- svelte-ignore a11y-autofocus -->
+					<textarea class="textarea" {placeholder} bind:value={content} autofocus />
+					{#if error}
+						<p class="error-message" in:fly={{ opacity: 0 }}>
+							{error}
+						</p>
+					{/if}
+				</div>
+				<div class="footer">
 					<div class="button-wrapper">
 						{#each CATEGORIES as category (category)}
 							{@const label = category.charAt(0) + category.slice(1)}
@@ -195,73 +187,68 @@
 							</button>
 						{/each}
 					</div>
-				</div>
-				{#if $openState}
-					<div class="input-wrapper" in:slide={{ axis: "y", duration: 200 }}>
-						<!-- svelte-ignore a11y-autofocus -->
-						<textarea class="textarea" {placeholder} bind:value={content} autofocus />
-					</div>
-					<div class="footer" in:slide={{ axis: "y", duration: 200 }}>
-						{#if error}
-							<p class="error-message" in:fly={{ opacity: 0 }}>
-								{error}
-							</p>
+					<button class="submit-button" class:loading-button={loading} on:click={submit}>
+						{#if loading}
+							<LoadingIcon />
 						{/if}
-						<button class="submit-button" class:loading-button={loading} on:click={submit}>
-							{#if loading}
-								<LoadingIcon />
-							{/if}
-							Send
-						</button>
-					</div>
-				{/if}
-			{:else}
-				<div class="success-wrapper">
-					<div class="check-icon">
-						<CheckIcon />
-					</div>
-					<p class="text">Your feedback has been received!</p>
-					<p class="text">Thank you for help.</p>
+						Send
+					</button>
 				</div>
+			{:else if currentStep === "success"}
+				<!-- <SuccessStep {selectedCategory} {currentStep} /> -->
 			{/if}
 		</div>
-	</CssVar>
-</div>
+	{/if}
+</CssVar>
 
 <style>
-	.container {
-		height: var(--inline-closed-height);
-		width: var(--inline-closed-width);
-		border-radius: 24px;
-		background-color: var(--color-bg-container);
-		box-shadow: var(--shadow);
-		overflow: hidden;
-		transition:
-			width 0.2s var(--motion-ease-in-out),
-			height 0.2s var(--motion-ease-in-out);
-	}
-
-	.active-container {
-		width: var(--inline-open-width);
-		height: var(--inline-open-height);
-		border-radius: 12px;
-	}
-
-	.widget-wrapper {
-		height: var(--inline-closed-height);
+	.popper {
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 8px;
-		padding-left: 16px;
-		padding-right: 8px;
+		flex-direction: column;
+		box-shadow: var(--shadow-menu);
+		background-color: var(--color-bg-container);
+		width: 340px;
+		overflow: hidden;
+		border-radius: 12px;
+		z-index: 99999 !important;
 	}
 
-	.text {
-		margin: 0;
+	.container {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 8px;
+	}
+
+	.textarea {
+		border: 1px solid var(--color-border);
+		border-radius: var(--border-radius);
+		padding: 10px 8px;
+		font-weight: 500;
 		font-size: 14px;
-		line-height: 20px;
 		color: var(--color-text);
+		background-color: var(--color-bg-container);
+		transition: all 0.2s;
+		resize: none;
+		outline: none;
+		height: 100px;
+	}
+
+	.textarea:active,
+	.textarea:focus {
+		box-shadow: 0 0 0 0.5px var(--color-border);
+	}
+
+	.textarea::placeholder {
+		color: var(--color-text-quaternary);
+	}
+
+	.footer {
+		display: flex;
+		justify-content: space-between;
+		border-top: 1px solid var(--color-border);
+		background-color: var(--color-fill-quaternary);
+		padding: 8px;
 	}
 
 	.button-wrapper {
@@ -292,43 +279,6 @@
 	.active-category-button {
 		background-color: var(--color-primary-bg);
 		color: var(--color-primary);
-	}
-
-	.input-wrapper {
-		display: flex;
-		padding: 0px 8px 8px 8px;
-	}
-
-	.textarea {
-		border: 1px solid var(--color-border);
-		border-radius: var(--border-radius);
-		padding: 10px 8px;
-		flex: 1;
-		font-weight: 500;
-		font-size: 14px;
-		color: var(--color-text);
-		background-color: var(--color-bg-container);
-		transition: all 0.2s;
-		resize: none;
-		outline: none;
-		height: 100px;
-	}
-
-	.textarea:active,
-	.textarea:focus {
-		box-shadow: 0 0 0 0.5px var(--color-border);
-	}
-
-	.textarea::placeholder {
-		color: var(--color-text-quaternary);
-	}
-
-	.footer {
-		display: flex;
-		justify-content: flex-end;
-		border-top: 1px solid var(--color-border);
-		background-color: var(--color-fill-quaternary);
-		padding: 8px;
 	}
 
 	.submit-button {
@@ -368,18 +318,5 @@
 		line-height: 16px;
 		margin: 0;
 		width: 100%;
-	}
-
-	.success-wrapper {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-		height: 100%;
-	}
-
-	.check-icon {
-		color: var(--color-primary);
 	}
 </style>
