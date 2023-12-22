@@ -143,9 +143,7 @@
 			use:popperContent={extraOpts}
 			transition:fade={{ duration: 100 }}
 		>
-			{#if projectId === undefined}
-				<p>Missing `projectId`</p>
-			{:else if currentStep === "form"}
+			{#if currentStep === "form"}
 				<div class="container">
 					<!-- svelte-ignore a11y-autofocus -->
 					<textarea class="textarea" {placeholder} bind:value={content} autofocus />
