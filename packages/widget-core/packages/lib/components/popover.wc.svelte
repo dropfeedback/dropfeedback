@@ -7,6 +7,7 @@
 	import SuccessStep from "./success-step.wc.svelte";
 	import LoadingIcon from "./icons/loading.wc.svelte";
 	import { getWidgetMeta } from "../utils/getWidgetMeta";
+	import { clickOutside } from "../utils/clickOutside";
 	import { sendFeedback } from "../api";
 	import type { Categories, PopoverSide, Steps, ThemeProps } from "../types";
 
@@ -142,6 +143,10 @@
 			class="popper"
 			use:popperContent={extraOpts}
 			transition:fade={{ duration: 100 }}
+			use:clickOutside
+			on:outclick={() => {
+				openState = false;
+			}}
 		>
 			{#if currentStep === "form"}
 				<div class="container">
