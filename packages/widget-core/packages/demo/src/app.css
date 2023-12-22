@@ -19,9 +19,13 @@
 main {
 	padding-left: 32px;
 	padding-right: 32px;
-	margin-bottom: 300px;
+	min-height: 300vh;
 }
 
+.widget-container {
+	display: flex;
+	flex-wrap: wrap;
+}
 .center {
 	display: flex;
 	justify-content: center;
@@ -53,28 +57,3 @@ fieldset {
 	margin-top: 1rem;
 }
 
-.arrow {
-	position: fixed;
-	top: 50%;
-	margin-top: -70px;
-	z-index: -1;
-}
-
-.arrow-right {
-	right: 35px;
-}
-
-.arrow-left {
-	left: 35px;
-	transform: rotateZ(180deg);
-}
-
-.arrow-dark {
-	filter: invert(0.87);
-}
-
-@media (max-width: 768px) {
-	.arrow {
-		display: none;
-	}
-}
