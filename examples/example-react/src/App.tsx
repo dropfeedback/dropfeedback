@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { DropFeedback } from "@dropfeedback/react";
 
-import arrowLogo from "./assets/arrow.svg";
-
 function App() {
   const [scheme, setScheme] = useState<"light" | "dark">("light");
   const [position, setPosition] = useState<"right" | "left">("right");
@@ -113,18 +111,8 @@ function App() {
         </div>
       </fieldset>
 
-      <img
-        className={`arrow arrow-${position} arrow-${scheme}`}
-        src={arrowLogo}
-        alt="Arrow"
-      />
-
       <DropFeedback
         projectId="24320d3d-c5f2-44e1-83a1-13e1cb61fe1d"
-        defaultButton={{
-          position,
-          enabled: true,
-        }}
         theme={{
           scheme,
           primaryColor,

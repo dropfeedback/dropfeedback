@@ -26,30 +26,19 @@
 				reflect: true,
 				type: "String",
 				attribute: "theme-text-color"
-			},
-			defaultButtonPosition: {
-				reflect: true,
-				type: "String",
-				attribute: "default-button-position"
-			},
-			defaultButtonEnabled: {
-				reflect: true,
-				type: "String",
-				attribute: "default-button-enabled"
 			}
 		}
 	}}
 />
 
 <script lang="ts">
+	import { onMount } from "svelte";
 	import Popover from "./popover.wc.svelte";
+	import Inline from "./inline.wc.svelte";
 	import { stringToBoolean } from "../utils/stringToBoolean";
 	import seedToken from "../theme/seed";
-	import { onMount } from "svelte";
 
 	export let projectId: string | undefined = undefined;
-	export let defaultButtonPosition: "right" | "left" | undefined = undefined;
-	export let defaultButtonEnabled: string | undefined = undefined;
 	export let themeScheme: "dark" | "light" | undefined = undefined;
 	export let themePrimaryColor: string | undefined = undefined;
 	export let themeBackgroundColor: string | undefined = undefined;
@@ -62,6 +51,9 @@
 	let popoverTriggerButtons = document.querySelectorAll(
 		"[data-feedback-button]"
 	) as NodeListOf<HTMLButtonElement>;
+	let feedbackInputs = document.querySelectorAll(
+		"[data-feedback-input]"
+	) as NodeListOf<HTMLTextAreaElement>;
 
 	onMount(() => {
 		const observer = new MutationObserver((mutations) => {
@@ -100,10 +92,6 @@
 		backgroundColor: dataset?.themeBackgroundColor ?? themeBackgroundColor ?? colorBgBase,
 		textColor: dataset?.themeTextColor ?? themeTextColor ?? colorTextBase
 	}}
-	{@const defaultButton = {
-		position: defaultButtonPosition ?? "right",
-		enabled: stringToBoolean(defaultButtonEnabled) ?? true
-	}}
 	{@const side = dataset?.side ?? "auto"}
 	{@const sideOffset = dataset?.sideOffset === "" ? 12 : Number(dataset?.sideOffset ?? 12)}
 	{@const open = stringToBoolean(dataset?.open) ?? dataset?.open === "" ?? false}
@@ -121,7 +109,6 @@
 		{popoverTriggerButton}
 		projectId={preferedProjectId}
 		{theme}
-		{defaultButton}
 		{side}
 		{sideOffset}
 		{open}
@@ -130,27 +117,28 @@
 	/>
 {/each}
 
-{#if stringToBoolean(defaultButtonEnabled) ?? true}
-	{@const defaultButton = {
-		position: defaultButtonPosition ?? "right",
-		enabled: stringToBoolean(defaultButtonEnabled) ?? true
-	}}
+{#each feedbackInputs as feedbackInput (feedbackInput)}
+	{@const dataset = feedbackInput?.dataset}
+	{@const preferedProjectId = feedbackInput?.dataset?.projectId ?? projectId}
 	{@const theme = {
-		scheme: themeScheme ?? "light",
-		primaryColor: themePrimaryColor ?? colorPrimary,
-		backgroundColor: themeBackgroundColor ?? colorBgBase,
-		textColor: themeTextColor ?? colorTextBase
+		scheme: dataset?.themeScheme ?? themeScheme ?? "light",
+		primaryColor: dataset?.themePrimaryColor ?? themePrimaryColor ?? colorPrimary,
+		backgroundColor: dataset?.themeBackgroundColor ?? themeBackgroundColor ?? colorBgBase,
+		textColor: dataset?.themeTextColor ?? themeTextColor ?? colorTextBase
 	}}
-	<Popover
-		{projectId}
-		{theme}
-		{defaultButton}
-		open={false}
-		side="auto"
-		sideOffset={12}
-		permanentOpen={false}
-	/>
-{/if}
+	{@const open = stringToBoolean(dataset?.open) ?? dataset?.open === "" ?? false}
+	{@const permanentOpen =
+		stringToBoolean(dataset?.permanentOpen) ?? dataset?.permanentOpen === "" ? true : false}
+	{@const meta = Object.entries(dataset)
+		.filter(([key]) => key.startsWith("meta"))
+		.reduce((acc, [key, value]) => {
+			const keyWithoutMetaPrefix = key.replace("meta", "");
+			const newKey = keyWithoutMetaPrefix.charAt(0).toLowerCase() + keyWithoutMetaPrefix.slice(1);
+			acc[newKey] = value ?? "";
+			return acc;
+		}, initialMeta)}
+	<Inline {feedbackInput} projectId={preferedProjectId} {theme} {open} {permanentOpen} {meta} />
+{/each}
 
 <style>
 	:host,
