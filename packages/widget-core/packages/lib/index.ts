@@ -1,1 +1,1 @@
-export { default as DropFeedback } from "./components/index.wc.svelte";
+export { default as DropFeedback } from "./components/drop-feedback.wc.svelte";

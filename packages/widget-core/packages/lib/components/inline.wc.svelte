@@ -1,26 +1,29 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+	import { fly, slide } from "svelte/transition";
 	import { createPopperActions } from "svelte-popperjs";
-	import { fade, slide } from "svelte/transition";
 	import CssVar from "./css-var.wc.svelte";
 	import CategorySwitcher from "./category-switcher.wc.svelte";
 	import SuccessStep from "./success-step.wc.svelte";
 	import LoadingIcon from "./icons/loading.wc.svelte";
+	import { cssObjectToString } from "../utils/cssObjectToString";
 	import { getWidgetMeta } from "../utils/getWidgetMeta";
-	import { clickOutside } from "../utils/clickOutside";
 	import { sendFeedback } from "../api";
-	import type { Categories, PopoverSide, Steps, ThemeProps } from "../types";
+	import type { Categories, Steps, ThemeProps } from "../types";
 
-	export let popoverTriggerButton: HTMLButtonElement;
+	export let feedbackInput: HTMLElement;
 	export let projectId: string | undefined = undefined;
 	export let theme: ThemeProps;
-	export let side: string;
-	export let sideOffset: number;
 	export let open: boolean;
 	export let permanentOpen: boolean;
 	export let meta: Record<string, any> = {};
 
-	let placeholder: string = "Your feedback...";
+	const CLOSED_HEIGHT = 48;
+	const OPEN_HEIGHT = 205;
+	const CLOSED_WIDTH = 230;
+	const OPEN_WIDTH = 340;
+
+	let placeholder: string = "What's on your mind?";
 	let content = "";
 	let error = "";
 	let loading = false;
@@ -33,6 +36,14 @@
 		console.error("DropFeedback: Missing `projectId`");
 	}
 
+	$: {
+		if (openState) {
+			feedbackInput.style.width = `${OPEN_WIDTH}px`;
+		} else {
+			feedbackInput.style.width = `${CLOSED_WIDTH}px`;
+		}
+	}
+
 	$: if (selectedCategory === "issue") {
 		placeholder = "[Issue]: I noticed that...";
 	} else if (selectedCategory === "idea") {
@@ -42,24 +53,27 @@
 	}
 
 	const [popperRef, popperContent] = createPopperActions({
-		strategy: "fixed"
+		strategy: "fixed",
+		placement: "bottom"
 	});
-	$: extraOpts = {
-		modifiers: [{ name: "offset", options: { offset: [0, sideOffset] } }],
-		placement: side as PopoverSide
+	const extraOpts = {
+		modifiers: [{ name: "offset", options: { offset: [0, -CLOSED_HEIGHT] } }]
 	};
 
 	onMount(() => {
-		popperRef(popoverTriggerButton);
-
-		const togglePopper = () => {
-			openState = !openState;
-		};
-
-		popoverTriggerButton.addEventListener("click", togglePopper);
-
-		return () => popoverTriggerButton.removeEventListener("click", togglePopper);
+		feedbackInput.style.height = `${CLOSED_HEIGHT}px`;
+		feedbackInput.style.width = `${CLOSED_WIDTH}px`;
+		popperRef(feedbackInput);
 	});
+
+	$: styles = {
+		inlineClosedHeight: `${CLOSED_HEIGHT}px`,
+		inlineOpenHeight: `${OPEN_HEIGHT}px`,
+		inlineClosedWidth: `${CLOSED_WIDTH}px`,
+		inlineOpenWidth: `${OPEN_WIDTH}px`
+	};
+
+	$: stringStyles = cssObjectToString(styles);
 
 	const submit = async () => {
 		if (!selectedCategory) {
@@ -120,8 +134,10 @@
 	const onCategoryChange = (event: CustomEvent<Categories>) => {
 		if (selectedCategory === event.detail) {
 			selectedCategory = null;
+			openState = false;
 		} else {
 			selectedCategory = event.detail;
+			openState = true;
 		}
 	};
 
@@ -134,76 +150,91 @@
 
 <svelte:window on:keydown={escapeListener} />
 
-<CssVar {theme}>
-	{#if permanentOpen || openState}
-		<div
-			id="popper"
-			class="popper"
-			use:popperContent={extraOpts}
-			transition:fade={{ duration: 100 }}
-			use:clickOutside
-			on:outclick={() => {
-				openState = false;
-			}}
-		>
+<div use:popperContent={extraOpts}>
+	<CssVar {theme}>
+		<div class="container" class:active-container={openState} style={stringStyles}>
 			{#if currentStep === "form"}
-				<div class="container">
-					<!-- svelte-ignore a11y-autofocus -->
-					<textarea class="textarea" {placeholder} bind:value={content} autofocus />
-					{#if error}
-						<p
-							class="error-message"
-							in:slide={{ axis: "y", duration: 200 }}
-							out:slide={{ axis: "y", duration: 200 }}
-						>
-							{error}
-						</p>
-					{/if}
-				</div>
-				<div class="footer">
+				<div class="widget-wrapper">
+					<p class="text">Send feedback</p>
 					<CategorySwitcher {selectedCategory} on:change={onCategoryChange} />
-					<button
-						class="submit-button"
-						class:loading-button={loading}
-						on:click={submit}
-						aria-label="Send feedback"
-					>
-						{#if loading}
-							<LoadingIcon />
-						{/if}
-						Send
-					</button>
 				</div>
+				{#if permanentOpen || openState}
+					<div class="input-wrapper" in:slide={{ axis: "y", duration: 200 }}>
+						<!-- svelte-ignore a11y-autofocus -->
+						<textarea class="textarea" {placeholder} bind:value={content} autofocus />
+					</div>
+					<div class="footer" in:slide={{ axis: "y", duration: 200 }}>
+						{#if error}
+							<p class="error-message" in:fly={{ opacity: 0 }}>
+								{error}
+							</p>
+						{/if}
+						<button
+							class="submit-button"
+							class:loading-button={loading}
+							on:click={submit}
+							aria-label="Send feedback"
+						>
+							{#if loading}
+								<LoadingIcon />
+							{/if}
+							Send
+						</button>
+					</div>
+				{/if}
 			{:else if currentStep === "success"}
-				<SuccessStep on:finish={onFinished} --height="165px" />
+				<SuccessStep on:finish={onFinished} --height={OPEN_HEIGHT + "px"} />
 			{/if}
 		</div>
-	{/if}
-</CssVar>
+	</CssVar>
+</div>
 
 <style>
-	.popper {
-		display: flex;
-		flex-direction: column;
-		box-shadow: var(--shadow-menu);
+	.container {
+		height: var(--inline-closed-height);
+		width: var(--inline-closed-width);
+		border-radius: 24px;
 		background-color: var(--color-bg-container);
-		width: 340px;
+		box-shadow: var(--shadow);
 		overflow: hidden;
-		border-radius: 12px;
-		z-index: 99999 !important;
+		transition:
+			width 0.2s var(--motion-ease-in-out),
+			height 0.2s var(--motion-ease-in-out);
 	}
 
-	.container {
+	.active-container {
+		width: var(--inline-open-width);
+		height: var(--inline-open-height);
+		border-radius: 12px;
+	}
+
+	.widget-wrapper {
+		height: var(--inline-closed-height);
 		display: flex;
-		flex-direction: column;
+		align-items: center;
+		justify-content: space-between;
 		gap: 8px;
-		padding: 8px;
+		padding-left: 16px;
+		padding-right: 8px;
+	}
+
+	.text {
+		margin: 0;
+		font-size: 14px;
+		line-height: 20px;
+		color: var(--color-text);
+	}
+
+	.input-wrapper {
+		display: flex;
+		padding: 0px 8px 8px 8px;
 	}
 
 	.textarea {
 		border: 1px solid var(--color-border);
 		border-radius: var(--border-radius);
 		padding: 10px 8px;
+		flex: 1;
 		font-weight: 500;
 		font-size: 14px;
 		color: var(--color-text);
@@ -225,7 +256,7 @@
 
 	.footer {
 		display: flex;
-		justify-content: space-between;
+		justify-content: flex-end;
 		border-top: 1px solid var(--color-border);
 		background-color: var(--color-fill-quaternary);
 		padding: 8px;

@@ -1,92 +1,45 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import type { Writable } from "svelte/store";
-	import type { Categories, Steps } from "../types";
+	import { onMount, createEventDispatcher } from "svelte";
+	import { fade, fly } from "svelte/transition";
+	import CheckIcon from "./icons/check.wc.svelte";
 
-	export let selectedCategory: Writable<Categories | null>;
-	export let currentStep: Writable<Steps>;
-
-	const finish = () => {
-		$currentStep = "category";
-		$selectedCategory = null;
-	};
+	const dispatch = createEventDispatcher<{
+		finish: void;
+	}>();
 
 	onMount(() => {
 		setTimeout(() => {
-			finish();
+			dispatch("finish");
 		}, 5000);
 	});
 </script>
 
-<div class="container">
-	<svg
-		version="1.1"
-		id="Capa_1"
-		xmlns="http://www.w3.org/2000/svg"
-		xmlns:xlink="http://www.w3.org/1999/xlink"
-		viewBox="0 0 50 50"
-		xml:space="preserve"
-		width="64px"
-		height="64px"
-		fill="#000000"
-		><g id="SVGRepo_bgCarrier" stroke-width="0" /><g
-			id="SVGRepo_tracerCarrier"
-			stroke-linecap="round"
-			stroke-linejoin="round"
-		/><g id="SVGRepo_iconCarrier">
-			<circle style="fill:#25AE88;" cx="25" cy="25" r="25" />
-			<polyline
-				style="fill:none;stroke:#FFFFFF;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"
-				points=" 38,15 22,33 12,25 "
-			/>
-		</g></svg
-	>
-	<p class="text">Thanks! We received your feedback.</p>
-	<button
-		type="button"
-		class="button"
-		on:click={() => {
-			finish();
-		}}>Submit more feedback</button
-	>
+<div class="success-wrapper" in:fade>
+	<div class="check-icon" in:fly={{ y: 15, duration: 200 }}>
+		<CheckIcon />
+	</div>
+	<p class="text" in:fly={{ y: 15, duration: 200, delay: 100 }}>Your feedback has been received!</p>
+	<p class="text" in:fly={{ y: 15, duration: 200, delay: 200 }}>Thank you for help.</p>
 </div>
 
 <style>
-	.container {
-		flex: 1;
+	.success-wrapper {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
 		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		height: var(--height);
+	}
+
+	.check-icon {
+		color: var(--color-success);
 	}
 
 	.text {
-		font-weight: 600;
-		color: var(--color-text);
-	}
-
-	.button {
-		background: var(--color-bg-container);
+		margin: 0;
 		font-size: 14px;
-		padding: 4px 12px;
-		border: 1px solid var(--color-border);
+		line-height: 20px;
 		color: var(--color-text);
-		border-radius: var(--border-radius);
-		transition: all 0.2s var(--motion-ease-in-out);
-		cursor: pointer;
-	}
-
-	.button:hover {
-		background-color: var(--color-fill-tertiary);
-	}
-
-	.button:active {
-		background-color: var(--color-fill-tertiary);
-	}
-
-	.button:focus-visible {
-		outline: 4px solid var(--color-primary-border);
-		outline-offset: 1px;
-		transition: outline-offset 0s, outline 0s;
 	}
 </style>

@@ -5,13 +5,6 @@ export type IFeedback = {
 	category: Categories;
 };
 
-export type DefaultButtonPosition = "left" | "right";
-
-export type DefaultButtonProps = {
-	position: DefaultButtonPosition;
-	enabled: boolean;
-};
-
 export type ThemeProps = {
 	scheme: string;
 	primaryColor: string;
@@ -36,6 +29,6 @@ export type PopoverSide =
 	| "left-start"
 	| "left-end";
 
-export type Steps = "category" | "form" | "success";
+export type Steps = "form" | "success";
 
 export type Categories = "issue" | "idea" | "other";
