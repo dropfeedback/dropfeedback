@@ -37,7 +37,9 @@ export const links: LinksFunction = () => [
 export async function loader() {
   return json({
     ENV: {
-      GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "",
+      GOOGLE_CLIENT_ID:
+        process.env.GOOGLE_CLIENT_ID ||
+        "108576727290-r2vpjvnub36682vn3vig0rq1jvj9to2n.apps.googleusercontent.com",
     },
   });
 }
