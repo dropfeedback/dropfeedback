@@ -118,13 +118,26 @@
 {/each}
 
 {#each feedbackInputs as feedbackInput (feedbackInput)}
+	{@const dataset = feedbackInput?.dataset}
+	{@const preferedProjectId = feedbackInput?.dataset?.projectId ?? projectId}
 	{@const theme = {
 		scheme: themeScheme ?? "light",
 		primaryColor: themePrimaryColor ?? colorPrimary,
 		backgroundColor: themeBackgroundColor ?? colorBgBase,
 		textColor: themeTextColor ?? colorTextBase
 	}}
-	<Inline {projectId} {theme} {feedbackInput} />
+	{@const open = stringToBoolean(dataset?.open) ?? dataset?.open === "" ?? false}
+	{@const permanentOpen =
+		stringToBoolean(dataset?.permanentOpen) ?? dataset?.permanentOpen === "" ? true : false}
+	{@const meta = Object.entries(dataset)
+		.filter(([key]) => key.startsWith("meta"))
+		.reduce((acc, [key, value]) => {
+			const keyWithoutMetaPrefix = key.replace("meta", "");
+			const newKey = keyWithoutMetaPrefix.charAt(0).toLowerCase() + keyWithoutMetaPrefix.slice(1);
+			acc[newKey] = value ?? "";
+			return acc;
+		}, initialMeta)}
+	<Inline {feedbackInput} projectId={preferedProjectId} {theme} {open} {permanentOpen} {meta} />
 {/each}
 
 <style>

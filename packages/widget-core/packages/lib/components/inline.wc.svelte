@@ -14,6 +14,8 @@
 	export let feedbackInput: HTMLElement;
 	export let projectId: string | undefined = undefined;
 	export let theme: ThemeProps;
+	export let open: boolean;
+	export let permanentOpen: boolean;
 	export let meta: Record<string, any> = {};
 
 	const CLOSED_HEIGHT = 48;
@@ -28,7 +30,7 @@
 	let duration: number;
 	let currentStep: Steps = "form";
 	let selectedCategory: Categories | null = null;
-	let openState: boolean = false;
+	let openState: boolean = open;
 
 	if (projectId === undefined) {
 		console.error("DropFeedback: Missing `projectId`");
@@ -156,7 +158,7 @@
 					<p class="text">Give feedback</p>
 					<CategorySwitcher {selectedCategory} on:change={onCategoryChange} />
 				</div>
-				{#if openState}
+				{#if permanentOpen || openState}
 					<div class="input-wrapper" in:slide={{ axis: "y", duration: 200 }}>
 						<!-- svelte-ignore a11y-autofocus -->
 						<textarea class="textarea" {placeholder} bind:value={content} autofocus />
