@@ -120,10 +120,8 @@
 	const onCategoryChange = (event: CustomEvent<Categories>) => {
 		if (selectedCategory === event.detail) {
 			selectedCategory = null;
-			openState = false;
 		} else {
 			selectedCategory = event.detail;
-			openState = true;
 		}
 	};
 
