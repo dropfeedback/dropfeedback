@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { Feedback } from 'src/prisma';
 
 export class GetOneParam
@@ -16,10 +16,11 @@ export class GetOneParam
       | 'projectId'
       | 'status'
       | 'id'
+      | 'resolution'
+      | 'reportIdentifier'
     >
 {
   @IsNotEmpty()
-  @IsUUID()
   @IsString()
   feedbackId: string;
 }

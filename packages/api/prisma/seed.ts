@@ -5,8 +5,10 @@ import {
   UserProviderType,
 } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { addExtensions } from '../src/prisma/prisma.service';
 
 const prisma = new PrismaClient();
+addExtensions(prisma);
 
 export const DEMO_USER = {
   email: 'demo@demo.com',
