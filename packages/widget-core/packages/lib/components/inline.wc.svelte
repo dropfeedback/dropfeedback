@@ -20,7 +20,7 @@
 
 	const CLOSED_HEIGHT = 48;
 	const OPEN_HEIGHT = 205;
-	const CLOSED_WIDTH = 223;
+	const CLOSED_WIDTH = 230;
 	const OPEN_WIDTH = 340;
 
 	let placeholder: string = "What's on your mind?";
@@ -155,7 +155,7 @@
 		<div class="container" class:active-container={openState} style={stringStyles}>
 			{#if currentStep === "form"}
 				<div class="widget-wrapper">
-					<p class="text">Give feedback</p>
+					<p class="text">Send feedback</p>
 					<CategorySwitcher {selectedCategory} on:change={onCategoryChange} />
 				</div>
 				{#if permanentOpen || openState}
