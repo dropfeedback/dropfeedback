@@ -162,7 +162,12 @@
 				</div>
 				<div class="footer">
 					<CategorySwitcher {selectedCategory} on:change={onCategoryChange} />
-					<button class="submit-button" class:loading-button={loading} on:click={submit}>
+					<button
+						class="submit-button"
+						class:loading-button={loading}
+						on:click={submit}
+						aria-label="Send feedback"
+					>
 						{#if loading}
 							<LoadingIcon />
 						{/if}
