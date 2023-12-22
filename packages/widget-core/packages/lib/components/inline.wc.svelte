@@ -242,7 +242,7 @@
 
 	.textarea:active,
 	.textarea:focus {
-		box-shadow: 0 0 0 0.5px var(--color-border);
+		border-color: var(--color-border-active);
 	}
 
 	.textarea::placeholder {
