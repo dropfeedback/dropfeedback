@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import { createEventDispatcher } from "svelte";
+	import { onMount, createEventDispatcher } from "svelte";
+	import { fade, fly } from "svelte/transition";
 	import CheckIcon from "./icons/check.wc.svelte";
 
 	const dispatch = createEventDispatcher<{
@@ -14,12 +14,12 @@
 	});
 </script>
 
-<div class="success-wrapper">
-	<div class="check-icon">
+<div class="success-wrapper" in:fade>
+	<div class="check-icon" in:fly={{ y: 15, duration: 200 }}>
 		<CheckIcon />
 	</div>
-	<p class="text">Your feedback has been received!</p>
-	<p class="text">Thank you for help.</p>
+	<p class="text" in:fly={{ y: 15, duration: 200, delay: 100 }}>Your feedback has been received!</p>
+	<p class="text" in:fly={{ y: 15, duration: 200, delay: 200 }}>Thank you for help.</p>
 </div>
 
 <style>
@@ -29,10 +29,17 @@
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
-		height: 100%;
+		height: var(--height);
 	}
 
 	.check-icon {
-		color: var(--color-primary);
+		color: var(--color-success);
+	}
+
+	.text {
+		margin: 0;
+		font-size: 14px;
+		line-height: 20px;
+		color: var(--color-text);
 	}
 </style>

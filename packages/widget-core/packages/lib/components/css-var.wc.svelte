@@ -25,6 +25,8 @@
 		colorPrimary: primaryColors[6],
 		colorPrimaryActive: primaryColors[7],
 
+		colorSuccess: "#0070f3",
+
 		borderRadius,
 		motionEaseInOut
 	};

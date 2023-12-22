@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { createPopperActions } from "svelte-popperjs";
-	import { fade, fly } from "svelte/transition";
+	import { fade, slide } from "svelte/transition";
 	import CssVar from "./css-var.wc.svelte";
 	import CategorySwitcher from "./category-switcher.wc.svelte";
 	import SuccessStep from "./success-step.wc.svelte";
@@ -129,6 +129,7 @@
 	const onFinished = () => {
 		currentStep = "form";
 		selectedCategory = null;
+		openState = false;
 	};
 </script>
 
@@ -149,7 +150,11 @@
 					<!-- svelte-ignore a11y-autofocus -->
 					<textarea class="textarea" {placeholder} bind:value={content} autofocus />
 					{#if error}
-						<p class="error-message" in:fly={{ opacity: 0 }}>
+						<p
+							class="error-message"
+							in:slide={{ axis: "y", duration: 200 }}
+							out:slide={{ axis: "y", duration: 200 }}
+						>
 							{error}
 						</p>
 					{/if}
@@ -164,7 +169,7 @@
 					</button>
 				</div>
 			{:else if currentStep === "success"}
-				<SuccessStep on:finish={onFinished} />
+				<SuccessStep on:finish={onFinished} --height="165px" />
 			{/if}
 		</div>
 	{/if}

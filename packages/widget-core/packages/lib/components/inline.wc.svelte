@@ -142,6 +142,7 @@
 	const onFinished = () => {
 		currentStep = "form";
 		selectedCategory = null;
+		openState = false;
 	};
 </script>
 
@@ -175,7 +176,7 @@
 					</div>
 				{/if}
 			{:else if currentStep === "success"}
-				<SuccessStep on:finish={onFinished} />
+				<SuccessStep on:finish={onFinished} --height={OPEN_HEIGHT + "px"} />
 			{/if}
 		</div>
 	</CssVar>
