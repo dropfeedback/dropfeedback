@@ -8,10 +8,6 @@ export interface DropFeedbackProps {
     backgroundColor?: string;
     textColor?: string;
   };
-  defaultButton?: {
-    position?: "left" | "right";
-    enabled?: boolean;
-  };
   meta?: Record<string, any>;
 }
 
@@ -24,8 +20,6 @@ declare global {
         "theme-primary-color"?: string;
         "theme-background-color"?: string;
         "theme-text-color"?: string;
-        "default-button-position"?: "left" | "right";
-        "default-button-enabled"?: boolean;
       };
     }
   }
@@ -34,7 +28,6 @@ declare global {
 export const DropFeedback = ({
   projectId,
   theme,
-  defaultButton = {},
   meta = {},
 }: DropFeedbackProps) => {
   const metaProps = Object.keys(meta).reduce(
@@ -51,8 +44,6 @@ export const DropFeedback = ({
       theme-scheme={theme?.scheme}
       theme-primary-color={theme?.primaryColor}
       theme-background-color={theme?.backgroundColor}
-      default-button-position={defaultButton?.position}
-      default-button-enabled={defaultButton?.enabled}
       theme-text-color={theme?.textColor}
       {...metaProps}
     />
