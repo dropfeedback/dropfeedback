@@ -121,10 +121,10 @@
 	{@const dataset = feedbackInput?.dataset}
 	{@const preferedProjectId = feedbackInput?.dataset?.projectId ?? projectId}
 	{@const theme = {
-		scheme: themeScheme ?? "light",
-		primaryColor: themePrimaryColor ?? colorPrimary,
-		backgroundColor: themeBackgroundColor ?? colorBgBase,
-		textColor: themeTextColor ?? colorTextBase
+		scheme: dataset?.themeScheme ?? themeScheme ?? "light",
+		primaryColor: dataset?.themePrimaryColor ?? themePrimaryColor ?? colorPrimary,
+		backgroundColor: dataset?.themeBackgroundColor ?? themeBackgroundColor ?? colorBgBase,
+		textColor: dataset?.themeTextColor ?? themeTextColor ?? colorTextBase
 	}}
 	{@const open = stringToBoolean(dataset?.open) ?? dataset?.open === "" ?? false}
 	{@const permanentOpen =
