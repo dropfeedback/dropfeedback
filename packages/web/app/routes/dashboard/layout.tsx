@@ -19,12 +19,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
     "/dashboard",
     "/dashboard/email-verification",
   ].includes(pathname);
+  // when we redirected to any page, we should add the next query param. so that we can redirect back to the page after login
+  const nextUrl = encodeURIComponent(pathname);
 
   const cookie = request.headers.get("Cookie");
   if (!cookie) {
-    const redirectNext = shouldAddNext
-      ? `/login?next=${encodeURIComponent(pathname)}`
-      : "/login";
+    const redirectNext = shouldAddNext ? `/login?next=${nextUrl}` : "/login";
     throw redirect(redirectNext);
   }
 
@@ -41,7 +41,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const message = response?.data?.message;
 
     let redirectUrl = "/login";
-    const nextUrl = encodeURIComponent(pathname);
 
     // API returns 403 and message is "Email is not verified". redirect to /email-verification
     if (status === 403 && message === "Email is not verified") {
