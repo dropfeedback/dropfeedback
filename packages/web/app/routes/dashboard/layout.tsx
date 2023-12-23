@@ -6,19 +6,25 @@ import {
   dehydrate,
 } from "@tanstack/react-query";
 import { DashboardHeader } from "~/components/headers/dashboard-header";
+import type { ApiError } from "~/lib/axios";
 import { fetchers } from "~/lib/fetchers";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const queryClient = new QueryClient();
   const { pathname } = new URL(request.url);
-  const redirectNext =
-    pathname === "/dashboard"
-      ? "/login"
-      : `/login?next=${encodeURIComponent(pathname)}`;
+
+  const shouldAddNext = ![
+    "/login",
+    "/signup",
+    "/dashboard",
+    "/dashboard/email-verification",
+  ].includes(pathname);
+  // when we redirected to any page, we should add the next query param. so that we can redirect back to the page after login
+  const nextUrl = encodeURIComponent(pathname);
 
   const cookie = request.headers.get("Cookie");
-
   if (!cookie) {
+    const redirectNext = shouldAddNext ? `/login?next=${nextUrl}` : "/login";
     throw redirect(redirectNext);
   }
 
@@ -29,8 +35,26 @@ export async function loader({ request }: LoaderFunctionArgs) {
     });
 
     return json({ dehydratedState: dehydrate(queryClient) });
-  } catch (error) {
-    return redirect(redirectNext);
+  } catch (error: any) {
+    const response = (error as ApiError).response;
+    const status = response?.status;
+    const message = response?.data?.message;
+
+    let redirectUrl = "/login";
+
+    // API returns 403 and message is "Email is not verified". redirect to /email-verification
+    if (status === 403 && message === "Email is not verified") {
+      redirectUrl = "/dashboard/email-verification";
+    }
+
+    // if we are already on the redirectUrl, return the json
+    if (pathname === redirectUrl) {
+      return json({ dehydratedState: dehydrate(queryClient) });
+    }
+
+    return redirect(
+      shouldAddNext ? `${redirectUrl}?next=${nextUrl}` : redirectUrl,
+    );
   }
 }
 
