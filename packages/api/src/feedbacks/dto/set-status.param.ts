@@ -16,6 +16,8 @@ export class SetStatusParam
       | 'projectId'
       | 'status'
       | 'id'
+      | 'resolution'
+      | 'reportIdentifier'
     >
 {
   @IsNotEmpty()

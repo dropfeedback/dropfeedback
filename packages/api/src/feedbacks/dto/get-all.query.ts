@@ -10,7 +10,6 @@ import { FeedbackStatus, FeedbackCategory } from 'src/prisma';
 
 export class GetAll {
   @IsNotEmpty()
-  @IsUUID()
   @IsString()
   projectId: string;
 
