@@ -15,7 +15,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const shouldAddNext = ![
     "/login",
-    "signup",
+    "/signup",
     "/dashboard",
     "/dashboard/email-verification",
   ].includes(pathname);
