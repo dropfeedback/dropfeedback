@@ -10,6 +10,7 @@ import { FeedbacksModule } from './feedbacks/feedbacks.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { UsersModule } from './users/users.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UsersModule } from './users/users.module';
       load: [config],
       isGlobal: true,
     }),
+    PrismaModule,
     AuthModule,
     ProjectsModule,
     FeedbacksModule,

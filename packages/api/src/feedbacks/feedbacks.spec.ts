@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateFeedbackDto } from './dto';
-import { prismaMock } from 'src/libs/__mocks__/prisma';
+import { prismaMock } from 'src/test/__mocks__/prisma';
 import { FeedbacksService } from './feedbacks.service';
 import { AppModule } from '../app.module';
 
@@ -37,6 +37,7 @@ describe('Feedbacks', () => {
         device: 'test',
         origin: 'test',
         ...feedbackDto,
+        updatedAt: new Date(),
         createdAt: new Date(),
         category: 'other',
         status: 'new',
@@ -54,6 +55,7 @@ describe('Feedbacks', () => {
         origin: 'test',
         ...feedbackDto,
         createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
       });
     });
   });

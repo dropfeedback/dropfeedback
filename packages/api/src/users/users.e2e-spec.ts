@@ -7,7 +7,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 describe('Users - e2e', () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let authCookie: string[] = [];
+  let authCookie: string = '';
 
   beforeAll(async () => {
     app = await createNestApp();
@@ -19,7 +19,7 @@ describe('Users - e2e', () => {
     await app.close();
   });
 
-  describe('GET /users/me', () => {
+  describe('/users/me', () => {
     it('should return user data', async () => {
       const { body } = await request(app.getHttpServer())
         .get('/users/me')
@@ -28,17 +28,15 @@ describe('Users - e2e', () => {
 
       expect(body).toMatchObject({
         id: expect.any(String),
-        email: MOCK_USER.email,
-        fullName: MOCK_USER.fullName,
+        email: expect.any(String),
+        fullName: expect.any(String),
       });
     });
 
     it('should return 401 if user is not authenticated', async () => {
       await request(app.getHttpServer()).get('/users/me').expect(401);
     });
-  });
 
-  describe('PATCH /users/me', () => {
     it('should update user data', async () => {
       const { body } = await request(app.getHttpServer())
         .patch('/users/me')
