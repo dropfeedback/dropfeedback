@@ -59,7 +59,7 @@
 	) as NodeListOf<HTMLButtonElement>;
 	let feedbackInputs = document.querySelectorAll(
 		"[data-feedback-input]"
-	) as NodeListOf<HTMLTextAreaElement>;
+	) as NodeListOf<HTMLDivElement>;
 
 	onMount(() => {
 		const observer = new MutationObserver((mutations) => {
