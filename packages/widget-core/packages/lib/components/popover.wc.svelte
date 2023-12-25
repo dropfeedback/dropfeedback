@@ -20,6 +20,7 @@
 	export let open: boolean;
 	export let permanentOpen: boolean;
 	export let meta: Record<string, any> = {};
+	export let reportIdentifier: string | undefined = undefined;
 
 	let placeholder: string = "Your feedback...";
 	let content = "";
@@ -85,6 +86,7 @@
 				content,
 				projectId: projectId!,
 				resolution,
+				reportIdentifier,
 				meta: {
 					...widgetMeta,
 					...meta

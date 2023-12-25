@@ -18,6 +18,7 @@
 	export let open: boolean;
 	export let permanentOpen: boolean;
 	export let meta: Record<string, any> = {};
+	export let reportIdentifier: string | undefined = undefined;
 
 	const CLOSED_HEIGHT = 48;
 	const OPEN_HEIGHT = 205;
@@ -99,6 +100,7 @@
 				content,
 				projectId: projectId!,
 				resolution,
+				reportIdentifier,
 				meta: {
 					...widgetMeta,
 					...meta
@@ -200,9 +202,7 @@
 		background-color: var(--color-bg-container);
 		box-shadow: var(--shadow);
 		overflow: hidden;
-		transition:
-			width 0.2s var(--motion-ease-in-out),
-			height 0.2s var(--motion-ease-in-out);
+		transition: width 0.2s var(--motion-ease-in-out), height 0.2s var(--motion-ease-in-out);
 	}
 
 	.active-container {
