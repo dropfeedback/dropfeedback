@@ -3,6 +3,8 @@ export type IFeedback = {
 	content: string;
 	meta: Record<string, any>;
 	category: Categories;
+	resolution: string;
+	reportIdentifier?: string;
 };
 
 export type ThemeProps = {

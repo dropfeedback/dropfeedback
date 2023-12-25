@@ -26,6 +26,11 @@
 				reflect: true,
 				type: "String",
 				attribute: "theme-text-color"
+			},
+			reportIdentifier: {
+				reflect: true,
+				type: "String",
+				attribute: "report-identifier"
 			}
 		}
 	}}
@@ -43,6 +48,7 @@
 	export let themePrimaryColor: string | undefined = undefined;
 	export let themeBackgroundColor: string | undefined = undefined;
 	export let themeTextColor: string | undefined = undefined;
+	export let reportIdentifier: string | undefined = undefined;
 	$$restProps;
 
 	const { colorPrimary, colorBgBase, colorTextBase } = seedToken;
@@ -53,7 +59,7 @@
 	) as NodeListOf<HTMLButtonElement>;
 	let feedbackInputs = document.querySelectorAll(
 		"[data-feedback-input]"
-	) as NodeListOf<HTMLTextAreaElement>;
+	) as NodeListOf<HTMLDivElement>;
 
 	onMount(() => {
 		const observer = new MutationObserver((mutations) => {
@@ -105,6 +111,7 @@
 			acc[newKey] = value ?? "";
 			return acc;
 		}, initialMeta)}
+	{@const preferedReportIdentifier = dataset?.reportIdentifier ?? reportIdentifier}
 	<Popover
 		{popoverTriggerButton}
 		projectId={preferedProjectId}
@@ -114,6 +121,7 @@
 		{open}
 		{permanentOpen}
 		{meta}
+		reportIdentifier={preferedReportIdentifier}
 	/>
 {/each}
 
@@ -137,7 +145,16 @@
 			acc[newKey] = value ?? "";
 			return acc;
 		}, initialMeta)}
-	<Inline {feedbackInput} projectId={preferedProjectId} {theme} {open} {permanentOpen} {meta} />
+	{@const preferedReportIdentifier = dataset?.reportIdentifier ?? reportIdentifier}
+	<Inline
+		{feedbackInput}
+		projectId={preferedProjectId}
+		{theme}
+		{open}
+		{permanentOpen}
+		{meta}
+		reportIdentifier={preferedReportIdentifier}
+	/>
 {/each}
 
 <style>
