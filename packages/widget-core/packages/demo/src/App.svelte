@@ -2,7 +2,7 @@
 	import "../../lib";
 
 	//widget props
-	let projectId = "b4dbbce7-92ae-47fa-840e-b696a9fb856b";
+	let projectId = "jvqzn16owlue2s";
 	let themeScheme = "light";
 	let primaryColor = "#1677ff";
 	let textColor = "#171717";
@@ -35,6 +35,7 @@
 		theme-background-color={backgroundColor}
 		meta-customer-id={metaCustomerId}
 		meta-role={metaRole}
+		report-identifier="123"
 	/>
 
 	<div class="flex-row">

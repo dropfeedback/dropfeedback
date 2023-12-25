@@ -8,6 +8,7 @@
 	import LoadingIcon from "./icons/loading.wc.svelte";
 	import { getWidgetMeta } from "../utils/getWidgetMeta";
 	import { clickOutside } from "../utils/clickOutside";
+	import { getWindowSize } from "../utils/getWindowSize";
 	import { sendFeedback } from "../api";
 	import type { Categories, PopoverSide, Steps, ThemeProps } from "../types";
 
@@ -19,6 +20,7 @@
 	export let open: boolean;
 	export let permanentOpen: boolean;
 	export let meta: Record<string, any> = {};
+	export let reportIdentifier: string | undefined = undefined;
 
 	let placeholder: string = "Your feedback...";
 	let content = "";
@@ -76,12 +78,15 @@
 		duration = Date.now();
 
 		const widgetMeta = getWidgetMeta();
+		const resolution = getWindowSize();
 
 		try {
 			await sendFeedback({
 				category: selectedCategory,
 				content,
 				projectId: projectId!,
+				resolution,
+				reportIdentifier,
 				meta: {
 					...widgetMeta,
 					...meta
