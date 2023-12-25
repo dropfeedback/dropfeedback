@@ -8,6 +8,7 @@
 	import LoadingIcon from "./icons/loading.wc.svelte";
 	import { cssObjectToString } from "../utils/cssObjectToString";
 	import { getWidgetMeta } from "../utils/getWidgetMeta";
+	import { getWindowSize } from "../utils/getWindowSize";
 	import { sendFeedback } from "../api";
 	import type { Categories, Steps, ThemeProps } from "../types";
 
@@ -90,12 +91,14 @@
 		duration = Date.now();
 
 		const widgetMeta = getWidgetMeta();
+		const resolution = getWindowSize();
 
 		try {
 			await sendFeedback({
 				category: selectedCategory,
 				content,
 				projectId: projectId!,
+				resolution,
 				meta: {
 					...widgetMeta,
 					...meta
