@@ -30,11 +30,10 @@
   },
   "peerDependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@dropfeedback/core": "^0.0.0"
+    "react-dom": "^18.2.0"
   },
   "dependencies": {
-    "@dropfeedback/core": "^0.0.0"
+    "@dropfeedback/core": "*"
   },
   "devDependencies": {
     "@types/node": "^20.10.5",
