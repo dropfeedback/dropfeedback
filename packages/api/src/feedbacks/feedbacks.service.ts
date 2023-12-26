@@ -186,22 +186,25 @@ export class FeedbacksService {
     origin: string;
     device: string;
   }) {
-    const { projectId, content, meta, category, status } = dto;
+    try {
+      return await this.prisma.feedback.create({
+        include: {
+          project: true,
+        },
+        data: {
+          ...dto,
+          origin,
+          device,
+          meta: dto.meta || {},
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2003') {
+        throw new BadRequestException('Project not found');
+      }
 
-    return this.prisma.feedback.create({
-      include: {
-        project: true,
-      },
-      data: {
-        origin,
-        device,
-        content,
-        projectId,
-        category,
-        status,
-        meta: meta || {},
-      },
-    });
+      throw new BadRequestException({ ...error });
+    }
   }
 
   async setStatus({ dto, id }: { dto: SetStatusDto; id: string }) {
