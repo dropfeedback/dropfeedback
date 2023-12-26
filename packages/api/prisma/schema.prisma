@@ -90,6 +90,7 @@ model Feedback {
   status           FeedbackStatus   @default(new)
   meta             Json?            @db.Json
   origin           String?          @db.VarChar(255)
+  url              String?          @db.VarChar(255)
   device           String?          @db.VarChar(255)
   reportIdentifier String?          @db.VarChar(255)
   resolution       String?          @db.VarChar(255)

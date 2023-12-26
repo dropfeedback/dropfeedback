@@ -83,6 +83,7 @@ CREATE TABLE "feedbacks" (
     "status" "FeedbackStatus" NOT NULL DEFAULT 'new',
     "meta" JSON,
     "origin" VARCHAR(255),
+    "url" VARCHAR(255),
     "device" VARCHAR(255),
     "reportIdentifier" VARCHAR(255),
     "resolution" VARCHAR(255),
