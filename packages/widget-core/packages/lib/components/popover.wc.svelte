@@ -87,6 +87,7 @@
 				projectId: projectId!,
 				resolution,
 				reportIdentifier,
+				url: window.location.href,
 				meta: {
 					...widgetMeta,
 					...meta

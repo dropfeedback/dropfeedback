@@ -5,6 +5,7 @@ export type IFeedback = {
 	category: Categories;
 	resolution: string;
 	reportIdentifier?: string;
+	url: string;
 };
 
 export type ThemeProps = {
