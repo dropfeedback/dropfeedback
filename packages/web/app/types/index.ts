@@ -43,10 +43,12 @@ export type Feedback = {
   content: string;
   createdAt: string;
   device: string;
-  origin: string;
-  meta?: Record<string, any> | null;
+  url: string | null;
+  meta: Record<string, any> | {};
   category: FeedbackCategory;
   status: FeedbackStatus;
+  reportIdentifier: string | null;
+  resolution: string | null;
 };
 
 export type FeedbackQueryType = {

@@ -8,6 +8,7 @@ import {
 import UAParser from "ua-parser-js";
 import { motion } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "@remix-run/react";
 import { cn, getRelativeTime } from "~/lib/utils";
 import { Button } from "./ui/button";
 import {
@@ -32,10 +33,13 @@ export function FeedbackCard({
   content,
   createdAt,
   device,
-  origin,
+  url,
   category,
   openedCardId,
   status,
+  meta,
+  reportIdentifier,
+  resolution,
   setOpenedCardId,
 }: Feedback & {
   openedCardId?: string;
@@ -62,7 +66,7 @@ export function FeedbackCard({
   });
 
   return (
-    <motion.article
+    <motion.button
       aria-label="Open feedback card to see more details"
       whileInView={{ opacity: 1, transition: { duration: 0.2 } }}
       className={cn(
@@ -103,43 +107,62 @@ export function FeedbackCard({
         </p>
         {isOpen && (
           <>
-            <div className="border-b-2 border-dashed" />
-            <div className="grid grid-cols-1 gap-y-2 md:grid-cols-2">
-              <div className="inline-flex items-center gap-2">
-                <SessionIcon tooltipDescription="Reporter">
-                  <PersonIcon className="text-muted-foreground" />
-                </SessionIcon>
-                <span>someone@example.com</span>
-              </div>
-              <div className="inline-flex items-center gap-2">
-                <SessionIcon tooltipDescription="Page">
-                  <FileIcon className="text-muted-foreground" />
-                </SessionIcon>
-                <span>{origin}</span>
-              </div>
-              {ua.os.name && ua.os.version && (
-                <div className="inline-flex items-center gap-2">
-                  <SessionIcon tooltipDescription="System">
-                    <DesktopIcon className="text-muted-foreground" />
-                  </SessionIcon>
-                  <span>{`${ua.os.name} ${ua.os.version}`}</span>
-                </div>
-              )}
-              {ua.browser.name && ua.browser.version && (
-                <div className="inline-flex items-center gap-2">
-                  <SessionIcon tooltipDescription="Browser">
-                    <GlobeIcon className="text-muted-foreground" />
-                  </SessionIcon>
-                  <span>{`${ua.browser.name} ${ua.browser.version}`}</span>
-                </div>
-              )}
-              <div className="inline-flex items-center gap-2">
-                <SessionIcon tooltipDescription="Screen Size">
-                  <SizeIcon className="text-muted-foreground" />
-                </SessionIcon>
-                <span>1240 x 720</span>
+            <div className="border-t">
+              <h3 className="my-2 font-medium">Session</h3>
+              <div className="grid grid-cols-1 gap-x-1 gap-y-2 md:grid-cols-2">
+                {reportIdentifier && (
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <SessionIcon tooltipDescription="Reporter">
+                      <PersonIcon className="flex-shrink-0 text-muted-foreground" />
+                    </SessionIcon>
+                    <p>{reportIdentifier}</p>
+                  </div>
+                )}
+                {url && (
+                  <div className="flex items-center gap-2">
+                    <SessionIcon tooltipDescription="Page">
+                      <FileIcon className="text-muted-foreground" />
+                    </SessionIcon>
+                    <p>{url}</p>
+                  </div>
+                )}
+                {ua.os.name && ua.os.version && (
+                  <div className="flex items-center gap-2">
+                    <SessionIcon tooltipDescription="System">
+                      <DesktopIcon className="text-muted-foreground" />
+                    </SessionIcon>
+                    <p>{`${ua.os.name} ${ua.os.version}`}</p>
+                  </div>
+                )}
+                {ua.browser.name && ua.browser.version && (
+                  <div className="flex items-center gap-2">
+                    <SessionIcon tooltipDescription="Browser">
+                      <GlobeIcon className="text-muted-foreground" />
+                    </SessionIcon>
+                    <p>{`${ua.browser.name} ${ua.browser.version}`}</p>
+                  </div>
+                )}
+                {resolution && (
+                  <div className="flex items-center gap-2">
+                    <SessionIcon tooltipDescription="Screen Size">
+                      <SizeIcon className="text-muted-foreground" />
+                    </SessionIcon>
+                    <p>{resolution}</p>
+                  </div>
+                )}
               </div>
             </div>
+            {Object.keys(meta).length > 0 && (
+              <div className="border-t">
+                <h3 className="my-2 font-medium">Custom Data</h3>
+                <div className="grid grid-cols-1 gap-x-1 gap-y-2 md:grid-cols-2">
+                  {Object.entries(meta).map(([key, value]) => (
+                    <MetaItem key={key} label={key} value={value} />
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="flex justify-end gap-2">
               <Button
                 size="sm"
@@ -158,13 +181,13 @@ export function FeedbackCard({
                 {status === FeedbackStatus.archived ? "Unarchive" : "Archive"}
               </Button>
               {status === FeedbackStatus.new && (
-                <Button size="sm">Reply</Button>
+                <ReplyButton email={reportIdentifier} />
               )}
             </div>
           </>
         )}
       </div>
-    </motion.article>
+    </motion.button>
   );
 }
 
@@ -179,3 +202,57 @@ const SessionIcon = (props: {
     </Tooltip>
   </TooltipProvider>
 );
+
+const MetaItem = (props: {
+  label: string;
+  value:
+    | string
+    | number
+    | boolean
+    | object
+    | Array<string | number | boolean | object>;
+}) => {
+  let value = props.value;
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      value = "Empty";
+      return;
+    }
+
+    value = value.join(", ");
+  }
+
+  if (typeof value === "object") {
+    value = JSON.stringify(value);
+  }
+
+  if (typeof value === "boolean") {
+    value = value.toString();
+  }
+
+  return (
+    <div className="flex flex-col">
+      <div className="text-xs text-muted-foreground">{props.label}</div>
+      <div>{value}</div>
+    </div>
+  );
+};
+
+const ReplyButton = (props: { email: string | null }) => {
+  if (!props.email) {
+    return null;
+  }
+
+  const isEmailValid = props.email.match(/.+@.+\..+/);
+
+  if (!isEmailValid) {
+    return null;
+  }
+
+  return (
+    <Button size="sm" asChild>
+      <Link to={`mailto:${props.email}`}>Reply</Link>
+    </Button>
+  );
+};

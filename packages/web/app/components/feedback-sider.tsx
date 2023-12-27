@@ -47,6 +47,7 @@ export function FeedbackSider() {
                 <Input
                   placeholder="Search feedback"
                   value={search}
+                  className="pr-6"
                   onChange={(e) => {
                     setSearch(e.target.value);
                     debouncedSearch(e.target.value);
