@@ -70,7 +70,7 @@ export function FeedbackCard({
       aria-label="Open feedback card to see more details"
       whileInView={{ opacity: 1, transition: { duration: 0.2 } }}
       className={cn(
-        "block w-full cursor-pointer select-text border-b p-2 text-left opacity-0 transition-all last:border-none",
+        "block w-full cursor-pointer select-text overflow-hidden border-b p-2 text-left opacity-0 transition-all last:border-none",
         {
           "cursor-auto bg-accent/70": isOpen,
         },
@@ -111,41 +111,56 @@ export function FeedbackCard({
               <h3 className="my-2 font-medium">Session</h3>
               <div className="grid grid-cols-1 gap-x-1 gap-y-2 md:grid-cols-2">
                 {reportIdentifier && (
-                  <div className="flex items-center gap-2 overflow-hidden">
+                  <div className="flex gap-2">
                     <SessionIcon tooltipDescription="Reporter">
-                      <PersonIcon className="flex-shrink-0 text-muted-foreground" />
+                      <div className="flex h-5 items-center">
+                        <PersonIcon className="flex-shrink-0 text-muted-foreground" />
+                      </div>
                     </SessionIcon>
-                    <p>{reportIdentifier}</p>
+                    <p className="break-all">{reportIdentifier}</p>
                   </div>
                 )}
                 {url && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex gap-2">
                     <SessionIcon tooltipDescription="Page">
-                      <FileIcon className="text-muted-foreground" />
+                      <div className="flex h-5 items-center">
+                        <FileIcon className="flex-shrink-0 text-muted-foreground" />
+                      </div>
                     </SessionIcon>
-                    <p>{url}</p>
+                    <Link
+                      to={url}
+                      className="break-all transition-colors hover:text-link"
+                    >
+                      {url}
+                    </Link>
                   </div>
                 )}
                 {ua.os.name && ua.os.version && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex gap-2">
                     <SessionIcon tooltipDescription="System">
-                      <DesktopIcon className="text-muted-foreground" />
+                      <div className="flex h-5 items-center">
+                        <DesktopIcon className="flex-shrink-0 text-muted-foreground" />
+                      </div>
                     </SessionIcon>
                     <p>{`${ua.os.name} ${ua.os.version}`}</p>
                   </div>
                 )}
                 {ua.browser.name && ua.browser.version && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex gap-2">
                     <SessionIcon tooltipDescription="Browser">
-                      <GlobeIcon className="text-muted-foreground" />
+                      <div className="flex h-5 items-center">
+                        <GlobeIcon className="flex-shrink-0 text-muted-foreground" />
+                      </div>
                     </SessionIcon>
                     <p>{`${ua.browser.name} ${ua.browser.version}`}</p>
                   </div>
                 )}
                 {resolution && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex gap-2">
                     <SessionIcon tooltipDescription="Screen Size">
-                      <SizeIcon className="text-muted-foreground" />
+                      <div className="flex h-5 items-center">
+                        <SizeIcon className="flex-shrink-0 text-muted-foreground" />
+                      </div>
                     </SessionIcon>
                     <p>{resolution}</p>
                   </div>
@@ -234,7 +249,7 @@ const MetaItem = (props: {
   return (
     <div className="flex flex-col">
       <div className="text-xs text-muted-foreground">{props.label}</div>
-      <div>{value}</div>
+      <div className="break-words">{value}</div>
     </div>
   );
 };
