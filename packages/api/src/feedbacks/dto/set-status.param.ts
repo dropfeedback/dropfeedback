@@ -18,6 +18,7 @@ export class SetStatusParam
       | 'id'
       | 'resolution'
       | 'reportIdentifier'
+      | 'url'
     >
 {
   @IsNotEmpty()

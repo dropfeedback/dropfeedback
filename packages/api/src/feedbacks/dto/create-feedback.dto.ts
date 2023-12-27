@@ -6,20 +6,14 @@ export class CreateFeedbackDto
   implements
     Omit<
       Feedback,
-      | 'id'
-      | 'createdAt'
-      | 'updatedAt'
-      | 'userId'
-      | 'device'
-      | 'origin'
-      | 'resolution'
-      | 'reportIdentifier'
+      'id' | 'createdAt' | 'updatedAt' | 'userId' | 'device' | 'origin'
     >
 {
   @IsNotEmpty()
   @IsString()
   content: string;
 
+  @IsOptional()
   meta: Prisma.JsonValue | null;
 
   @IsNotEmpty()
@@ -39,4 +33,13 @@ export class CreateFeedbackDto
     message: 'Invalid status. Should be one of: "new", "archived"',
   })
   status: FeedbackStatus;
+
+  @IsOptional()
+  reportIdentifier: string | null;
+
+  @IsOptional()
+  resolution: string | null;
+
+  @IsOptional()
+  url: string | null;
 }
