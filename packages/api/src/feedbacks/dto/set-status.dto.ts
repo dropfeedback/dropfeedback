@@ -17,6 +17,7 @@ export class SetStatusDto
       | 'category'
       | 'resolution'
       | 'reportIdentifier'
+      | 'url'
     >
 {
   @IsNotEmpty()
