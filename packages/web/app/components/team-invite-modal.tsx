@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useParams } from "@remix-run/react";
+import { useParams } from "@remix-run/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
@@ -14,48 +14,39 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "./ui/form";
-import { type ProjectMemberRole, type InviteMemberVariables } from "~/types";
+import { type InviteMemberVariables } from "~/types";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import {
-  CaretSortIcon,
-  CheckIcon,
-  ExternalLinkIcon,
-} from "@radix-ui/react-icons";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { cn } from "~/lib/utils";
-import { Command, CommandGroup, CommandItem } from "./ui/command";
-import { LoadingIndicator } from "./loading-indicator";
-import { type ApiError } from "~/lib/axios";
-import { fetchers } from "~/lib/fetchers";
 import { Separator } from "./ui/separator";
-
-const roles = [
-  { label: "Member", value: "member" },
-  { label: "Manager", value: "manager" },
-  { label: "Owner", value: "owner" },
-];
+import { useToast } from "./ui/use-toast";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { LoadingIndicator } from "./loading-indicator";
+import { fetchers } from "~/lib/fetchers";
+import { useMe } from "~/data-hooks";
+import { ROLES } from "~/lib/constants/roles";
+import { type ApiError } from "~/lib/axios";
 
 export function TeamInviteModal() {
   const { projectId } = useParams<{ projectId: string }>();
   if (!projectId) throw new Error("Project ID is required");
 
   const [open, setOpen] = useState(false);
-  const [popoverOpen, setPopoverOpen] = useState(false);
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const form = useForm<InviteMemberVariables>({
     defaultValues: {
       email: "",
-      role: undefined,
+      role: "member",
     },
   });
+
+  const { data: user } = useMe();
 
   const inviteUser = useMutation<
     InviteMemberVariables,
@@ -68,6 +59,28 @@ export function TeamInviteModal() {
       setOpen(false);
       queryClient.invalidateQueries({
         queryKey: ["team", projectId],
+      });
+    },
+    onError: (error) => {
+      let description;
+
+      if (typeof error.response?.data.message === "string") {
+        description = error.response?.data.message;
+      }
+
+      if (Array.isArray(error.response?.data.message)) {
+        description = (
+          <div className="flex flex-col">
+            {error.response?.data.message.map((message) => (
+              <p key={message}>{message}</p>
+            ))}
+          </div>
+        );
+      }
+
+      toast({
+        title: "Error",
+        description,
       });
     },
   });
@@ -115,67 +128,38 @@ export function TeamInviteModal() {
               control={form.control}
               name="role"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
+                <FormItem className="space-y-3">
                   <FormLabel>Role</FormLabel>
-                  <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-[200px] justify-between",
-                            !field.value && "text-muted-foreground",
-                          )}
-                        >
-                          {field.value
-                            ? roles.find((role) => role.value === field.value)
-                                ?.label
-                            : "Select role"}
-                          <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command>
-                        <CommandGroup>
-                          {roles.map((role) => (
-                            <CommandItem
-                              value={role.label}
-                              key={role.value}
-                              onSelect={() => {
-                                form.setValue(
-                                  "role",
-                                  role.value as keyof typeof ProjectMemberRole,
-                                );
-                                setPopoverOpen(false);
-                              }}
-                            >
-                              {role.label}
-                              <CheckIcon
-                                className={cn(
-                                  "ml-auto h-4 w-4",
-                                  role.value === field.value
-                                    ? "opacity-100"
-                                    : "opacity-0",
-                                )}
-                              />
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormDescription>
-                    Learn more about{" "}
-                    <Link
-                      to="#"
-                      className="inline-flex items-center text-link underline-offset-2 hover:underline"
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="gap-4"
                     >
-                      Roles
-                      <ExternalLinkIcon className="ml-1 h-4 w-4" />
-                    </Link>
-                  </FormDescription>
+                      {ROLES.map((role) => (
+                        <FormItem
+                          key={role.value}
+                          className="flex space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <RadioGroupItem
+                              id={role.value}
+                              value={role.value}
+                            />
+                          </FormControl>
+                          <FormLabel
+                            className="font-normal"
+                            htmlFor={role.value}
+                          >
+                            <div className="mb-1 leading-none">{role.name}</div>
+                            <p className="text-xs text-muted-foreground">
+                              {role.description}
+                            </p>
+                          </FormLabel>
+                        </FormItem>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

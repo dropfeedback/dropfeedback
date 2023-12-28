@@ -31,27 +31,9 @@ import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
 import { LoadingIndicator } from "./loading-indicator";
 import { fetchers } from "~/lib/fetchers";
+import { ROLES } from "~/lib/constants/roles";
 import { type ApiError } from "~/lib/axios";
 import { type ProjectMember } from "~/types";
-
-const roles = [
-  {
-    value: "owner",
-    name: "Owner",
-    description:
-      "Can add/remove members, change roles, and delete the project.",
-  },
-  {
-    value: "manager",
-    name: "Manager",
-    description: "Can add/remove members and change roles.",
-  },
-  {
-    value: "member",
-    name: "Member",
-    description: "Can view the project and its feedback.",
-  },
-];
 
 type DeleteMemberVariables = {
   memberId: string;
@@ -106,7 +88,7 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
           </DialogHeader>
           <Separator />
           <RadioGroup defaultValue={member.role.toString()} className="gap-4">
-            {roles.map((role) => (
+            {ROLES.map((role) => (
               <div key={role.value} className="flex items-start gap-2">
                 <RadioGroupItem value={role.value} id={role.value} />
                 <Label htmlFor={role.value}>
