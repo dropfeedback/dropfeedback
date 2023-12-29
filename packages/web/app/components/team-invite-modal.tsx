@@ -19,7 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from "./ui/form";
-import { type InviteMemberVariables } from "~/types";
+import { ProjectMemberRole, type InviteMemberVariables } from "~/types";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
@@ -29,6 +29,7 @@ import { LoadingIndicator } from "./loading-indicator";
 import { fetchers } from "~/lib/fetchers";
 import { useMe } from "~/data-hooks";
 import { ROLES } from "~/lib/constants/roles";
+import { cn } from "~/lib/utils";
 import { type ApiError } from "~/lib/axios";
 
 export function TeamInviteModal() {
@@ -47,6 +48,9 @@ export function TeamInviteModal() {
   });
 
   const { data: user } = useMe();
+  const userRoleOnProject = user?.projects.find(
+    (project) => project.id === projectId,
+  )?.role;
 
   const inviteUser = useMutation<
     InviteMemberVariables,
@@ -89,10 +93,18 @@ export function TeamInviteModal() {
     inviteUser.mutate(values);
   };
 
+  const inviteMemberButtonProps = {
+    disabled: userRoleOnProject === ProjectMemberRole.member,
+    title:
+      userRoleOnProject === ProjectMemberRole.member
+        ? "You must be an owner or manager to invite members"
+        : "Invite a member",
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Invite Member</Button>
+        <Button {...inviteMemberButtonProps}>Invite Member</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -136,28 +148,40 @@ export function TeamInviteModal() {
                       defaultValue={field.value}
                       className="gap-4"
                     >
-                      {ROLES.map((role) => (
-                        <FormItem
-                          key={role.value}
-                          className="flex space-x-3 space-y-0"
-                        >
-                          <FormControl>
-                            <RadioGroupItem
-                              id={role.value}
-                              value={role.value}
-                            />
-                          </FormControl>
-                          <FormLabel
-                            className="font-normal"
-                            htmlFor={role.value}
+                      {ROLES.map((role) => {
+                        const disabled =
+                          role.value === ProjectMemberRole.owner &&
+                          userRoleOnProject !== ProjectMemberRole.owner;
+
+                        return (
+                          <FormItem
+                            key={role.value}
+                            className="flex space-x-3 space-y-0"
                           >
-                            <div className="mb-1 leading-none">{role.name}</div>
-                            <p className="text-xs text-muted-foreground">
-                              {role.description}
-                            </p>
-                          </FormLabel>
-                        </FormItem>
-                      ))}
+                            <FormControl>
+                              <RadioGroupItem
+                                id={role.value}
+                                disabled={disabled}
+                                value={role.value}
+                              />
+                            </FormControl>
+                            <FormLabel
+                              className={cn("font-normal", {
+                                "text-muted-foreground": disabled,
+                                "opacity-70": disabled,
+                              })}
+                              htmlFor={role.value}
+                            >
+                              <div className="mb-1 leading-none">
+                                {role.name}
+                              </div>
+                              <p className="text-xs text-muted-foreground">
+                                {role.description}
+                              </p>
+                            </FormLabel>
+                          </FormItem>
+                        );
+                      })}
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />

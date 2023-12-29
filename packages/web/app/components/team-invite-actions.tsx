@@ -21,7 +21,8 @@ import {
 import { LoadingIndicator } from "./loading-indicator";
 import { fetchers } from "~/lib/fetchers";
 import { type ApiError } from "~/lib/axios";
-import { type ProjectMemberInvite } from "~/types";
+import { useMe } from "~/data-hooks";
+import { ProjectMemberRole, type ProjectMemberInvite } from "~/types";
 
 type CancelInviteVariables = {
   inviteId: string;
@@ -42,11 +43,23 @@ export function TeamInviteActions({ invite }: { invite: ProjectMemberInvite }) {
     },
   });
 
+  const { data: user } = useMe();
+  const userRoleOnProject = user?.projects.find(
+    (project) => project.id === projectId,
+  )?.role;
+
+  const isMember = userRoleOnProject === ProjectMemberRole.member;
+
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" title="Actions">
+          <Button
+            variant="ghost"
+            size="icon"
+            title="Actions"
+            disabled={isMember}
+          >
             <span className="sr-only">Actions</span>
             <DotsHorizontalIcon className="h-4 w-4" />
           </Button>

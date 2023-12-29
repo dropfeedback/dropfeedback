@@ -1,18 +1,20 @@
+import { ProjectMemberRole } from "~/types";
+
 export const ROLES = [
   {
-    value: "owner",
-    name: "Owner",
-    description:
-      "Can add/remove members, change roles, and delete the project.",
+    value: ProjectMemberRole.member,
+    name: "Member",
+    description: "Can view the project and its feedback.",
   },
   {
-    value: "manager",
+    value: ProjectMemberRole.manager,
     name: "Manager",
     description: "Can add/remove members and change roles.",
   },
   {
-    value: "member",
-    name: "Member",
-    description: "Can view the project and its feedback.",
+    value: ProjectMemberRole.owner,
+    name: "Owner",
+    description:
+      "Can add/remove members, change roles, and delete the project.",
   },
 ];

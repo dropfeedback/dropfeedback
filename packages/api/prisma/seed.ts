@@ -10,27 +10,147 @@ import { addExtensions } from '../src/prisma/prisma.service';
 const prisma = new PrismaClient();
 addExtensions(prisma);
 
-export const DEMO_USER = {
-  email: 'demo@demo.com',
-  password: 'demo',
-  fullName: 'Demo User',
+export const OWNER_USER = {
+  email: 'owner@dropfeedback.com',
+  password: 'owner',
+  fullName: 'Owner User',
   avatarUrl: 'https://i.pravatar.cc/150?img=13',
+};
+
+export const OWNER_USER_2 = {
+  email: 'owner2@dropfeedback.com',
+  password: 'owner',
+  fullName: 'Owner User 2',
+  avatarUrl: 'https://i.pravatar.cc/150?img=8',
+};
+
+export const MANAGER_USER = {
+  email: 'manager@dropfeedback.com',
+  password: 'manager',
+  fullName: 'Manager User',
+  avatarUrl: 'https://i.pravatar.cc/150?img=12',
+};
+
+export const MANAGER_USER_2 = {
+  email: 'manager2@dropfeedback.com',
+  password: 'manager',
+  fullName: 'Manager User 2',
+  avatarUrl: 'https://i.pravatar.cc/150?img=9',
+};
+
+export const MEMBER_USER = {
+  email: 'member@dropfeedback.com',
+  password: 'member',
+  fullName: 'Member User',
+  avatarUrl: 'https://i.pravatar.cc/150?img=10',
+};
+
+export const MEMBER_USER_2 = {
+  email: 'member2@dropfeedback.com',
+  password: 'member',
+  fullName: 'Member User 2',
+  avatarUrl: 'https://i.pravatar.cc/150?img=5',
 };
 
 async function main() {
   console.log('🌱 Seeding prisma db...');
 
-  const userDemo = await prisma.user.upsert({
-    where: { email: DEMO_USER.email },
+  const userOwner = await prisma.user.upsert({
+    where: { email: OWNER_USER.email },
     update: {},
     create: {
-      email: DEMO_USER.email,
-      fullName: DEMO_USER.fullName,
-      avatarUrl: DEMO_USER.avatarUrl,
+      email: OWNER_USER.email,
+      fullName: OWNER_USER.fullName,
+      avatarUrl: OWNER_USER.avatarUrl,
       UserProvider: {
         create: {
           type: UserProviderType.internal,
-          hash: await bcrypt.hash(DEMO_USER.password, 10),
+          hash: await bcrypt.hash(OWNER_USER.password, 10),
+          emailVerified: true,
+        },
+      },
+    },
+  });
+
+  const userManager = await prisma.user.upsert({
+    where: { email: MANAGER_USER.email },
+    update: {},
+    create: {
+      email: MANAGER_USER.email,
+      fullName: MANAGER_USER.fullName,
+      avatarUrl: MANAGER_USER.avatarUrl,
+      UserProvider: {
+        create: {
+          type: UserProviderType.internal,
+          hash: await bcrypt.hash(MANAGER_USER.password, 10),
+          emailVerified: true,
+        },
+      },
+    },
+  });
+
+  const userMember = await prisma.user.upsert({
+    where: { email: MEMBER_USER.email },
+    update: {},
+    create: {
+      email: MEMBER_USER.email,
+      fullName: MEMBER_USER.fullName,
+      avatarUrl: MEMBER_USER.avatarUrl,
+      UserProvider: {
+        create: {
+          type: UserProviderType.internal,
+          hash: await bcrypt.hash(MEMBER_USER.password, 10),
+          emailVerified: true,
+        },
+      },
+    },
+  });
+
+  const userOwner2 = await prisma.user.upsert({
+    where: { email: OWNER_USER_2.email },
+    update: {},
+    create: {
+      email: OWNER_USER_2.email,
+      fullName: OWNER_USER_2.fullName,
+      avatarUrl: OWNER_USER_2.avatarUrl,
+      UserProvider: {
+        create: {
+          type: UserProviderType.internal,
+          hash: await bcrypt.hash(OWNER_USER_2.password, 10),
+          emailVerified: true,
+        },
+      },
+    },
+  });
+
+  const userManager2 = await prisma.user.upsert({
+    where: { email: MANAGER_USER_2.email },
+    update: {},
+    create: {
+      email: MANAGER_USER_2.email,
+      fullName: MANAGER_USER_2.fullName,
+      avatarUrl: MANAGER_USER_2.avatarUrl,
+      UserProvider: {
+        create: {
+          type: UserProviderType.internal,
+          hash: await bcrypt.hash(MANAGER_USER_2.password, 10),
+          emailVerified: true,
+        },
+      },
+    },
+  });
+
+  const userMember2 = await prisma.user.upsert({
+    where: { email: MEMBER_USER_2.email },
+    update: {},
+    create: {
+      email: MEMBER_USER_2.email,
+      fullName: MEMBER_USER_2.fullName,
+      avatarUrl: MEMBER_USER_2.avatarUrl,
+      UserProvider: {
+        create: {
+          type: UserProviderType.internal,
+          hash: await bcrypt.hash(MEMBER_USER_2.password, 10),
           emailVerified: true,
         },
       },
@@ -41,9 +161,33 @@ async function main() {
     data: {
       name: 'Demo Project',
       projectMembers: {
-        create: {
-          userId: userDemo.id,
-          role: ProjectMemberRole.manager,
+        createMany: {
+          data: [
+            {
+              userId: userOwner.id,
+              role: ProjectMemberRole.owner,
+            },
+            {
+              userId: userManager.id,
+              role: ProjectMemberRole.manager,
+            },
+            {
+              userId: userMember.id,
+              role: ProjectMemberRole.member,
+            },
+            {
+              userId: userOwner2.id,
+              role: ProjectMemberRole.owner,
+            },
+            {
+              userId: userManager2.id,
+              role: ProjectMemberRole.manager,
+            },
+            {
+              userId: userMember2.id,
+              role: ProjectMemberRole.member,
+            },
+          ],
         },
       },
     },
@@ -69,6 +213,15 @@ async function main() {
     const category =
       randomCategory === 1 ? 'idea' : randomCategory === 2 ? 'issue' : 'other';
     const date = getDateBetweenLastThreeDays();
+    const randomReporterId =
+      Math.random() > 0.7 ? faker.internet.email() : null;
+    const resolution = `${faker.number.int({
+      min: 0,
+      max: 1920,
+    })}x${faker.number.int({
+      min: 0,
+      max: 1080,
+    })}`;
 
     await prisma.feedback.create({
       data: {
@@ -81,6 +234,9 @@ async function main() {
         origin: faker.internet.domainSuffix(),
         createdAt: date,
         updatedAt: date,
+        url: faker.internet.url(),
+        reportIdentifier: randomReporterId,
+        resolution,
       },
     });
   }
