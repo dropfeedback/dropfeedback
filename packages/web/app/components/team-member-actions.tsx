@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams } from "@remix-run/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import {
   AlertDialogHeader,
@@ -27,13 +28,22 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
 import { LoadingIndicator } from "./loading-indicator";
 import { fetchers } from "~/lib/fetchers";
 import { ROLES } from "~/lib/constants/roles";
+import { useMe } from "~/data-hooks";
 import { type ApiError } from "~/lib/axios";
-import { type ProjectMember } from "~/types";
+import { cn } from "~/lib/utils";
+import { ProjectMemberRole, type ProjectMember } from "~/types";
 
 type DeleteMemberVariables = {
   memberId: string;
@@ -43,7 +53,7 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
   const { projectId } = useParams<{ projectId: string }>();
   if (!projectId) throw new Error("Project ID is required");
 
-  const [open, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const queryClient = useQueryClient();
 
@@ -55,17 +65,47 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
     },
   });
 
+  const form = useForm<{ role: ProjectMemberRole }>({
+    defaultValues: {
+      role: member.role,
+    },
+  });
+
+  const onSubmit = (values: { role: ProjectMemberRole }) => {
+    //TODO: Add mutation to update role
+    console.log("values", values);
+  };
+
+  const { data: user } = useMe();
+  const userRoleOnProject =
+    user?.projects.find((project) => project.id === projectId)?.role ??
+    "member";
+
+  const isMember = userRoleOnProject === ProjectMemberRole.member;
+  const isManager = userRoleOnProject === ProjectMemberRole.manager;
+
+  const isCurrentUser = user?.id === member.id;
+
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" title="Actions">
+          <Button
+            variant="ghost"
+            size="icon"
+            title="Actions"
+            disabled={
+              isMember ||
+              (isManager && member.role === ProjectMemberRole.owner) ||
+              isCurrentUser
+            }
+          >
             <span className="sr-only">Actions</span>
             <DotsHorizontalIcon className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onSelect={() => setIsOpen(true)}>
+          <DropdownMenuItem onSelect={() => setOpen(true)}>
             Change role
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -76,7 +116,7 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <Dialog open={open} onOpenChange={setIsOpen}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
@@ -87,26 +127,74 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
             </DialogDescription>
           </DialogHeader>
           <Separator />
-          <RadioGroup defaultValue={member.role.toString()} className="gap-4">
-            {ROLES.map((role) => (
-              <div key={role.value} className="flex items-start gap-2">
-                <RadioGroupItem value={role.value} id={role.value} />
-                <Label htmlFor={role.value}>
-                  <div className="mb-1 font-medium leading-none">
-                    {role.name}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {role.description}
-                  </p>
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-          <DialogFooter>
-            <Button variant="destructive" onClick={() => setIsOpen(false)}>
-              Change Role
-            </Button>
-          </DialogFooter>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Role</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="gap-4"
+                      >
+                        {ROLES.map((role) => {
+                          const disabled =
+                            role.value === ProjectMemberRole.owner && isManager;
+
+                          return (
+                            <FormItem
+                              key={role.value}
+                              className="flex space-x-3 space-y-0"
+                            >
+                              <FormControl>
+                                <RadioGroupItem
+                                  id={role.value}
+                                  disabled={disabled}
+                                  value={role.value}
+                                />
+                              </FormControl>
+                              <FormLabel
+                                className={cn("font-normal", {
+                                  "text-muted-foreground": disabled,
+                                  "opacity-70": disabled,
+                                })}
+                                htmlFor={role.value}
+                              >
+                                <div className="mb-1 leading-none">
+                                  {role.name}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                  {role.description}
+                                </p>
+                              </FormLabel>
+                            </FormItem>
+                          );
+                        })}
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit">Change Role</Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

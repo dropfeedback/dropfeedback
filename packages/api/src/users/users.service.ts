@@ -12,15 +12,26 @@ export class UsersService {
 
   async me(id: string) {
     try {
-      return await this.prisma.user.findUniqueOrThrow({
+      const userWithProjectMembers = await this.prisma.user.findUniqueOrThrow({
         where: { id },
-        select: {
-          id: true,
-          email: true,
-          avatarUrl: true,
-          fullName: true,
+        include: {
+          projectMember: true,
         },
       });
+
+      const user = {
+        id: userWithProjectMembers.id,
+        email: userWithProjectMembers.email,
+        avatarUrl: userWithProjectMembers.avatarUrl,
+        fullName: userWithProjectMembers.fullName,
+      };
+      return {
+        ...user,
+        projects: userWithProjectMembers.projectMember.map((project) => ({
+          id: project.projectId,
+          role: project.role,
+        })),
+      };
     } catch (error) {
       if (error.code === 'P2025') {
         throw new NotFoundException('User not found');
