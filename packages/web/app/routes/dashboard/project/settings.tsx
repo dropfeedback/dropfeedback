@@ -29,8 +29,9 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { LoadingIndicator } from "~/components/loading-indicator";
 import { CopyButton } from "~/components/copy-button";
 import { fetchers } from "~/lib/fetchers";
+import { useMe } from "~/data-hooks";
 import { type ApiError } from "~/lib/axios";
-import { type Project } from "~/types";
+import { ProjectMemberRole, type Project } from "~/types";
 
 export default function Settings() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -102,6 +103,14 @@ export default function Settings() {
     }
   }, [deleteMutation.isSuccess, navigate]);
 
+  const { data: user } = useMe();
+  const userRoleOnProject = user?.projects.find(
+    (project) => project.id === projectId,
+  )?.role;
+
+  const isMember = userRoleOnProject === ProjectMemberRole.member;
+  const isManager = userRoleOnProject === ProjectMemberRole.manager;
+
   const onSubmit = (variables: Project) => {
     updateMutation.mutate({ name: variables.name.trim() });
   };
@@ -150,7 +159,11 @@ export default function Settings() {
                       <Skeleton className="h-9 w-full" />
                     ) : (
                       <FormControl>
-                        <Input {...field} autoComplete="false" />
+                        <Input
+                          {...field}
+                          autoComplete="false"
+                          disabled={isMember || isManager}
+                        />
                       </FormControl>
                     )}
                   </div>
@@ -158,7 +171,11 @@ export default function Settings() {
                 </FormItem>
               )}
             />
-            <Button type="submit" size="sm" disabled={updateMutation.isPending}>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={updateMutation.isPending || isMember || isManager}
+            >
               {updateMutation.isPending ? (
                 <LoadingIndicator className="mr-2" />
               ) : null}
@@ -175,7 +192,11 @@ export default function Settings() {
           </p>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="sm">
+              <Button
+                variant="destructive"
+                size="sm"
+                disabled={isMember || isManager}
+              >
                 Delete
               </Button>
             </AlertDialogTrigger>

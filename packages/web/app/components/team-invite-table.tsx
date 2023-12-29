@@ -10,7 +10,7 @@ export function TeamInviteTable({
 }) {
   if (invites.length === 0) {
     return (
-      <div className="text-center py-3">
+      <div className="py-3 text-center">
         <p className="text-muted-foreground">No invites yet.</p>
       </div>
     );

@@ -7,9 +7,9 @@ export type Project = {
 };
 
 export enum ProjectMemberRole {
-  owner,
-  manager,
-  member,
+  owner = "owner",
+  manager = "manager",
+  member = "member",
 }
 
 export enum MemberInviteState {
@@ -24,6 +24,10 @@ export type MeResponse = {
   fullName: string;
   avatarUrl?: string;
   isEmailVerified: boolean;
+  projects: {
+    id: string;
+    role: ProjectMemberRole;
+  }[];
   provider: UserProviderType;
 };
 
