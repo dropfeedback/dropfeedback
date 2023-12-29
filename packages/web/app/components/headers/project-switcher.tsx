@@ -52,6 +52,10 @@ export function ProjectSwitcher() {
   });
 
   useEffect(() => {
+    setSelectedProjectId(projectId);
+  }, [projectId]);
+
+  useEffect(() => {
     if (project.error) {
       toast({
         description: "Project not found.",
