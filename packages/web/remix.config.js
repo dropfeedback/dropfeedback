@@ -13,7 +13,7 @@ export default {
   serverDependenciesToBundle: "all",
   serverMinify: true,
   serverModuleFormat: "esm",
-  serverPlatform: "neutral",
+  serverPlatform: "node",
   routes(defineRoutes) {
     return defineRoutes((route) => {
       // public routes
