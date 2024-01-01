@@ -157,7 +157,6 @@ export class AuthController {
   ) {
     const ticket = await this.googleClient.verifyIdToken({
       idToken: dto.idToken,
-      audience: this.config.get<string>('GOOGLE_CLIENT_ID'),
     });
     const payload = ticket.getPayload();
     if (!payload?.email) {
