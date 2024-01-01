@@ -25,6 +25,7 @@ export default {
       path: true,
       util: true,
       events: true,
+      assert: true,
     },
     browserNodeBuiltinsPolyfill: {
       modules: {
