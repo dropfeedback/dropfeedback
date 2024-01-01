@@ -6,10 +6,14 @@ export default {
   appDirectory: "app",
   assetsBuildDirectory: "public/build",
   publicPath: "/build/",
+  server: "./server.ts",
   serverBuildPath: "functions/[[path]].js",
-  serverConditions: ["worker"],
+  serverConditions: ["workerd", "worker", "browser"],
   serverMainFields: ["browser", "module", "main"],
+  serverDependenciesToBundle: "all",
   serverMinify: true,
+  serverModuleFormat: "esm",
+  serverPlatform: "neutral",
   routes(defineRoutes) {
     return defineRoutes((route) => {
       // public routes
