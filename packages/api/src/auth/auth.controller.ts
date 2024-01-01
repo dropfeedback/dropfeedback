@@ -106,6 +106,7 @@ export class AuthController {
   }
 
   @Post('/logout')
+  @EmailVerificationIsNotRequired()
   @HttpCode(HttpStatus.OK)
   logout(
     @GetCurrentUser() user: JwtPayload,
