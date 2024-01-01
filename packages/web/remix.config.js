@@ -25,6 +25,7 @@ export default {
       util: true,
       events: true,
       assert: true,
+      zlib: true,
     },
   },
   routes(defineRoutes) {
