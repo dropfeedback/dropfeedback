@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs, redirect } from "@remix-run/node";
+import { type LoaderFunctionArgs, redirect } from "@remix-run/cloudflare";
 import { Outlet } from "@remix-run/react";
 import { AuthHeader } from "~/components/headers/auth-header";
 import { fetchers } from "~/lib/fetchers";
@@ -20,7 +20,7 @@ export default function Layout() {
     <>
       <AuthHeader />
       <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden">
-        <div className="container mx-4 w-full sm:w-fit rounded-lg border p-4 sm:p-16  ">
+        <div className="container mx-4 w-full rounded-lg border p-4 sm:w-fit sm:p-16  ">
           <Outlet />
         </div>
       </div>

@@ -6,7 +6,10 @@ export default {
   appDirectory: "app",
   assetsBuildDirectory: "public/build",
   publicPath: "/build/",
-  serverBuildPath: "build/index.js",
+  serverBuildPath: "functions/[[path]].js",
+  serverConditions: ["worker"],
+  serverMainFields: ["browser", "module", "main"],
+  serverMinify: true,
   routes(defineRoutes) {
     return defineRoutes((route) => {
       // public routes
