@@ -14,7 +14,6 @@ import { ProjectsService } from './projects.service';
 import type { JwtPayload } from 'src/auth/types';
 import { GetCurrentUser } from 'src/common/decorators';
 import { DeleteMemberDto } from './dto/delete-member.dto';
-import { GetMembersParam } from './param/get-members.param';
 import { InviteMemberDto } from './dto/invite-member.dto';
 import { InviteMemberParam } from './dto/invite-member.param';
 import { GetInvitesParam } from './param/get-invites.param';
@@ -120,27 +119,6 @@ export class ProjectsController {
     }
 
     return this.projectService.getTeam({ projectId: param.projectId });
-  }
-
-  @Get('/:projectId/members')
-  @HttpCode(HttpStatus.OK)
-  async getMembers(
-    @GetCurrentUser() user: JwtPayload,
-    @Param() param: GetMembersParam,
-  ) {
-    const hasAccess = await this.projectService.hasAccess({
-      acceptedRoles: ['arkadaslar', 'owner', 'manager', 'member'],
-      projectId: param.projectId,
-      userId: user.sub,
-    });
-
-    if (!hasAccess) {
-      throw new ForbiddenException(
-        'You are not allowed to access this resource',
-      );
-    }
-
-    return this.projectService.members({ projectId: param.projectId });
   }
 
   @Get('/:projectId/invites')

@@ -159,27 +159,6 @@ export class ProjectsService {
     };
   }
 
-  async members({ projectId }: { projectId: string }) {
-    const members = await this.prisma.projectMember.findMany({
-      where: {
-        projectId,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-          },
-        },
-      },
-    });
-    return members.map((m) => ({
-      id: m.user.id,
-      email: m.user.email,
-      role: m.role,
-    }));
-  }
-
   async inviteMember({
     projectId,
     email,
