@@ -6,8 +6,7 @@ import {
   dehydrate,
 } from "@tanstack/react-query";
 import { DashboardHeader } from "~/components/headers/dashboard-header";
-import type { ApiError } from "~/lib/axios";
-import { fetchers } from "~/lib/fetchers";
+import { BASE_URL, type ApiError } from "~/lib/axios";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const queryClient = new QueryClient();
@@ -31,7 +30,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
   try {
     await queryClient.fetchQuery({
       queryKey: ["me"],
-      queryFn: () => fetchers.me(cookie),
+      queryFn: () =>
+        fetch(`${BASE_URL}/users/me`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: cookie || "",
+          },
+        }),
     });
 
     return json({ dehydratedState: dehydrate(queryClient) });

@@ -1,7 +1,7 @@
 import axios, { type AxiosError } from "axios";
 import { fetchers } from "~/lib/fetchers";
 
-const BASE_URL =
+export const BASE_URL =
   process.env.NODE_ENV === "production"
     ? "https://feedbacky-production.up.railway.app"
     : "http://localhost:8080";
@@ -33,6 +33,8 @@ axiosInstance.interceptors.response.use(
 
     const status = response?.status;
     const message = response?.data?.message;
+
+    console.log("axios error", error);
 
     if (typeof window !== "undefined") {
       // API returns 401 and message is "Invalid refresh token". redirect to login

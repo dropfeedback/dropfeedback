@@ -1,13 +1,23 @@
 import { type LoaderFunctionArgs, redirect } from "@remix-run/cloudflare";
 import { Outlet } from "@remix-run/react";
 import { AuthHeader } from "~/components/headers/auth-header";
-import { fetchers } from "~/lib/fetchers";
+import { BASE_URL } from "~/lib/axios";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const cookie = request.headers.get("Cookie");
 
   try {
-    await fetchers.me(cookie ?? "");
+    const reusult = await fetch(`${BASE_URL}/users/me`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookie || "",
+      },
+    });
+
+    if (!reusult.ok) {
+      return null;
+    }
 
     return redirect("/dashboard");
   } catch (error) {
