@@ -7,7 +7,7 @@
     "build": "remix build",
     "dev": "remix dev --manual",
     "start": "remix-serve ./build/index.js",
-    "pages:deploy": "npm run build && wrangler pages deploy ./public",
+    "pages:deploy": "npm run build && wrangler pages deploy ./public --compatibility-flags=\"nodejs_compat\"",
     "typecheck": "tsc"
   },
   "dependencies": {
