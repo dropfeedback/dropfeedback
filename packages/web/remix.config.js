@@ -16,12 +16,25 @@ export default {
   serverPlatform: "node",
   serverNodeBuiltinsPolyfill: {
     modules: {
-      buffer: true, // Provide a JSPM polyfill
-      fs: "empty", // Provide an empty polyfill
+      buffer: true,
+      url: true,
+      http: true,
+      https: true,
+      stream: true,
+      zlib: true,
+      path: true,
+      util: true,
+      events: true,
     },
-  },
-  globals: {
-    Buffer: true,
+    browserNodeBuiltinsPolyfill: {
+      modules: {
+        buffer: true, // Provide a JSPM polyfill
+        fs: "empty", // Provide an empty polyfill
+      },
+      globals: {
+        Buffer: true,
+      },
+    },
   },
   routes(defineRoutes) {
     return defineRoutes((route) => {
