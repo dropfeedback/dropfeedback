@@ -36,4 +36,4 @@ yarn-error.log*
 .vercel
 dist
 
-apps/api/src/metadata.ts
+packages/web/.wrangler

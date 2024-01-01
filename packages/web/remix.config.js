@@ -16,6 +16,7 @@ export default {
   serverPlatform: "node",
   serverNodeBuiltinsPolyfill: {
     modules: {
+      process: true,
       buffer: true,
       url: true,
       http: true,

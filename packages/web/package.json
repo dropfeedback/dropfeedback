@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "remix build",
-    "dev": "remix dev --manual -c \"npm run start\"",
-    "start": "wrangler pages dev --compatibility-date=2023-06-21 ./public",
+    "dev": "remix dev --manual --port 3000 -c \"npm run start\"",
+    "start": "wrangler pages dev --compatibility-date=2023-06-21 --port 3000 ./public --compatibility-flags=nodejs_compat",
     "typecheck": "tsc"
   },
   "dependencies": {
@@ -34,7 +34,7 @@
     "@remix-run/cloudflare-pages": "^2.4.0",
     "@tanstack/react-query": "^5.8.3",
     "@tanstack/react-query-devtools": "^5.12.2",
-    "axios": "^1.6.1",
+    "axios": "1.2.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
@@ -67,7 +67,7 @@
     "prettier-plugin-tailwindcss": "^0.5.6",
     "tailwindcss": "^3.3.5",
     "typescript": "^5.2.2",
-    "wrangler": "3.8.0"
+    "wrangler": "3.22.1"
   },
   "engines": {
     "node": ">=18.0.0"
