@@ -244,6 +244,38 @@ export class ProjectsService {
     });
   }
 
+  async updateMemberRole({
+    operatorId,
+    projectId,
+    memberId,
+    newRole,
+  }: {
+    operatorId: string;
+    projectId: string;
+    memberId: string;
+    newRole: 'owner' | 'manager' | 'member';
+  }) {
+    if (operatorId === memberId)
+      throw new ForbiddenException('You cannot change your own role');
+
+    const { operator } = await this.checkAuthorized({
+      operatorId,
+      projectId,
+      memberId,
+    });
+
+    if (this.rolePriority[operator.role] < this.rolePriority[newRole]) {
+      throw new BadRequestException(
+        'You are not allowed to update role to this role',
+      );
+    }
+
+    return this.prisma.projectMember.update({
+      where: { userId_projectId: { projectId, userId: memberId } },
+      data: { role: newRole },
+    });
+  }
+
   async removeMember({
     operatorId,
     projectId,
