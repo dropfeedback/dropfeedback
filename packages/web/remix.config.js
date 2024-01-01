@@ -11,7 +11,7 @@ export default {
   serverConditions: ["workerd", "worker", "browser"],
   serverMainFields: ["browser", "module", "main"],
   serverDependenciesToBundle: "all",
-  serverMinify: false,
+  serverMinify: true,
   serverModuleFormat: "esm",
   serverPlatform: "node",
   serverNodeBuiltinsPolyfill: {
