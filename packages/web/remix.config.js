@@ -11,9 +11,18 @@ export default {
   serverConditions: ["workerd", "worker", "browser"],
   serverMainFields: ["browser", "module", "main"],
   serverDependenciesToBundle: "all",
-  serverMinify: true,
+  serverMinify: false,
   serverModuleFormat: "esm",
   serverPlatform: "node",
+  serverNodeBuiltinsPolyfill: {
+    modules: {
+      buffer: true, // Provide a JSPM polyfill
+      fs: "empty", // Provide an empty polyfill
+    },
+  },
+  globals: {
+    Buffer: true,
+  },
   routes(defineRoutes) {
     return defineRoutes((route) => {
       // public routes
