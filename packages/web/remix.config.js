@@ -16,7 +16,6 @@ export default {
   serverPlatform: "node",
   serverNodeBuiltinsPolyfill: {
     modules: {
-      process: true,
       buffer: true,
       url: true,
       http: true,
@@ -27,6 +26,9 @@ export default {
       events: true,
       assert: true,
       zlib: true,
+    },
+    globals: {
+      process: true,
     },
   },
   routes(defineRoutes) {
