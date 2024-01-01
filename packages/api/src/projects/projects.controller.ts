@@ -26,6 +26,8 @@ import { GetProjectById } from './param/get-project-by-id.param';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { GetTeamParam } from './param/get-team.param';
+import { UpdateMemberRoleParam } from './dto/update-member.param';
+import { UpdateMemberRoleDto } from './dto/update-member.dto';
 
 @Controller('projects')
 export class ProjectsController {
@@ -164,6 +166,32 @@ export class ProjectsController {
     return this.projectService.rejectInvite({
       projectId: param.projectId,
       email: user.email,
+    });
+  }
+
+  @Patch('/:projectId/member/:memberId')
+  @HttpCode(HttpStatus.OK)
+  async updateMemberRole(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() param: UpdateMemberRoleParam,
+    @Body() body: UpdateMemberRoleDto,
+  ) {
+    const hasAccess = await this.projectService.hasAccess({
+      acceptedRoles: ['arkadaslar', 'owner', 'manager'],
+      projectId: param.projectId,
+      userId: user.sub,
+    });
+
+    if (!hasAccess)
+      throw new ForbiddenException(
+        'You are not allowed to access this resource',
+      );
+
+    await this.projectService.updateMemberRole({
+      projectId: param.projectId,
+      operatorId: user.sub,
+      memberId: param.memberId,
+      newRole: body.role,
     });
   }
 
