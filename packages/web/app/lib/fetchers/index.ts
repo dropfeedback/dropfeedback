@@ -134,11 +134,6 @@ const updateFeedbackStatus = async (payload: {
   return data;
 };
 
-const getProjectMembers = async (projectId: string) => {
-  const { data } = await axiosInstance.get(`/projects/${projectId}/members`);
-  return data;
-};
-
 const inviteMember = async (
   projectId: string,
   payload: { email: string; role: string },
@@ -189,7 +184,6 @@ export const fetchers = {
   googleLogin,
   getFeedbacks,
   updateFeedbackStatus,
-  getProjectMembers,
   inviteMember,
   deleteMember,
   cancelInvite,
