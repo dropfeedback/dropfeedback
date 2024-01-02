@@ -1,7 +1,7 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Request } from 'express';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { UnauthorizedException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload, JwtPayloadWithRefreshToken } from '../types';
 
@@ -12,26 +12,16 @@ export class RefreshTokenStrategy extends PassportStrategy(
 ) {
   constructor(config: ConfigService) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        RefreshTokenStrategy.extractJWTFromCookie,
-      ]),
+      jwtFromRequest: ExtractJwt.fromHeader('x-refresh-token'),
       secretOrKey: config.get<string>('REFRESH_TOKEN_SECRET'),
       passReqToCallback: true,
     });
   }
 
-  private static extractJWTFromCookie(req: Request): string | null {
-    if (req?.cookies && 'refreshToken' in req?.cookies) {
-      return req.cookies.refreshToken;
-    }
-
-    return null;
-  }
-
   validate(req: Request, payload: JwtPayload): JwtPayloadWithRefreshToken {
-    const refreshToken = req?.cookies?.refreshToken;
+    const refreshToken = req.headers?.['x-refresh-token'] as string;
 
-    if (!refreshToken) throw new ForbiddenException('Refresh token malformed');
+    if (!refreshToken) throw new UnauthorizedException('Invalid refresh token');
 
     return {
       ...payload,

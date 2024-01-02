@@ -1,21 +1,26 @@
 import { type LoaderFunctionArgs, redirect } from "@remix-run/cloudflare";
 import { Outlet } from "@remix-run/react";
 import { AuthHeader } from "~/components/headers/auth-header";
-import { BASE_URL } from "~/lib/axios";
+import { API_URL } from "~/lib/axios";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const cookie = request.headers.get("Cookie");
-
   try {
-    const reusult = await fetch(`${BASE_URL}/users/me`, {
+    const cookieHeader = request.headers.get("Cookie") || "";
+    const accessToken = cookieHeader
+      .split("; ")
+      .find((c) => c.startsWith("accessToken="))
+      ?.split("=")[1];
+
+    const result = await fetch(`${API_URL}/users/me`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Cookie: cookie || "",
+        Authorization: `Bearer ${accessToken}`,
       },
     });
 
-    if (!reusult.ok) {
+    console.log("auth layout OK", { result });
+    if (!result.ok) {
       return null;
     }
 
