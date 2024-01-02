@@ -34,7 +34,6 @@ axiosInstance.interceptors.response.use(
     const status = response?.status;
     const message = response?.data?.message;
 
-    console.log("axios error", error);
 
     if (typeof window !== "undefined") {
       // API returns 401 and message is "Invalid refresh token". redirect to login
