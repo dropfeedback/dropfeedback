@@ -35,14 +35,21 @@ export async function loader({ request }: LoaderFunctionArgs) {
   try {
     await queryClient.fetchQuery({
       queryKey: ["me"],
-      queryFn: () =>
-        fetch(`${API_URL}/users/me`, {
+      queryFn: async () => {
+        const response = await fetch(`${API_URL}/users/me`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
-        }),
+        });
+
+        if (!response.ok) {
+          throw response;
+        }
+
+        return await response.json();
+      },
     });
 
     return json({ dehydratedState: dehydrate(queryClient) });
@@ -84,6 +91,7 @@ function Layout() {
 
 export default function LayoutRoute() {
   const { dehydratedState } = useLoaderData<typeof loader>();
+  console.log("dehydratedState", dehydratedState);
   return (
     <HydrationBoundary state={dehydratedState}>
       <Layout />
