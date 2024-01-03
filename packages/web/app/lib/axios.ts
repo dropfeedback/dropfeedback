@@ -26,11 +26,6 @@ axiosInstance.interceptors.request.use(
     const accessToken = Cookies.get("accessToken");
     const refreshToken = Cookies.get("refreshToken");
 
-    console.log({
-      accessToken,
-      refreshToken,
-    });
-
     if ((accessToken || refreshToken) && config?.headers) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
       config.headers["x-refresh-token"] = refreshToken;

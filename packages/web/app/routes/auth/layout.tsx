@@ -19,7 +19,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
       },
     });
 
-    console.log("auth layout OK", { result });
     if (!result.ok) {
       return null;
     }

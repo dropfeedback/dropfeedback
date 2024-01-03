@@ -28,7 +28,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     ?.split("=")[1];
 
   if (!accessToken) {
-    console.log("dashboard layout", "no access token", accessToken);
     const redirectNext = shouldAddNext ? `/login?next=${nextUrl}` : "/login";
     throw redirect(redirectNext);
   }
