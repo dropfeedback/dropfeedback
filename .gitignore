@@ -40,3 +40,6 @@ dist
 packages/web/.wrangler
 # remix build output. cloudflare uses this to build the worker
 packages/web/functions
+apps/api/src/metadata.ts
+
+package-lock.json
