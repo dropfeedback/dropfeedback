@@ -37,3 +37,5 @@ yarn-error.log*
 dist
 
 apps/api/src/metadata.ts
+
+package-lock.json
