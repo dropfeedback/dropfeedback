@@ -34,8 +34,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   try {
     await queryClient.fetchQuery({
-      // TODO: rehydrate not working, because of that we are using different queryKey
-      queryKey: ["me-server"],
+      queryKey: ["me"],
       queryFn: () =>
         fetch(`${API_URL}/users/me`, {
           method: "GET",
@@ -44,7 +43,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
             Authorization: `Bearer ${accessToken}`,
           },
         }),
-      retry: false,
     });
 
     return json({ dehydratedState: dehydrate(queryClient) });

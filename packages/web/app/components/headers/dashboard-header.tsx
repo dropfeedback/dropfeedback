@@ -36,6 +36,7 @@ export function DashboardHeader() {
   });
 
   const { data: user } = useMe();
+  console.log(user);
 
   const logout = () => {
     logoutMutation.mutate();
