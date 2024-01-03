@@ -65,9 +65,6 @@ export default {
         );
         route("settings", "routes/dashboard/settings.tsx", { index: true });
       });
-
-      // api
-      route("api/login", "routes/api/login.ts");
     });
   },
 };
