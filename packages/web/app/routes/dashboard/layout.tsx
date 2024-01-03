@@ -91,7 +91,6 @@ function Layout() {
 
 export default function LayoutRoute() {
   const { dehydratedState } = useLoaderData<typeof loader>();
-  console.log("dehydratedState", dehydratedState);
   return (
     <HydrationBoundary state={dehydratedState}>
       <Layout />
