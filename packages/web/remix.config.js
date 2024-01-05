@@ -6,7 +6,31 @@ export default {
   appDirectory: "app",
   assetsBuildDirectory: "public/build",
   publicPath: "/build/",
-  serverBuildPath: "build/index.js",
+  server: "./server.ts",
+  serverBuildPath: "functions/[[path]].js",
+  serverConditions: ["workerd", "worker", "browser"],
+  serverMainFields: ["browser", "module", "main"],
+  serverDependenciesToBundle: "all",
+  serverMinify: true,
+  serverModuleFormat: "esm",
+  serverPlatform: "node",
+  serverNodeBuiltinsPolyfill: {
+    modules: {
+      buffer: true,
+      url: true,
+      http: true,
+      https: true,
+      stream: true,
+      path: true,
+      util: true,
+      events: true,
+      assert: true,
+      zlib: true,
+    },
+    globals: {
+      process: true,
+    },
+  },
   routes(defineRoutes) {
     return defineRoutes((route) => {
       // public routes

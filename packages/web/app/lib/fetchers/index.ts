@@ -6,6 +6,7 @@ import {
   type ProjectVariables,
   type VerifyEmailPayload,
 } from "~/types";
+import Cookies from "js-cookie";
 
 const getProjects = async () => {
   const { data } = await axiosInstance.get("/projects");
@@ -68,11 +69,13 @@ const updateUser = async (payload: { fullName: string }) => {
 
 const signup = async (payload: { email: string; password: string }) => {
   const { data } = await axiosInstance.post("/auth/local/signup", payload);
+  setAuthCookies(data.accessToken, data.refreshToken);
   return data;
 };
 
 const signin = async (payload: { email: string; password: string }) => {
   const { data } = await axiosInstance.post("/auth/local/signin", payload);
+  setAuthCookies(data.accessToken, data.refreshToken);
   return data;
 };
 
@@ -93,16 +96,19 @@ const resendVerificationEmail = async () => {
 
 const logout = async () => {
   const { data } = await axiosInstance.post("/auth/logout");
+  removeAuthCookies();
   return data;
 };
 
 const refreshToken = async () => {
   const { data } = await axiosInstance.post("/auth/refresh");
+  setAuthCookies(data.accessToken, data.refreshToken);
   return data;
 };
 
 const googleLogin = async (payload: { idToken: string }) => {
   const { data } = await axiosInstance.post("/auth/google/login", payload);
+  setAuthCookies(data.accessToken, data.refreshToken);
   return data;
 };
 
@@ -131,11 +137,6 @@ const updateFeedbackStatus = async (payload: {
     `/feedbacks/${payload.id}/status`,
     payload,
   );
-  return data;
-};
-
-const getProjectMembers = async (projectId: string) => {
-  const { data } = await axiosInstance.get(`/projects/${projectId}/members`);
   return data;
 };
 
@@ -169,6 +170,26 @@ const getProjectTeam = async (projectId: string) => {
   return data;
 };
 
+const setAuthCookies = (accessToken: string, refreshToken: string) => {
+  Cookies.set("accessToken", accessToken, {
+    sameSite: "strict",
+    path: "/",
+    secure: true,
+    expires: 2,
+  });
+  Cookies.set("refreshToken", refreshToken, {
+    sameSite: "strict",
+    path: "/",
+    secure: true,
+    expires: 7,
+  });
+};
+
+const removeAuthCookies = () => {
+  Cookies.remove("accessToken");
+  Cookies.remove("refreshToken");
+};
+
 export const fetchers = {
   getProjects,
   getProject,
@@ -189,7 +210,6 @@ export const fetchers = {
   googleLogin,
   getFeedbacks,
   updateFeedbackStatus,
-  getProjectMembers,
   inviteMember,
   deleteMember,
   cancelInvite,

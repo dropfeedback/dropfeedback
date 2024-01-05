@@ -9,7 +9,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import { json, type LinksFunction } from "@remix-run/node";
+import { json, type LinksFunction } from "@remix-run/cloudflare";
 import {
   MutationCache,
   QueryCache,
