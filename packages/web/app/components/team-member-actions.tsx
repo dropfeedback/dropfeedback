@@ -78,7 +78,7 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
 
   const { data: user } = useMe();
   const userRoleOnProject =
-    user?.projects.find((project) => project.id === projectId)?.role ??
+    user?.projects?.find((project) => project.id === projectId)?.role ??
     "member";
 
   const isMember = userRoleOnProject === ProjectMemberRole.member;

@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "remix build",
-    "dev": "remix dev --manual",
-    "start": "remix-serve ./build/index.js",
+    "dev": "remix dev --manual -c \"npm run start\"",
+    "start": "wrangler pages dev --compatibility-date=2023-06-21 ./public --compatibility-flags=nodejs_compat --port 3000",
     "typecheck": "tsc"
   },
   "dependencies": {
@@ -26,13 +26,15 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@react-oauth/google": "^0.11.1",
-    "@remix-run/css-bundle": "^2.2.0",
-    "@remix-run/node": "^2.2.0",
-    "@remix-run/react": "^2.2.0",
-    "@remix-run/serve": "^2.2.0",
+    "@remix-run/css-bundle": "^2.4.0",
+    "@remix-run/node": "^2.4.0",
+    "@remix-run/react": "^2.4.0",
+    "@remix-run/serve": "^2.4.0",
+    "@remix-run/cloudflare": "^2.4.0",
+    "@remix-run/cloudflare-pages": "^2.4.0",
     "@tanstack/react-query": "^5.8.3",
     "@tanstack/react-query-devtools": "^5.12.2",
-    "axios": "^1.6.1",
+    "axios": "1.2.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
@@ -49,21 +51,25 @@
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
     "ua-parser-js": "^1.0.37",
-    "use-timer": "^2.0.1"
+    "use-timer": "^2.0.1",
+    "js-cookie": "^3.0.5"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.2.0",
-    "@remix-run/eslint-config": "^2.2.0",
+    "@cloudflare/workers-types": "^4.20230518.0",
+    "@remix-run/dev": "^2.4.0",
+    "@remix-run/eslint-config": "^2.4.0",
     "@tanstack/eslint-plugin-query": "^5.8.3",
     "@types/lodash.debounce": "^4.0.9",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.7",
+    "@types/js-cookie": "^3.0.5",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.56.0",
     "prettier": "^3.0.3",
     "prettier-plugin-tailwindcss": "^0.5.6",
     "tailwindcss": "^3.3.5",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "wrangler": "3.22.1"
   },
   "engines": {
     "node": ">=18.0.0"
