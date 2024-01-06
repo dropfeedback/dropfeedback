@@ -91,6 +91,13 @@ export class AuthController {
   async sendVerificationEmail(@GetCurrentUser() user: JwtPayload) {
     this.authService.sendVerificationMail({ email: user.email });
   }
+  @Post('/local/reset-password')
+  @EmailVerificationIsNotRequired()
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  async forgotPassword(@Body() dto: { email: string }) {
+    await this.authService.resetPassword(dto.email);
+  }
 
   @Post('/logout')
   @EmailVerificationIsNotRequired()
