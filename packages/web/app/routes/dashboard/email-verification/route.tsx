@@ -3,9 +3,9 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { LoadingIndicator } from "~/components/loading-indicator";
 import { Button } from "~/components/ui/button";
-import { fetchers } from "~/lib/fetchers";
+import { fetchers, setAuthCookies } from "~/lib/fetchers";
 import type { ApiError } from "~/lib/axios";
-import type { VerifyEmailPayload } from "~/types";
+import type { VerifyEmailPayload, VerifyEmailResponse } from "~/types";
 import { useTimer } from "use-timer";
 import { cn } from "~/lib/utils";
 
@@ -25,9 +25,15 @@ export default function EmailVerification() {
     mutationFn: fetchers.resendVerificationEmail,
   });
 
-  const verifyEmail = useMutation<{}, ApiError, VerifyEmailPayload>({
+  const verifyEmail = useMutation<
+    VerifyEmailResponse,
+    ApiError,
+    VerifyEmailPayload
+  >({
     mutationFn: fetchers.verifyEmail,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log({ data });
+      setAuthCookies(data);
       navigate("/dashboard", { replace: true });
     },
   });

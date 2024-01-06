@@ -15,6 +15,7 @@ export class UsersService {
       const userWithProjectMembers = await this.prisma.user.findUniqueOrThrow({
         where: { id },
         include: {
+          UserProvider: true,
           projectMember: true,
         },
       });
@@ -25,8 +26,14 @@ export class UsersService {
         avatarUrl: userWithProjectMembers.avatarUrl,
         fullName: userWithProjectMembers.fullName,
       };
+
+      const isEmailVerified = userWithProjectMembers.UserProvider.some(
+        (provider) => provider.emailVerified,
+      );
+
       return {
         ...user,
+        isEmailVerified,
         projects: userWithProjectMembers.projectMember.map((project) => ({
           id: project.projectId,
           role: project.role,
