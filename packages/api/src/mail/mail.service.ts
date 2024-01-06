@@ -84,15 +84,7 @@ export class MailService {
   }
 
   async sendVerificationMail({ email }: { email: string }) {
-    const token = await this.jwtService.signAsync(
-      { email },
-      {
-        expiresIn: this.config.get<number>('EMAIL_TOKEN_EXPIRES_IN'),
-        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}`,
-        jwtid: email,
-        issuer: 'dropfeedback.com',
-      },
-    );
+    const token = await this.generateToken({ email });
     const html = render(VerificationEmail({ token }));
     this.sendMail({ subject: 'Verification email', email, html });
   }
