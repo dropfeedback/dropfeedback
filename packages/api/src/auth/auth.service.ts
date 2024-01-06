@@ -350,4 +350,31 @@ export class AuthService {
 
     return user;
   }
+
+  async resetPassword(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        UserProvider: {
+          select: {
+            type: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const internalProvider = user?.UserProvider?.find(
+      (provider) => provider.type === UserProviderType.internal,
+    );
+
+    if (!internalProvider) {
+      throw new BadRequestException('User not found');
+    }
+
+    await this.mailService.sendResetPasswordMail({ email: user.email });
+  }
 }
