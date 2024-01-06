@@ -6,6 +6,7 @@
     "lint": "eslint --fix \"**/*.{ts,tsx}\"",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "lerna run test --stream",
+    "test:e2e": "lerna run test:e2e --stream",
     "clean": "lerna clean --yes",
     "docker": "docker compose down && docker compose up -d"
   },
