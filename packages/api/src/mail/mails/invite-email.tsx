@@ -47,12 +47,12 @@ const InviteEmail = ({
               <strong>DropFeedback</strong>. To join the team, click the button.
             </Text>
             <Section className="text-center mt-[32px] mb-[32px]">
-              <Button
+              <Link
                 className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center py-2 px-4"
                 href={inviteUrl}
               >
                 Join the DropFeedback
-              </Button>
+              </Link>
             </Section>
             <Text className="text-black text-[14px] leading-[24px]">
               or copy and paste this URL into your browser:{' '}

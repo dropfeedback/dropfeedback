@@ -3,7 +3,6 @@ import React from 'react';
 
 import {
   Body,
-  Button,
   Container,
   Head,
   Heading,
@@ -45,14 +44,14 @@ const VerificationEmail = ({ token }: { token: string }) => {
               your email address. Just press the button below.
             </Text>
             <Section className="text-center mt-[32px] mb-[32px]">
-              <Button
+              <Link
                 className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center py-2 px-4"
                 href={acceptVerificationLink}
               >
                 Join the team
-              </Button>
+              </Link>
             </Section>
-            <Text className="text-black text-[14px] leading-[24px]">
+            <Text className="text-black text-[14px] leading-[24px]  max-w-[300px]">
               or copy and paste this URL into your browser:{' '}
               <Link
                 href={acceptVerificationLink}
