@@ -304,15 +304,10 @@ export class AuthService {
       throw new BadRequestException('Invalid token');
     }
 
-    try {
-      await this.jwtService.verify(token, {
-        secret: this.config.get<string>('EMAIL_TOKEN_SECRET'),
-        jwtid: decodedToken.email,
-        complete: true,
-      });
-    } catch (error) {
-      throw new ForbiddenException('Invalid token');
-    }
+    await this.verifyToken({
+      email: decodedToken.email,
+      token: token,
+    });
 
     const user = await this.prisma.user.findUnique({
       where: { email: decodedToken.email },
