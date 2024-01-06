@@ -28,5 +28,6 @@ jobs:
           cache: "npm"
       - run: cp .env.test .env
       - run: npm ci
+      - run: npm i @swc/core@^1.3.96
       - run: npm run build
       - run: npm run test
