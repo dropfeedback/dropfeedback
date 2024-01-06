@@ -4,8 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { render } from '@react-email/render';
 import { google } from 'googleapis';
 import { Options } from 'nodemailer/lib/smtp-transport';
-import { InviteEmail } from 'src/mail/mails/invite-email';
-import { VerificationEmail } from './mails/verification-email';
+import InviteEmail from 'src/mail/mails/invite-email';
+import VerificationEmail from './mails/verification-email';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
