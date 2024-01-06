@@ -42,4 +42,3 @@ packages/web/.wrangler
 packages/web/functions
 apps/api/src/metadata.ts
 
-package-lock.json
