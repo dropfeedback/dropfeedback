@@ -21,6 +21,8 @@ import { OAuth2Client } from 'google-auth-library';
 import { GoogleLoginDto } from './dto/google-login.dto';
 import { VerifyEmailDto } from './dto/verify-email';
 import { UserProviderType } from '@prisma/client';
+import { ResetPasswordDto } from './dto/reset-password-dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -96,7 +98,7 @@ export class AuthController {
   @EmailVerificationIsNotRequired()
   @Public()
   @HttpCode(HttpStatus.OK)
-  async forgotPassword(@Body() dto: { email: string }) {
+  async forgotPassword(@Body() dto: ResetPasswordDto) {
     await this.authService.resetPassword(dto.email);
   }
 
@@ -104,9 +106,7 @@ export class AuthController {
   @EmailVerificationIsNotRequired()
   @Public()
   @HttpCode(HttpStatus.OK)
-  async changePassword(
-    @Body() dto: { password: string; passwordResetToken: string },
-  ) {
+  async changePassword(@Body() dto: ChangePasswordDto) {
     const { id, email } = await this.authService.changePassword({
       password: dto.password,
       passwordResetToken: dto.passwordResetToken,
