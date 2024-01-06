@@ -46,17 +46,11 @@ After you have cloned the repository, you need to install the dependencies.
 npm install
 ```
 
-### Bootstraping the packages
-
-DropFeedback is a monorepo managed by [Lerna](https://lerna.js.org/). You can bootstrap the packages by running the following command. This will install the dependencies of each given package and link them together.
-
-```bash
-npm run bootstrap --scope web --scope api --scope @dropfeedback/core
-```
-
 ### Start the development server
 
-After you have bootstrapped the packages, you can start the development server by running the following command. This will start the development server of each given package.
+After you have installed the dependencies, you can start the development server by running the following command. This will start the development server of each given package.
+
+> 🚨 DropFeedback is a monorepo and managed by [Lerna](https://lerna.js.org/).
 
 ```bash
 npm run dev --scope web --scope api --scope @dropfeedback/core
