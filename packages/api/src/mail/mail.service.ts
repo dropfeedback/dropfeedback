@@ -7,6 +7,7 @@ import { Options } from 'nodemailer/lib/smtp-transport';
 import { InviteEmail } from 'src/mail/mails/invite-email';
 import { VerificationEmail } from './mails/verification-email';
 import { JwtService } from '@nestjs/jwt';
+import { ResetPassword } from './mails/reset-password';
 
 @Injectable()
 export class MailService {
@@ -62,7 +63,7 @@ export class MailService {
     email,
     html,
   }: {
-    subject: 'Verification email' | 'Invite email';
+    subject: 'Verification email' | 'Invite email' | 'Forgot Password';
     email: string;
     html: string;
   }) {
@@ -105,5 +106,23 @@ export class MailService {
   }) {
     const html = render(InviteEmail({ projectName }));
     this.sendMail({ subject: 'Invite email', email, html });
+  }
+
+  async sendResetPasswordMail({ email }: { email: string }) {
+    const token = await this.generateToken({ email });
+    const html = render(ResetPassword({ token }));
+    this.sendMail({ subject: 'Forgot Password', email, html });
+  }
+
+  private async generateToken({ email }: { email: string }) {
+    return await this.jwtService.signAsync(
+      { email },
+      {
+        expiresIn: this.config.get<number>('EMAIL_TOKEN_EXPIRES_IN'),
+        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}`,
+        jwtid: email,
+        issuer: 'dropfeedback.com',
+      },
+    );
   }
 }
