@@ -28,6 +28,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { GetTeamParam } from './param/get-team.param';
 import { UpdateMemberRoleParam } from './dto/update-member.param';
 import { UpdateMemberRoleDto } from './dto/update-member.dto';
+import { LeaveProjectParam } from './param/leave-project.param';
 
 @Controller('projects')
 export class ProjectsController {
@@ -223,7 +224,7 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   async leaveProject(
     @GetCurrentUser() user: JwtPayload,
-    @Param() param: { projectId: string },
+    @Param() param: LeaveProjectParam,
   ) {
     await this.projectService.leaveProject({
       projectId: param.projectId,
