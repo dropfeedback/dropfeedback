@@ -8,7 +8,7 @@
 
 ## Contributing
 
-#### Packages
+### Packages
 
 - **web**: The admin panel.
 - **api**: The API server.
