@@ -21,6 +21,8 @@ import { OAuth2Client } from 'google-auth-library';
 import { GoogleLoginDto } from './dto/google-login.dto';
 import { VerifyEmailDto } from './dto/verify-email';
 import { UserProviderType } from '@prisma/client';
+import { ResetPasswordDto } from './dto/reset-password-dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -90,6 +92,40 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async sendVerificationEmail(@GetCurrentUser() user: JwtPayload) {
     this.authService.sendVerificationMail({ email: user.email });
+  }
+
+  @Post('/local/reset-password')
+  @EmailVerificationIsNotRequired()
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  async forgotPassword(@Body() dto: ResetPasswordDto) {
+    await this.authService.resetPassword(dto.email);
+  }
+
+  @Post('/local/change-password')
+  @EmailVerificationIsNotRequired()
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  async changePassword(@Body() dto: ChangePasswordDto) {
+    const { id, email } = await this.authService.changePassword({
+      password: dto.password,
+      passwordResetToken: dto.passwordResetToken,
+    });
+
+    const { accessToken, refreshToken } = await this.authService.signAuthToken({
+      provider: UserProviderType.internal,
+      sub: id,
+      email,
+      isEmailVerified: true,
+      iss: 'dropfeedback.com',
+    } satisfies JwtPayload);
+
+    await this.authService.updateRefreshTokenFromDB({
+      id,
+      refreshToken: refreshToken,
+    });
+
+    return { accessToken, refreshToken };
   }
 
   @Post('/logout')
