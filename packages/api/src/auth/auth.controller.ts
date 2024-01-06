@@ -91,12 +91,41 @@ export class AuthController {
   async sendVerificationEmail(@GetCurrentUser() user: JwtPayload) {
     this.authService.sendVerificationMail({ email: user.email });
   }
+
   @Post('/local/reset-password')
   @EmailVerificationIsNotRequired()
   @Public()
   @HttpCode(HttpStatus.OK)
   async forgotPassword(@Body() dto: { email: string }) {
     await this.authService.resetPassword(dto.email);
+  }
+
+  @Post('/local/change-password')
+  @EmailVerificationIsNotRequired()
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @Body() dto: { password: string; passwordResetToken: string },
+  ) {
+    const { id, email } = await this.authService.changePassword({
+      password: dto.password,
+      passwordResetToken: dto.passwordResetToken,
+    });
+
+    const { accessToken, refreshToken } = await this.authService.signAuthToken({
+      provider: UserProviderType.internal,
+      sub: id,
+      email,
+      isEmailVerified: true,
+      iss: 'dropfeedback.com',
+    } satisfies JwtPayload);
+
+    await this.authService.updateRefreshTokenFromDB({
+      id,
+      refreshToken: refreshToken,
+    });
+
+    return { accessToken, refreshToken };
   }
 
   @Post('/logout')
