@@ -219,6 +219,18 @@ export class ProjectsController {
     });
   }
 
+  @Delete('/:projectId/leave-project')
+  @HttpCode(HttpStatus.OK)
+  async leaveProject(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() param: { projectId: string },
+  ) {
+    await this.projectService.leaveProject({
+      projectId: param.projectId,
+      memberId: user.sub,
+    });
+  }
+
   @Delete('/:projectId/invite/:memberInviteId')
   @HttpCode(HttpStatus.OK)
   async cancelInvite(
