@@ -49,6 +49,10 @@ type DeleteMemberVariables = {
   memberId: string;
 };
 
+type UpdateMemberRoleVariables = {
+  role: ProjectMemberRole;
+};
+
 export function TeamMemberActions({ member }: { member: ProjectMember }) {
   const { projectId } = useParams<{ projectId: string }>();
   if (!projectId) throw new Error("Project ID is required");
@@ -65,6 +69,19 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
     },
   });
 
+  const updateMemberRole = useMutation<
+    undefined,
+    ApiError,
+    UpdateMemberRoleVariables
+  >({
+    mutationFn: ({ role }) =>
+      fetchers.updateMemberRole(projectId, member.id, { role }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["team", projectId] });
+      setOpen(false);
+    },
+  });
+
   const form = useForm<{ role: ProjectMemberRole }>({
     defaultValues: {
       role: member.role,
@@ -72,8 +89,7 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
   });
 
   const onSubmit = (values: { role: ProjectMemberRole }) => {
-    //TODO: Add mutation to update role
-    console.log("values", values);
+    updateMemberRole.mutate({ role: values.role });
   };
 
   const { data: user } = useMe();
