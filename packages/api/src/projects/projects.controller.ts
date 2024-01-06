@@ -28,6 +28,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { GetTeamParam } from './param/get-team.param';
 import { UpdateMemberRoleParam } from './dto/update-member.param';
 import { UpdateMemberRoleDto } from './dto/update-member.dto';
+import { LeaveProjectParam } from './param/leave-project.param';
 
 @Controller('projects')
 export class ProjectsController {
@@ -216,6 +217,18 @@ export class ProjectsController {
       projectId: param.projectId,
       operatorId: user.sub,
       memberId: param.memberId,
+    });
+  }
+
+  @Delete('/:projectId/leave-project')
+  @HttpCode(HttpStatus.OK)
+  async leaveProject(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() param: LeaveProjectParam,
+  ) {
+    await this.projectService.leaveProject({
+      projectId: param.projectId,
+      memberId: user.sub,
     });
   }
 
