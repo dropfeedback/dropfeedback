@@ -22,7 +22,10 @@ export class UsersController {
   @EmailVerificationIsNotRequired()
   @HttpCode(HttpStatus.OK)
   async me(@GetCurrentUser() user: JwtPayload) {
-    return this.usersService.me(user.sub);
+    return this.usersService.me({
+      userId: user.sub,
+      userProviderType: user.provider,
+    });
   }
 
   @Patch('/me')

@@ -5,36 +5,40 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserProviderType } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async me(id: string) {
+  async me({
+    userId,
+    userProviderType,
+  }: {
+    userId: string;
+    userProviderType: UserProviderType;
+  }) {
     try {
-      const userWithProjectMembers = await this.prisma.user.findUniqueOrThrow({
-        where: { id },
+      const user = await this.prisma.user.findUniqueOrThrow({
+        where: { id: userId },
         include: {
           UserProvider: true,
           projectMember: true,
         },
       });
 
-      const user = {
-        id: userWithProjectMembers.id,
-        email: userWithProjectMembers.email,
-        avatarUrl: userWithProjectMembers.avatarUrl,
-        fullName: userWithProjectMembers.fullName,
-      };
-
-      const isEmailVerified = userWithProjectMembers.UserProvider.some(
-        (provider) => provider.emailVerified,
-      );
+      // user can have multiple providers, but we only need the one that matches the current request (e.g. google or internal)
+      const provider = user.UserProvider.find(function (provider) {
+        return provider.type === userProviderType;
+      });
 
       return {
-        ...user,
-        isEmailVerified,
-        projects: userWithProjectMembers.projectMember.map((project) => ({
+        id: user.id,
+        email: user.email,
+        avatarUrl: user.avatarUrl,
+        fullName: user.fullName,
+        isEmailVerified: provider?.emailVerified,
+        projects: user.projectMember.map((project) => ({
           id: project.projectId,
           role: project.role,
         })),
