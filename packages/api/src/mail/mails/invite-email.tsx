@@ -3,7 +3,6 @@ import React from 'react';
 
 import {
   Body,
-  Button,
   Container,
   Head,
   Heading,
@@ -49,6 +48,8 @@ const InviteEmail = ({
             <Section className="text-center mt-[32px] mb-[32px]">
               <Link
                 className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center py-2 px-4"
+                target="_blank"
+                rel="noopener noreferrer"
                 href={inviteUrl}
               >
                 Join the DropFeedback
@@ -56,7 +57,12 @@ const InviteEmail = ({
             </Section>
             <Text className="text-black text-[14px] leading-[24px]">
               or copy and paste this URL into your browser:{' '}
-              <Link href={inviteUrl} className="text-blue-600 no-underline">
+              <Link
+                href={inviteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 no-underline"
+              >
                 {inviteUrl}
               </Link>
             </Text>

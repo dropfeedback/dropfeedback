@@ -17,7 +17,7 @@ import {
 } from '@react-email/components';
 import { config } from '../../config';
 
-export const ResetPassword = ({ token }: { token: string }) => {
+const ResetPasswordEmail = ({ token }: { token: string }) => {
   const resetPasswordLink =
     config().WEB_URL + '/dashboard/reset-password?resetPasswordToken=' + token;
   return (
@@ -54,6 +54,8 @@ export const ResetPassword = ({ token }: { token: string }) => {
               or copy and paste this URL into your browser:{' '}
               <Link
                 href={resetPasswordLink}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-blue-600 no-underline"
               >
                 {resetPasswordLink}
@@ -72,3 +74,5 @@ export const ResetPassword = ({ token }: { token: string }) => {
     </Html>
   );
 };
+
+export default ResetPasswordEmail;
