@@ -25,7 +25,8 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push --skip-generate",
     "db:create": "prisma migrate dev",
-    "db:run": "prisma migrate deploy"
+    "db:run": "prisma migrate deploy",
+    "email:dev": "export $(cat .env | xargs) && email dev --port 8081 --dir ./src/mail/mails"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -58,6 +59,7 @@
     "passport-local": "^1.0.0",
     "react": "^18.2.0",
     "reflect-metadata": "^0.1.13",
+    "react-email": "^1.10.0",
     "rxjs": "^7.8.1",
     "tsx": "^4.1.1",
     "ua-parser-js": "^1.0.37"

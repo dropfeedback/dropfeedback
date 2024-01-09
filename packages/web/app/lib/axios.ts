@@ -4,7 +4,7 @@ import { fetchers } from "~/lib/fetchers";
 
 export const API_URL =
   process.env.NODE_ENV === "production"
-    ? "https://feedbacky-production.up.railway.app"
+    ? "https://dropfeedback-prod.up.railway.app"
     : "http://localhost:8080";
 
 export type ApiError = AxiosError<{

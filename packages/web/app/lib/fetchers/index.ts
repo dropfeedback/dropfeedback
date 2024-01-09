@@ -5,6 +5,7 @@ import {
   type FeedbackStatus,
   type ProjectVariables,
   type VerifyEmailPayload,
+  type ProjectMemberRole,
 } from "~/types";
 import Cookies from "js-cookie";
 
@@ -158,6 +159,20 @@ const deleteMember = async (projectId: string, memberId: string) => {
   return data;
 };
 
+const updateMemberRole = async (
+  projectId: string,
+  memberId: string,
+  payload: {
+    role: ProjectMemberRole;
+  },
+) => {
+  const { data } = await axiosInstance.patch(
+    `/projects/${projectId}/member/${memberId}`,
+    payload,
+  );
+  return data;
+};
+
 const cancelInvite = async (projectId: string, inviteId: string) => {
   const { data } = await axiosInstance.delete(
     `/projects/${projectId}/invite/${inviteId}`,
@@ -212,6 +227,7 @@ export const fetchers = {
   updateFeedbackStatus,
   inviteMember,
   deleteMember,
+  updateMemberRole,
   cancelInvite,
   getProjectTeam,
 };

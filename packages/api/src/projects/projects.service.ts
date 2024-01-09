@@ -296,6 +296,38 @@ export class ProjectsService {
     });
   }
 
+  async leaveProject({
+    projectId,
+    memberId,
+  }: {
+    projectId: string;
+    memberId: string;
+  }) {
+    const member = await this.prisma.projectMember.findFirst({
+      where: {
+        projectId,
+        userId: memberId,
+      },
+    });
+
+    if (!member) {
+      throw new ForbiddenException('You are not member of this project');
+    }
+
+    if (member.role === ProjectMemberRole.owner) {
+      throw new ForbiddenException('You cannot leave project as owner');
+    }
+
+    await this.prisma.projectMember.delete({
+      where: {
+        userId_projectId: {
+          projectId,
+          userId: memberId,
+        },
+      },
+    });
+  }
+
   async cancelInvite(memberInviteId: string) {
     //TODO: your account removed from project mail will send here
     return this.prisma.memberInvite.delete({

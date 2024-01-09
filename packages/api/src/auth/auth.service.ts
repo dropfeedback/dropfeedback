@@ -304,15 +304,10 @@ export class AuthService {
       throw new BadRequestException('Invalid token');
     }
 
-    try {
-      await this.jwtService.verify(token, {
-        secret: this.config.get<string>('EMAIL_TOKEN_SECRET'),
-        jwtid: decodedToken.email,
-        complete: true,
-      });
-    } catch (error) {
-      throw new ForbiddenException('Invalid token');
-    }
+    await this.verifyToken({
+      email: decodedToken.email,
+      token: token,
+    });
 
     const user = await this.prisma.user.findUnique({
       where: { email: decodedToken.email },
@@ -349,5 +344,101 @@ export class AuthService {
     });
 
     return user;
+  }
+
+  async resetPassword(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        UserProvider: {
+          select: {
+            type: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const internalProvider = user?.UserProvider?.find(
+      (provider) => provider.type === UserProviderType.internal,
+    );
+
+    if (!internalProvider) {
+      throw new BadRequestException('User not found');
+    }
+
+    await this.mailService.sendResetPasswordMail({ email: user.email });
+  }
+
+  async changePassword({
+    password,
+    passwordResetToken,
+  }: {
+    password: string;
+    passwordResetToken: string;
+  }) {
+    const decodedToken: JwtPayload = this.jwtService.decode(
+      passwordResetToken,
+    ) as JwtPayload;
+    if (!decodedToken) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    await this.verifyToken({
+      email: decodedToken.email,
+      token: passwordResetToken,
+    });
+
+    const user = await this.prisma.user.findUnique({
+      where: { email: decodedToken.email },
+      include: {
+        UserProvider: {
+          select: {
+            id: true,
+            type: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const internalProvider = user?.UserProvider?.find(
+      (provider) => provider.type === UserProviderType.internal,
+    );
+
+    if (!internalProvider) {
+      throw new BadRequestException('User not found');
+    }
+
+    await this.prisma.userProvider.update({
+      where: { id: internalProvider.id },
+      data: { hash: await this.hashData(password), emailVerified: true },
+    });
+
+    return user;
+  }
+
+  private async verifyToken({
+    email,
+    token,
+  }: {
+    email: string;
+    token: string;
+  }) {
+    try {
+      await this.jwtService.verify(token, {
+        secret: this.config.get<string>('EMAIL_TOKEN_SECRET'),
+        jwtid: email,
+        complete: true,
+      });
+    } catch (error) {
+      throw new ForbiddenException('Invalid token');
+    }
   }
 }
