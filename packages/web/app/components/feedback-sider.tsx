@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  MagnifyingGlassIcon,
-} from "@radix-ui/react-icons";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import debounce from "lodash.debounce";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { FeedbackRadioGroup } from "./feedback-radio-group";
 import { FeedbackCollapsibleArea } from "./feedback-collapsible-area";
 import { useFeedbackContext } from "./feedback-provider";
@@ -59,48 +56,52 @@ export function FeedbackSider() {
             </div>
           </FeedbackCollapsibleArea>
           <FeedbackCollapsibleArea title="Sorter">
-            <div className="grid grid-cols-2 gap-1.5 pr-0 md:pr-4">
-              <Button
-                className="px-2 text-muted-foreground hover:text-muted-foreground"
-                variant={
-                  Object.values(sorters)[0] === "desc" ? "outline" : "ghost"
-                }
-                onClick={() =>
-                  setFiltersAndSorters((prev) => ({
-                    ...prev,
-                    sorters: Object.fromEntries(
-                      Object.entries(prev.sorters).map(([key, value]) => [
-                        key,
-                        "desc",
-                      ]),
-                    ),
-                  }))
-                }
-              >
-                <ArrowDownIcon className="mr-1 h-4 w-4" />
-                Newest first
-              </Button>
-              <Button
-                className="px-2 text-muted-foreground hover:text-muted-foreground"
-                variant={
-                  Object.values(sorters)[0] === "asc" ? "outline" : "ghost"
-                }
-                onClick={() =>
-                  setFiltersAndSorters((prev) => ({
-                    ...prev,
-                    sorters: Object.fromEntries(
-                      Object.entries(prev.sorters).map(([key, value]) => [
-                        key,
-                        "asc",
-                      ]),
-                    ),
-                  }))
-                }
-              >
-                <ArrowUpIcon className="mr-1 h-4 w-4" />
-                Oldest first
-              </Button>
-            </div>
+            <Tabs
+              defaultValue={
+                Object.values(sorters)[0] === "asc" ? "oldest" : "newest"
+              }
+            >
+              <TabsList >
+                <TabsTrigger value="newest" asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() =>
+                      setFiltersAndSorters((prev) => ({
+                        ...prev,
+                        sorters: Object.fromEntries(
+                          Object.entries(prev.sorters).map(([key, value]) => [
+                            key,
+                            "desc",
+                          ]),
+                        ),
+                      }))
+                    }
+                  >
+                    Newest first
+                  </Button>
+                </TabsTrigger>
+                <TabsTrigger value="oldest" asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() =>
+                      setFiltersAndSorters((prev) => ({
+                        ...prev,
+                        sorters: Object.fromEntries(
+                          Object.entries(prev.sorters).map(([key, value]) => [
+                            key,
+                            "asc",
+                          ]),
+                        ),
+                      }))
+                    }
+                  >
+                    Oldest first
+                  </Button>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </FeedbackCollapsibleArea>
           <FeedbackCollapsibleArea title="Project ID">
             <div className="flex items-center gap-1.5">
