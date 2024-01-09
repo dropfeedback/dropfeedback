@@ -107,6 +107,7 @@ export function FeedbackCard({
             <Link to={`/dashboard/${projectId}/feedback/${id}`}>
               <OpenInNewWindowIcon className="text-muted-foreground" />
             </Link>
+            <span className="sr-only">Open feedback details</span>
           </Button>
         </div>
         <p
