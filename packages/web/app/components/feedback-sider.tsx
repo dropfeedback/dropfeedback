@@ -61,7 +61,7 @@ export function FeedbackSider() {
                 Object.values(sorters)[0] === "asc" ? "oldest" : "newest"
               }
             >
-              <TabsList >
+              <TabsList>
                 <TabsTrigger value="newest" asChild>
                   <Button
                     variant="ghost"
