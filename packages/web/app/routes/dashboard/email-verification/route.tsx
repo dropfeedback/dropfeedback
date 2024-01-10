@@ -32,7 +32,6 @@ export default function EmailVerification() {
   >({
     mutationFn: fetchers.verifyEmail,
     onSuccess: (data) => {
-      console.log({ data });
       setAuthCookies(data);
       navigate("/dashboard", { replace: true });
     },
