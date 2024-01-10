@@ -103,6 +103,28 @@ export default function Settings() {
     }
   }, [deleteMutation.isSuccess, navigate]);
 
+  const leaveMutation = useMutation({
+    mutationFn: () => fetchers.leaveProject(projectId),
+    onSuccess: () => {
+      //Remove the project from the cache
+      queryClient.setQueryData(["projects"], (projects: Project[]) => {
+        if (!projects) return;
+
+        const index = projects.findIndex((p) => p.id === projectId);
+
+        if (index === -1) return projects;
+
+        return [...projects.slice(0, index), ...projects.slice(index + 1)];
+      });
+    },
+  });
+
+  useEffect(() => {
+    if (leaveMutation.isSuccess) {
+      navigate("/dashboard");
+    }
+  }, [leaveMutation.isSuccess, navigate]);
+
   const { data: user } = useMe();
   const userRoleOnProject = user?.projects?.find(
     (project) => project.id === projectId,
@@ -184,39 +206,67 @@ export default function Settings() {
           </form>
         </Form>
         <Separator className="my-6" />
-        <div className="space-y-2">
-          <h3 className="text-sm font-medium">Delete Project</h3>
-          <p className="text-[0.8rem] text-muted-foreground">
-            The project will be permanently deleted, including its feedback.
-            This action is irreversible and can not be undone.
-          </p>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="destructive"
-                size="sm"
-                disabled={isMember || isManager}
-              >
-                Delete
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete Project</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your project and all its feedback.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => deleteMutation.mutate()}>
-                  Continue
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+        {userRoleOnProject === ProjectMemberRole.owner ? (
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium">Delete Project</h3>
+            <p className="text-[0.8rem] text-muted-foreground">
+              The project will be permanently deleted, including its feedback.
+              This action is irreversible and can not be undone.
+            </p>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm">
+                  Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Project</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your project and all its feedback.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => deleteMutation.mutate()}>
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium">Leave Project</h3>
+            <p className="text-[0.8rem] text-muted-foreground">
+              You will no longer be able to access this project. This action is
+              irreversible and can not be undone.
+            </p>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm">
+                  Leave
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Leave Project</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. You will no longer be able to
+                    access this project.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => leaveMutation.mutate()}>
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        )}
       </div>
     </>
   );
