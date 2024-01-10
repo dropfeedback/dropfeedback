@@ -15,6 +15,7 @@ import {
 import { MailService } from 'src/mail/mail.service';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { UpdateMemberNotificationsDto } from './dto/update-member-notifications';
 
 @Injectable()
 export class ProjectsService {
@@ -149,6 +150,9 @@ export class ProjectsService {
         role: m.role,
         avatarUrl: m.user.avatarUrl,
         fullName: m.user.fullName,
+        permissions: {
+          email: m.emailNotification,
+        },
       })),
       invites: invites.map((m) => ({
         id: m.id,
@@ -527,4 +531,33 @@ export class ProjectsService {
     [ProjectMemberRole.owner]: 2,
     [ProjectMemberRole.arkadaslar]: 3,
   };
+
+  async updateMemberNotifications({
+    projectId,
+    memberId,
+    permissions,
+  }: {
+    projectId: string;
+    memberId: string;
+    permissions: UpdateMemberNotificationsDto;
+  }) {
+    try {
+      return await this.prisma.projectMember.update({
+        where: {
+          userId_projectId: {
+            projectId,
+            userId: memberId,
+          },
+        },
+        data: {
+          emailNotification: permissions.email,
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Member not found');
+      }
+      throw new BadRequestException(error.message);
+    }
+  }
 }

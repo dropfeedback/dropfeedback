@@ -57,6 +57,7 @@ CREATE TABLE "project_members" (
     "projectId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "emailNotification" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "project_members_pkey" PRIMARY KEY ("id")
 );

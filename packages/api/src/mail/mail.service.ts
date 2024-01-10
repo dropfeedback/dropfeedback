@@ -4,10 +4,12 @@ import { ConfigService } from '@nestjs/config';
 import { render } from '@react-email/render';
 import { google } from 'googleapis';
 import { Options } from 'nodemailer/lib/smtp-transport';
+import { JwtService } from '@nestjs/jwt';
 import InviteEmail from 'src/mail/mails/invite-email';
 import VerificationEmail from './mails/verification-email';
-import { JwtService } from '@nestjs/jwt';
-import { ResetPassword } from './mails/reset-password';
+import ResetPasswordEmail from './mails/reset-password-email';
+import FeedbackNotificationEmail from './mails/feedback-notification-email';
+import { Feedback, Project } from '@prisma/client';
 
 @Injectable()
 export class MailService {
@@ -63,7 +65,7 @@ export class MailService {
     email,
     html,
   }: {
-    subject: 'Verification email' | 'Invite email' | 'Forgot Password';
+    subject: string;
     email: string;
     html: string;
   }) {
@@ -102,8 +104,25 @@ export class MailService {
 
   async sendResetPasswordMail({ email }: { email: string }) {
     const token = await this.generateToken({ email });
-    const html = render(ResetPassword({ token }));
+    const html = render(ResetPasswordEmail({ token }));
     this.sendMail({ subject: 'Forgot Password', email, html });
+  }
+
+  async sendFeedbackNotificationMail({
+    email,
+    feedback,
+  }: {
+    email: string;
+    feedback: Feedback & {
+      project: Project;
+    };
+  }) {
+    const html = render(FeedbackNotificationEmail({ feedback }));
+    this.sendMail({
+      subject: `You have new feedback on ${feedback?.project?.name}`,
+      email,
+      html,
+    });
   }
 
   private async generateToken({ email }: { email: string }) {

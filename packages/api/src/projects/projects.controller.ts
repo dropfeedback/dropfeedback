@@ -15,7 +15,7 @@ import type { JwtPayload } from 'src/auth/types';
 import { GetCurrentUser } from 'src/common/decorators';
 import { DeleteMemberDto } from './dto/delete-member.dto';
 import { InviteMemberDto } from './dto/invite-member.dto';
-import { InviteMemberParam } from './dto/invite-member.param';
+import { InviteMemberParam } from './param/invite-member.param';
 import { GetInvitesParam } from './param/get-invites.param';
 import { DeleteMemberInviteParam } from './param/delete-member-invite.param';
 import { AcceptInviteParam } from './param/accept-invite.param';
@@ -26,9 +26,11 @@ import { GetProjectById } from './param/get-project-by-id.param';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { GetTeamParam } from './param/get-team.param';
-import { UpdateMemberRoleParam } from './dto/update-member.param';
-import { UpdateMemberRoleDto } from './dto/update-member.dto';
+import { UpdateMemberRoleParam } from './param/update-member-role.param';
+import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 import { LeaveProjectParam } from './param/leave-project.param';
+import { UpdateMemberNotificationsDto } from './dto/update-member-notifications';
+import { UpdateMemberNotificationsParam } from './param/update-member-notifications.param';
 
 @Controller('projects')
 export class ProjectsController {
@@ -250,5 +252,26 @@ export class ProjectsController {
       );
 
     await this.projectService.cancelInvite(param.memberInviteId);
+  }
+
+  @Patch('/:projectId/member/:memberId/notifications')
+  @HttpCode(HttpStatus.OK)
+  async updateMemberNoficiations(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() param: UpdateMemberNotificationsParam,
+    @Body() body: UpdateMemberNotificationsDto,
+  ) {
+    // user cant update other members notifications
+    if (user.sub !== param.memberId) {
+      throw new ForbiddenException(
+        'You are not allowed to access this resource',
+      );
+    }
+
+    await this.projectService.updateMemberNotifications({
+      projectId: param.projectId,
+      memberId: param.memberId,
+      permissions: body,
+    });
   }
 }
