@@ -70,13 +70,19 @@ const updateUser = async (payload: { fullName: string }) => {
 
 const signup = async (payload: { email: string; password: string }) => {
   const { data } = await axiosInstance.post("/auth/local/signup", payload);
-  setAuthCookies(data.accessToken, data.refreshToken);
+  setAuthCookies({
+    accessToken: data.accessToken,
+    refreshToken: data.refreshToken,
+  });
   return data;
 };
 
 const signin = async (payload: { email: string; password: string }) => {
   const { data } = await axiosInstance.post("/auth/local/signin", payload);
-  setAuthCookies(data.accessToken, data.refreshToken);
+  setAuthCookies({
+    accessToken: data.accessToken,
+    refreshToken: data.refreshToken,
+  });
   return data;
 };
 
@@ -103,13 +109,19 @@ const logout = async () => {
 
 const refreshToken = async () => {
   const { data } = await axiosInstance.post("/auth/refresh");
-  setAuthCookies(data.accessToken, data.refreshToken);
+  setAuthCookies({
+    accessToken: data.accessToken,
+    refreshToken: data.refreshToken,
+  });
   return data;
 };
 
 const googleLogin = async (payload: { idToken: string }) => {
   const { data } = await axiosInstance.post("/auth/google/login", payload);
-  setAuthCookies(data.accessToken, data.refreshToken);
+  setAuthCookies({
+    accessToken: data.accessToken,
+    refreshToken: data.refreshToken,
+  });
   return data;
 };
 
@@ -190,7 +202,13 @@ const getProjectTeam = async (projectId: string) => {
   return data;
 };
 
-const setAuthCookies = (accessToken: string, refreshToken: string) => {
+export const setAuthCookies = ({
+  accessToken,
+  refreshToken,
+}: {
+  accessToken: string;
+  refreshToken: string;
+}) => {
   Cookies.set("accessToken", accessToken, {
     sameSite: "strict",
     path: "/",
@@ -205,7 +223,7 @@ const setAuthCookies = (accessToken: string, refreshToken: string) => {
   });
 };
 
-const removeAuthCookies = () => {
+export const removeAuthCookies = () => {
   Cookies.remove("accessToken");
   Cookies.remove("refreshToken");
 };

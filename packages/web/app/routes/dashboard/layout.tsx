@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { DashboardHeader } from "~/components/headers/dashboard-header";
 import { API_URL } from "~/lib/axios";
+import type { MeResponse } from "~/types";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const queryClient = new QueryClient();
@@ -48,7 +49,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
           throw response;
         }
 
-        return await response.json();
+        const user: MeResponse = await response.json();
+        if (!user?.isEmailVerified) {
+          if (pathname !== "/dashboard/email-verification") {
+            redirect("/dashboard/email-verification");
+          }
+        }
+
+        return user;
       },
     });
 

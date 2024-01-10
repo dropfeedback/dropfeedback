@@ -2,6 +2,7 @@ import { type LoaderFunctionArgs, redirect } from "@remix-run/cloudflare";
 import { Outlet } from "@remix-run/react";
 import { AuthHeader } from "~/components/headers/auth-header";
 import { API_URL } from "~/lib/axios";
+import type { MeResponse } from "~/types";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   try {
@@ -11,7 +12,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       .find((c) => c.startsWith("accessToken="))
       ?.split("=")[1];
 
-    const result = await fetch(`${API_URL}/users/me`, {
+    const response = await fetch(`${API_URL}/users/me`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -19,8 +20,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
       },
     });
 
-    if (!result.ok) {
+    if (!response.ok) {
       return null;
+    }
+
+    const user: MeResponse = await response.json();
+    if (!user?.isEmailVerified) {
+      redirect("/dashboard/email-verification");
     }
 
     return redirect("/dashboard");
