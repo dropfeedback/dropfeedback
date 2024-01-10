@@ -29,6 +29,13 @@ const deleteProject = async (projectId: string) => {
   return data;
 };
 
+const leaveProject = async (projectId: string) => {
+  const { data } = await axiosInstance.delete(
+    `/projects/${projectId}/leave-project`,
+  );
+  return data;
+};
+
 const createProject = async (payload: ProjectVariables) => {
   const { data } = await axiosInstance.post("/projects", payload);
   return data;
@@ -215,6 +222,7 @@ export const fetchers = {
   getProject,
   updateProject,
   deleteProject,
+  leaveProject,
   createProject,
   getUserInvites,
   acceptInvite,
