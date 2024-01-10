@@ -3,6 +3,7 @@ import {
   FileIcon,
   GlobeIcon,
   PersonIcon,
+  OpenInNewWindowIcon,
   SizeIcon,
 } from "@radix-ui/react-icons";
 import UAParser from "ua-parser-js";
@@ -11,15 +12,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@remix-run/react";
 import { cn, getRelativeTime } from "~/lib/utils";
 import { Button } from "./ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./ui/tooltip";
-import { fetchers } from "~/lib/fetchers";
+import { ReplyButton } from "./feedback-reply-button";
+import { MetaItem } from "./feedback-meta-item";
+import { FeedbackTooltip } from "./feedback-tooltip";
+import { FeedbackCategoryBadge } from "./feedback-category-badge";
 import { useFeedbackContext } from "./feedback-provider";
-import { FeedbackCategory, type Feedback, FeedbackStatus } from "~/types";
+import { fetchers } from "~/lib/fetchers";
+import { type Feedback, FeedbackStatus } from "~/types";
 import { type ApiError } from "~/lib/axios";
 
 type UpdateFeedbackStatusVariables = {
@@ -66,37 +65,49 @@ export function FeedbackCard({
   });
 
   return (
-    <motion.button
+    <motion.div
+      role="button"
+      tabIndex={0}
+      aria-pressed="false"
       aria-label="Open feedback card to see more details"
       whileInView={{ opacity: 1, transition: { duration: 0.2 } }}
       className={cn(
-        "block w-full cursor-pointer select-text overflow-hidden border-b p-2 text-left opacity-0 transition-all last:border-none",
+        "block w-full cursor-pointer select-text overflow-hidden border-b border-l-2 border-l-transparent p-2 text-left opacity-0 transition-all last:border-none",
         {
-          "cursor-auto bg-accent/70": isOpen,
+          "cursor-auto  border-l-muted-foreground bg-accent/70": isOpen,
         },
       )}
+      onKeyDown={(e) => {
+        if (e.key === " " || e.key === "Enter" || e.key === "Spacebar") {
+          e.preventDefault();
+          setOpenedCardId(id);
+        }
+      }}
       onClick={() => setOpenedCardId(id)}
     >
       <div className="flex flex-col gap-2">
-        <div className="flex items-end justify-between">
-          <div className="text-xs text-muted-foreground">
-            {getRelativeTime(createdAt)}
+        <div className="flex justify-between">
+          <div className="flex items-center gap-2">
+            <time
+              className="text-xs text-muted-foreground"
+              dateTime={createdAt}
+            >
+              {getRelativeTime(createdAt)}
+            </time>
+            <FeedbackCategoryBadge variant={category} />
           </div>
-          <div
-            className={cn(
-              "inline-flex select-none items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold",
-              {
-                "border-amber bg-amber-foreground text-amber":
-                  category === FeedbackCategory.idea,
-                "border-red bg-red-foreground text-red":
-                  category === FeedbackCategory.issue,
-                "border-gray bg-gray-foreground text-gray":
-                  category === FeedbackCategory.other,
-              },
-            )}
+          <Button
+            size="icon"
+            title="Details"
+            variant="ghost"
+            className="h-6 w-6"
+            aria-label="Details"
+            asChild
           >
-            {category}
-          </div>
+            <Link to={`/dashboard/${projectId}/feedback/${id}`}>
+              <OpenInNewWindowIcon className="text-muted-foreground" />
+            </Link>
+          </Button>
         </div>
         <p
           className={cn("line-clamp-5 text-base", {
@@ -112,23 +123,25 @@ export function FeedbackCard({
               <div className="grid grid-cols-1 gap-x-1 gap-y-2 md:grid-cols-2">
                 {reportIdentifier && (
                   <div className="flex gap-2">
-                    <SessionIcon tooltipDescription="Reporter">
+                    <FeedbackTooltip tooltip="Reporter">
                       <div className="flex h-5 items-center">
                         <PersonIcon className="flex-shrink-0 text-muted-foreground" />
                       </div>
-                    </SessionIcon>
+                    </FeedbackTooltip>
                     <p className="break-all">{reportIdentifier}</p>
                   </div>
                 )}
                 {url && (
                   <div className="flex gap-2">
-                    <SessionIcon tooltipDescription="Page">
+                    <FeedbackTooltip tooltip="Page">
                       <div className="flex h-5 items-center">
                         <FileIcon className="flex-shrink-0 text-muted-foreground" />
                       </div>
-                    </SessionIcon>
+                    </FeedbackTooltip>
                     <Link
                       to={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="break-all transition-colors hover:text-link"
                     >
                       {url}
@@ -137,31 +150,31 @@ export function FeedbackCard({
                 )}
                 {ua.os.name && ua.os.version && (
                   <div className="flex gap-2">
-                    <SessionIcon tooltipDescription="System">
+                    <FeedbackTooltip tooltip="System">
                       <div className="flex h-5 items-center">
                         <DesktopIcon className="flex-shrink-0 text-muted-foreground" />
                       </div>
-                    </SessionIcon>
+                    </FeedbackTooltip>
                     <p>{`${ua.os.name} ${ua.os.version}`}</p>
                   </div>
                 )}
                 {ua.browser.name && ua.browser.version && (
                   <div className="flex gap-2">
-                    <SessionIcon tooltipDescription="Browser">
+                    <FeedbackTooltip tooltip="Browser">
                       <div className="flex h-5 items-center">
                         <GlobeIcon className="flex-shrink-0 text-muted-foreground" />
                       </div>
-                    </SessionIcon>
+                    </FeedbackTooltip>
                     <p>{`${ua.browser.name} ${ua.browser.version}`}</p>
                   </div>
                 )}
                 {resolution && (
                   <div className="flex gap-2">
-                    <SessionIcon tooltipDescription="Screen Size">
+                    <FeedbackTooltip tooltip="Screen Size">
                       <div className="flex h-5 items-center">
                         <SizeIcon className="flex-shrink-0 text-muted-foreground" />
                       </div>
-                    </SessionIcon>
+                    </FeedbackTooltip>
                     <p>{resolution}</p>
                   </div>
                 )}
@@ -195,79 +208,11 @@ export function FeedbackCard({
               >
                 {status === FeedbackStatus.archived ? "Unarchive" : "Archive"}
               </Button>
-              {status === FeedbackStatus.new && (
-                <ReplyButton email={reportIdentifier} />
-              )}
+              {reportIdentifier && <ReplyButton email={reportIdentifier} />}
             </div>
           </>
         )}
       </div>
-    </motion.button>
+    </motion.div>
   );
 }
-
-const SessionIcon = (props: {
-  children: React.ReactNode;
-  tooltipDescription: string;
-}) => (
-  <TooltipProvider>
-    <Tooltip delayDuration={300}>
-      <TooltipTrigger asChild>{props.children}</TooltipTrigger>
-      <TooltipContent sideOffset={5}>{props.tooltipDescription}</TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
-);
-
-const MetaItem = (props: {
-  label: string;
-  value:
-    | string
-    | number
-    | boolean
-    | object
-    | Array<string | number | boolean | object>;
-}) => {
-  let value = props.value;
-
-  if (Array.isArray(value)) {
-    if (value.length === 0) {
-      value = "Empty";
-      return;
-    }
-
-    value = value.join(", ");
-  }
-
-  if (typeof value === "object") {
-    value = JSON.stringify(value);
-  }
-
-  if (typeof value === "boolean") {
-    value = value.toString();
-  }
-
-  return (
-    <div className="flex flex-col">
-      <div className="text-xs text-muted-foreground">{props.label}</div>
-      <div className="break-words">{value}</div>
-    </div>
-  );
-};
-
-const ReplyButton = (props: { email: string | null }) => {
-  if (!props.email) {
-    return null;
-  }
-
-  const isEmailValid = props.email.match(/.+@.+\..+/);
-
-  if (!isEmailValid) {
-    return null;
-  }
-
-  return (
-    <Button size="sm" asChild>
-      <Link to={`mailto:${props.email}`}>Reply</Link>
-    </Button>
-  );
-};

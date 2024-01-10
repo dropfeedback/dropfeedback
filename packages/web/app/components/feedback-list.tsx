@@ -1,21 +1,27 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
+import useLocalStorageState from "use-local-storage-state";
 import { FeedbackCardSkeleton } from "./feedback-card-skeleton";
 import { FeedbackCard } from "./feedback-card";
 import { LoadingIndicator } from "./loading-indicator";
 import { useFeedbackContext } from "./feedback-provider";
-import FeedbackEmptyView from "./feedback-empty-view";
+import { FeedbackEmptyView } from "./feedback-empty-view";
+import { FeedbackFilterEmptyView } from "./feedback-filter-empty-view";
 import { fetchers } from "~/lib/fetchers";
 import { type FeedbackQueryType } from "~/types";
-import { FeedbackFilterEmptyView } from "./feedback-filter-empty-view";
 
 const PAGE_SIZE = 10;
 
 export function FeedbackList() {
   const { ref, inView } = useInView();
-  const [openedCardId, setOpenedCardId] = useState("");
   const { projectId, filtersAndSorters, setCounts } = useFeedbackContext();
+  const [openedCardId, setOpenedCardId] = useLocalStorageState(
+    `selected-card-${projectId}`,
+    {
+      defaultValue: "",
+    },
+  );
 
   const {
     data,
@@ -63,7 +69,7 @@ export function FeedbackList() {
     }
   }, [status, data, setCounts, isStale]);
 
-  if (isError) return <p>Cound not load feedbacks</p>;
+  if (isError) return <p>Could not load feedbacks</p>;
 
   if (isPending) {
     return (
