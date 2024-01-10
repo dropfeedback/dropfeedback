@@ -10,8 +10,11 @@ export function FeedbackCardSkeleton() {
       className="flex flex-col gap-2 border-b p-2 last:border-none"
     >
       <div className="flex justify-between">
-        <Skeleton className="h-5 w-[55px]" />
-        <Skeleton className="h-3 w-[65px]" />
+        <div className="flex gap-2">
+          <Skeleton className="h-4 w-[100px]" />
+          <Skeleton className="h-4 w-[40px]" />
+        </div>
+        <Skeleton className="h-4 w-4" />
       </div>
       <div className="space-y-3">
         <Skeleton className="h-4 w-full" />

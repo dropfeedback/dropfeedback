@@ -141,6 +141,11 @@ const getFeedbacks = async (params: {
   return data;
 };
 
+const getFeedback = async (feedbackId: string) => {
+  const { data } = await axiosInstance.get(`/feedbacks/${feedbackId}`);
+  return data;
+};
+
 const updateFeedbackStatus = async (payload: {
   id: string;
   projectId: string;
@@ -242,6 +247,7 @@ export const fetchers = {
   refreshToken,
   googleLogin,
   getFeedbacks,
+  getFeedback,
   updateFeedbackStatus,
   inviteMember,
   deleteMember,

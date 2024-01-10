@@ -44,6 +44,7 @@ export function CopyButton({
       ) : (
         <CopyIcon />
       )}
+      <span className="sr-only">Copy</span>
     </Button>
   );
 }

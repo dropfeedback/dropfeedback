@@ -2,7 +2,7 @@ import { FeedbackSider } from "~/components/feedback-sider";
 import { FeedbackList } from "~/components/feedback-list";
 import { FeedbackProvider } from "~/components/feedback-provider";
 
-export default function Feedbacks() {
+export default function Feedback() {
   return (
     <FeedbackProvider>
       <div className="bg-background">

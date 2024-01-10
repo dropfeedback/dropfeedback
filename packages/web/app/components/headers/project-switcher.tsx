@@ -95,6 +95,9 @@ export function ProjectSwitcher() {
         <PopoverTrigger asChild>
           <Button variant="ghost" size="icon" className="-ml-1.5 w-auto px-1">
             <CaretSortIcon className="h-5 w-5 shrink-0 text-muted-foreground" />
+            <span className="sr-only">
+              {open ? "Close project switcher" : "Open project switcher"}
+            </span>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="z-50 w-[200px] bg-background p-0">
