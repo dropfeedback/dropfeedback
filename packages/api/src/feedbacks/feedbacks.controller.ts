@@ -63,6 +63,7 @@ export class FeedbacksController {
     @Origin() origin: string,
   ) {
     await this.feedbackService.createByProjectId({ dto, origin, device });
+    return { success: true };
   }
 
   @Get('/:feedbackId')
