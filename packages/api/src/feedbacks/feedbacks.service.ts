@@ -171,13 +171,15 @@ export class FeedbacksService {
   }
 
   async getById({ id, userId }: { id: string; userId: string }) {
-    const feedback = await this.prisma.feedback.findUniqueOrThrow({
+    const feedback = await this.prisma.feedback.findUnique({
       where: {
         id,
       },
     });
 
-    await this.checkProjectMembership({
+    if (!feedback) throw new NotFoundException('Feedback not found');
+
+    await this.getProjectMember({
       projectId: feedback.projectId,
       userId,
     });
