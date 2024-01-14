@@ -274,7 +274,7 @@ export class FeedbacksService {
     });
   }
 
-  async checkProjectMembership({
+  async getProjectMember({
     projectId,
     userId,
   }: {

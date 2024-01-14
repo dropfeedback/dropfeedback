@@ -42,7 +42,7 @@ export class FeedbacksController {
     if (!param.projectId)
       throw new BadRequestException('Project id is required');
 
-    await this.feedbackService.checkProjectMembership({
+    await this.feedbackService.getProjectMember({
       projectId: param.projectId,
       userId: user.sub,
     });
@@ -84,7 +84,7 @@ export class FeedbacksController {
     @Param() param: SetStatusParam,
     @GetCurrentUser() user: JwtPayload,
   ) {
-    await this.feedbackService.checkProjectMembership({
+    await this.feedbackService.getProjectMember({
       projectId: dto.projectId,
       userId: user.sub,
     });

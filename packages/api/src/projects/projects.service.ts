@@ -561,7 +561,7 @@ export class ProjectsService {
     }
   }
 
-  async checkProjectMembership({
+  async getProjectMember({
     projectId,
     userId,
   }: {

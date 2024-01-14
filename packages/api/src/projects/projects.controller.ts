@@ -65,7 +65,7 @@ export class ProjectsController {
     @Param() param: GetProjectById,
     @GetCurrentUser() user: JwtPayload,
   ) {
-    await this.projectService.checkProjectMembership({
+    await this.projectService.getProjectMember({
       projectId: param.projectId,
       userId: user.sub,
     });
@@ -82,7 +82,7 @@ export class ProjectsController {
     @Param() param: UpdateProjectParam,
     @GetCurrentUser() user: JwtPayload,
   ) {
-    const projectMember = await this.projectService.checkProjectMembership({
+    const projectMember = await this.projectService.getProjectMember({
       projectId: param.projectId,
       userId: user.sub,
     });
