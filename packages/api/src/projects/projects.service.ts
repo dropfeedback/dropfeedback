@@ -560,4 +560,26 @@ export class ProjectsService {
       throw new BadRequestException(error.message);
     }
   }
+
+  async checkProjectMembership({
+    projectId,
+    userId,
+  }: {
+    projectId: string;
+    userId: string;
+  }) {
+    const projectMember = await this.prisma.projectMember.findUnique({
+      where: {
+        userId_projectId: {
+          userId,
+          projectId,
+        },
+      },
+    });
+
+    if (!projectMember) {
+      throw new BadRequestException('You are not a member of this project');
+    }
+    return projectMember;
+  }
 }
