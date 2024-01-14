@@ -170,20 +170,19 @@ export class FeedbacksService {
     };
   }
 
-  async getById({ id }: { id: string }) {
-    try {
-      return await this.prisma.feedback.findUniqueOrThrow({
-        where: {
-          id,
-        },
-      });
-    } catch (error) {
-      if (error.code === 'P2025') {
-        throw new NotFoundException('Feedback not found');
-      }
+  async getById({ id, userId }: { id: string; userId: string }) {
+    const feedback = await this.prisma.feedback.findUniqueOrThrow({
+      where: {
+        id,
+      },
+    });
 
-      throw new NotFoundException(error.message);
-    }
+    await this.checkProjectMembership({
+      projectId: feedback.projectId,
+      userId,
+    });
+
+    return feedback;
   }
 
   async createByProjectId({

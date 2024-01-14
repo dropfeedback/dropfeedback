@@ -13,6 +13,7 @@ import {
 import { FeedbacksService } from './feedbacks.service';
 import {
   Device,
+  GetCurrentUser,
   GetCursorPagination,
   Origin,
   Public,
@@ -24,6 +25,7 @@ import { SetStatusDto } from './dto/set-status.dto';
 import { SetStatusParam } from './dto/set-status.param';
 import { GetAll } from './dto/get-all.query';
 import { GetOneParam } from './dto/get-one-param';
+import { JwtPayload } from 'src/auth/types';
 
 @Controller('feedbacks')
 export class FeedbacksController {
@@ -31,13 +33,19 @@ export class FeedbacksController {
 
   @Get('/')
   @HttpCode(HttpStatus.OK)
-  getAllByProjectId(
+  async getAllByProjectId(
     @Query() param: GetAll,
     @GetCursorPagination() pagination: CursorPagination,
     @GetOderBy() orderBy: OrderBy,
+    @GetCurrentUser() user: JwtPayload,
   ) {
     if (!param.projectId)
       throw new BadRequestException('Project id is required');
+
+    await this.feedbackService.checkProjectMembership({
+      projectId: param.projectId,
+      userId: user.sub,
+    });
 
     return this.feedbackService.getAllByProjectId({
       ...param,
@@ -49,23 +57,41 @@ export class FeedbacksController {
   @Post('/')
   @Public()
   @HttpCode(HttpStatus.CREATED)
-  createByProjectId(
+  async createByProjectId(
     @Body() dto: CreateFeedbackDto,
     @Device() device: string,
     @Origin() origin: string,
   ) {
-    return this.feedbackService.createByProjectId({ dto, origin, device });
+    await this.feedbackService.createByProjectId({ dto, origin, device });
   }
 
   @Get('/:feedbackId')
   @HttpCode(HttpStatus.OK)
-  getById(@Param() param: GetOneParam) {
-    return this.feedbackService.getById({ id: param.feedbackId });
+  async getById(
+    @Param() param: GetOneParam,
+    @GetCurrentUser() user: JwtPayload,
+  ) {
+    return this.feedbackService.getById({
+      id: param.feedbackId,
+      userId: user.sub,
+    });
   }
 
   @Patch('/:feedbackId/status')
   @HttpCode(HttpStatus.CREATED)
-  setStatus(@Body() dto: SetStatusDto, @Param() param: SetStatusParam) {
-    return this.feedbackService.setStatus({ dto, id: param.feedbackId });
+  async setStatus(
+    @Body() dto: SetStatusDto,
+    @Param() param: SetStatusParam,
+    @GetCurrentUser() user: JwtPayload,
+  ) {
+    await this.feedbackService.checkProjectMembership({
+      projectId: dto.projectId,
+      userId: user.sub,
+    });
+
+    return this.feedbackService.setStatus({
+      dto,
+      id: param.feedbackId,
+    });
   }
 }
