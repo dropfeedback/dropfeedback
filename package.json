@@ -32,5 +32,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/dropfeedback/dropfeedback.git"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
