@@ -8,7 +8,8 @@
     "test": "lerna run test --stream",
     "test:e2e": "lerna run test:e2e --stream",
     "clean": "lerna clean --yes",
-    "docker": "docker compose down && docker compose up -d"
+    "docker": "docker compose down && docker compose up -d",
+    "publish": "lerna publish from-package --no-private"
   },
   "devDependencies": {
     "eslint": "^8.56.0",
