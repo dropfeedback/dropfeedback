@@ -44,5 +44,8 @@
 		"type": "git",
 		"url": "https://github.com/dropfeedback/dropfeedback.git",
 		"directory": "packages/widget-core"
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }
