@@ -28,5 +28,9 @@
     "character-parser": "^4.0.0",
     "is-whitespace": "^0.3.0",
     "preview-email": "^3.0.19"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dropfeedback/dropfeedback.git"
   }
 }
