@@ -4,7 +4,7 @@
 	"version": "0.0.4-alpha.0",
 	"type": "module",
 	"module": "dist/index.js",
-	"main": "dist/inde.umd.cjs",
+	"main": "dist/index.umd.cjs",
 	"files": [
 		"dist"
 	],
