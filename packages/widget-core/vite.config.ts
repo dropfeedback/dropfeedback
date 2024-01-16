@@ -10,8 +10,13 @@ export default defineConfig({
 		emptyOutDir: true,
 		lib: {
 			entry: "./index.ts",
-			fileName: "index",
-			name: "dropfeedback"
+			name: "dropfeedback",
+			formats: ["es", "umd"],
+			fileName: (format) =>
+				({
+					es: "index.js",
+					umd: "index.umd.js"
+				})[format]
 		}
 	},
 	plugins: [
