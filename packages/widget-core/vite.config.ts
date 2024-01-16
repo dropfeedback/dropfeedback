@@ -6,12 +6,12 @@ export default defineConfig({
 	root: "./packages/lib/",
 	build: {
 		outDir: "../../dist",
+		target: "modules",
 		emptyOutDir: true,
 		lib: {
 			entry: "./index.ts",
 			fileName: "index",
 			name: "dropfeedback",
-			formats: ["es", "cjs"]
 		}
 	},
 	plugins: [
