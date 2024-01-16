@@ -11,7 +11,7 @@ export default defineConfig({
 		lib: {
 			entry: "./index.ts",
 			fileName: "index",
-			name: "dropfeedback",
+			name: "dropfeedback"
 		}
 	},
 	plugins: [

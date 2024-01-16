@@ -1,7 +1,7 @@
 import type { IFeedback } from "../types";
 
 export const API_URL =
-	process.env.NODE_ENV === "production"
+	import.meta.env.MODE === "production"
 		? "https://dropfeedback-prod.up.railway.app"
 		: "http://localhost:8080";
 
