@@ -1,7 +1,7 @@
 {
 	"name": "@dropfeedback/core",
 	"description": "A web component for collecting feedback from users.",
-	"version": "0.0.4-alpha.0",
+	"version": "0.0.5-alpha.0",
 	"type": "module",
 	"module": "dist/index.js",
 	"main": "dist/index.umd.cjs",
