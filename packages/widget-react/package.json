@@ -1,7 +1,6 @@
 {
   "name": "@dropfeedback/react",
   "description": "React wrapper for DropFeedback",
-  "private": true,
   "version": "0.0.0",
   "type": "module",
   "files": [
@@ -31,9 +30,6 @@
   "peerDependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
-  },
-  "dependencies": {
-    "@dropfeedback/core": "*"
   },
   "devDependencies": {
     "@types/node": "^20.10.5",
