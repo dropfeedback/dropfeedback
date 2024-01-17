@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/lerna/schemas/lerna-schema.json",
-  "packages": ["packages/*", "examples/*"],
+  "packages": ["packages/*"],
   "npmClient": "npm",
   "registry": "https://registry.npmjs.org/",
   "version": "independent"
