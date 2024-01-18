@@ -1,6 +1,7 @@
 import type { MetaFunction } from "@remix-run/cloudflare";
 import { Link } from "@remix-run/react";
 import { ThemeSwitcher } from "~/components/headers/theme-switcher";
+import { DropFeedback } from "@dropfeedback/react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -27,6 +28,15 @@ export default function Index() {
           {"->"} Docs
         </Link>
       </div>
+      <DropFeedback
+        projectId="24320d3d-c5f2-44e1-83a1-13e1cb61fe1d"
+        meta={{
+          "customer-id": "123",
+          role: "admin",
+        }}
+      />
+
+      <button data-feedback-button>Feedback</button>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import "@dropfeedback/core";
+import { useEffect } from "react";
 
 export interface DropFeedbackProps {
   projectId: string;
@@ -9,6 +9,7 @@ export interface DropFeedbackProps {
     textColor?: string;
   };
   meta?: Record<string, any>;
+  reportIdentifier?: string;
 }
 
 declare global {
@@ -20,6 +21,7 @@ declare global {
         "theme-primary-color"?: string;
         "theme-background-color"?: string;
         "theme-text-color"?: string;
+        "report-identifier"?: string;
       };
     }
   }
@@ -29,7 +31,27 @@ export const DropFeedback = ({
   projectId,
   theme,
   meta = {},
+  reportIdentifier,
 }: DropFeedbackProps) => {
+  useEffect(() => {
+    if ((window as any).__drop_feedback_injected__) return;
+    (window as any).__drop_feedback_injected__ = true;
+
+    const script = document.createElement("script");
+    script.src = `https://unpkg.com/@dropfeedback/core@0.0.7-alpha.0/dist/index.umd.js`;
+    script.type = "module";
+    script.defer = true;
+
+    const onScriptError = () => script.remove();
+    script.addEventListener("error", onScriptError);
+
+    document.body.appendChild(script);
+
+    return () => {
+      script.removeEventListener("error", onScriptError);
+    };
+  }, []);
+
   const metaProps = Object.keys(meta).reduce(
     (acc, key) => {
       acc[`meta-${key}`] = meta[key];
@@ -45,6 +67,7 @@ export const DropFeedback = ({
       theme-primary-color={theme?.primaryColor}
       theme-background-color={theme?.backgroundColor}
       theme-text-color={theme?.textColor}
+      report-identifier={reportIdentifier}
       {...metaProps}
     />
   );
