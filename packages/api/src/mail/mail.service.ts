@@ -4,9 +4,12 @@ import { ConfigService } from '@nestjs/config';
 import { render } from '@react-email/render';
 import { google } from 'googleapis';
 import { Options } from 'nodemailer/lib/smtp-transport';
-import { InviteEmail } from 'src/mail/mails/invite-email';
-import { VerificationEmail } from './mails/verification-email';
 import { JwtService } from '@nestjs/jwt';
+import InviteEmail from 'src/mail/mails/invite-email';
+import VerificationEmail from './mails/verification-email';
+import ResetPasswordEmail from './mails/reset-password-email';
+import FeedbackNotificationEmail from './mails/feedback-notification-email';
+import { Feedback, Project } from '@prisma/client';
 
 @Injectable()
 export class MailService {
@@ -62,7 +65,7 @@ export class MailService {
     email,
     html,
   }: {
-    subject: 'Verification email' | 'Invite email';
+    subject: string;
     email: string;
     html: string;
   }) {
@@ -83,15 +86,7 @@ export class MailService {
   }
 
   async sendVerificationMail({ email }: { email: string }) {
-    const token = await this.jwtService.signAsync(
-      { email },
-      {
-        expiresIn: this.config.get<number>('EMAIL_TOKEN_EXPIRES_IN'),
-        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}`,
-        jwtid: email,
-        issuer: 'dropfeedback.com',
-      },
-    );
+    const token = await this.generateToken({ email });
     const html = render(VerificationEmail({ token }));
     this.sendMail({ subject: 'Verification email', email, html });
   }
@@ -105,5 +100,40 @@ export class MailService {
   }) {
     const html = render(InviteEmail({ projectName }));
     this.sendMail({ subject: 'Invite email', email, html });
+  }
+
+  async sendResetPasswordMail({ email }: { email: string }) {
+    const token = await this.generateToken({ email });
+    const html = render(ResetPasswordEmail({ token }));
+    this.sendMail({ subject: 'Forgot Password', email, html });
+  }
+
+  async sendFeedbackNotificationMail({
+    email,
+    feedback,
+  }: {
+    email: string;
+    feedback: Feedback & {
+      project: Project;
+    };
+  }) {
+    const html = render(FeedbackNotificationEmail({ feedback }));
+    this.sendMail({
+      subject: `You have new feedback on ${feedback?.project?.name}`,
+      email,
+      html,
+    });
+  }
+
+  private async generateToken({ email }: { email: string }) {
+    return await this.jwtService.signAsync(
+      { email },
+      {
+        expiresIn: this.config.get<number>('EMAIL_TOKEN_EXPIRES_IN'),
+        secret: `${this.config.get<number>('EMAIL_TOKEN_SECRET')}`,
+        jwtid: email,
+        issuer: 'dropfeedback.com',
+      },
+    );
   }
 }

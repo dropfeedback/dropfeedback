@@ -1,4 +1,4 @@
-import { json, redirect, type LoaderFunctionArgs } from "@remix-run/node";
+import { json, redirect, type LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import {
   HydrationBoundary,
@@ -6,8 +6,8 @@ import {
   dehydrate,
 } from "@tanstack/react-query";
 import { DashboardHeader } from "~/components/headers/dashboard-header";
-import type { ApiError } from "~/lib/axios";
-import { fetchers } from "~/lib/fetchers";
+import { API_URL } from "~/lib/axios";
+import type { MeResponse } from "~/types";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const queryClient = new QueryClient();
@@ -22,8 +22,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
   // when we redirected to any page, we should add the next query param. so that we can redirect back to the page after login
   const nextUrl = encodeURIComponent(pathname);
 
-  const cookie = request.headers.get("Cookie");
-  if (!cookie) {
+  const cookieHeader = request.headers.get("Cookie") || "";
+  const accessToken = cookieHeader
+    .split("; ")
+    .find((c) => c.startsWith("accessToken="))
+    ?.split("=")[1];
+
+  if (!accessToken) {
     const redirectNext = shouldAddNext ? `/login?next=${nextUrl}` : "/login";
     throw redirect(redirectNext);
   }
@@ -31,14 +36,37 @@ export async function loader({ request }: LoaderFunctionArgs) {
   try {
     await queryClient.fetchQuery({
       queryKey: ["me"],
-      queryFn: () => fetchers.me(cookie),
+      queryFn: async () => {
+        const response = await fetch(`${API_URL}/users/me`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw response;
+        }
+
+        const user: MeResponse = await response.json();
+        if (!user?.isEmailVerified) {
+          if (pathname !== "/dashboard/email-verification") {
+            redirect("/dashboard/email-verification");
+          }
+        }
+
+        return user;
+      },
     });
 
     return json({ dehydratedState: dehydrate(queryClient) });
   } catch (error: any) {
-    const response = (error as ApiError).response;
+    const response = error;
+    const data = await response.json();
+
     const status = response?.status;
-    const message = response?.data?.message;
+    const message = data?.message;
 
     let redirectUrl = "/login";
 

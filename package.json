@@ -6,8 +6,11 @@
     "lint": "eslint --fix \"**/*.{ts,tsx}\"",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "lerna run test --stream",
+    "test:e2e": "lerna run test:e2e --stream",
     "clean": "lerna clean --yes",
-    "docker": "docker compose down && docker compose up -d"
+    "docker": "docker compose down && docker compose up -d",
+    "version": "lerna version --no-private",
+    "publish": "lerna publish from-package --no-private"
   },
   "devDependencies": {
     "eslint": "^8.56.0",
@@ -17,7 +20,6 @@
   "name": "dropfeedback",
   "packageManager": "npm@10.2.0",
   "workspaces": [
-    "examples/*",
     "packages/*"
   ],
   "dependencies": {
@@ -26,5 +28,9 @@
     "character-parser": "^4.0.0",
     "is-whitespace": "^0.3.0",
     "preview-email": "^3.0.19"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dropfeedback/dropfeedback.git"
   }
 }

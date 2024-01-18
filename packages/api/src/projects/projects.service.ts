@@ -15,6 +15,7 @@ import {
 import { MailService } from 'src/mail/mail.service';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { UpdateMemberNotificationsDto } from './dto/update-member-notifications';
 
 @Injectable()
 export class ProjectsService {
@@ -149,6 +150,9 @@ export class ProjectsService {
         role: m.role,
         avatarUrl: m.user.avatarUrl,
         fullName: m.user.fullName,
+        permissions: {
+          email: m.emailNotification,
+        },
       })),
       invites: invites.map((m) => ({
         id: m.id,
@@ -157,27 +161,6 @@ export class ProjectsService {
         state: m.state,
       })),
     };
-  }
-
-  async members({ projectId }: { projectId: string }) {
-    const members = await this.prisma.projectMember.findMany({
-      where: {
-        projectId,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-          },
-        },
-      },
-    });
-    return members.map((m) => ({
-      id: m.user.id,
-      email: m.user.email,
-      role: m.role,
-    }));
   }
 
   async inviteMember({
@@ -265,6 +248,38 @@ export class ProjectsService {
     });
   }
 
+  async updateMemberRole({
+    operatorId,
+    projectId,
+    memberId,
+    newRole,
+  }: {
+    operatorId: string;
+    projectId: string;
+    memberId: string;
+    newRole: 'owner' | 'manager' | 'member';
+  }) {
+    if (operatorId === memberId)
+      throw new ForbiddenException('You cannot change your own role');
+
+    const { operator } = await this.checkAuthorized({
+      operatorId,
+      projectId,
+      memberId,
+    });
+
+    if (this.rolePriority[operator.role] < this.rolePriority[newRole]) {
+      throw new BadRequestException(
+        'You are not allowed to update role to this role',
+      );
+    }
+
+    return this.prisma.projectMember.update({
+      where: { userId_projectId: { projectId, userId: memberId } },
+      data: { role: newRole },
+    });
+  }
+
   async removeMember({
     operatorId,
     projectId,
@@ -274,10 +289,46 @@ export class ProjectsService {
     projectId: string;
     memberId: string;
   }) {
-    await this.checkAuthorized({ operatorId, projectId, memberId });
+    await this.checkAuthorized({
+      operatorId,
+      projectId,
+      memberId,
+    });
     //TODO: your account removed from project mail will send here
     return this.prisma.projectMember.delete({
       where: { userId_projectId: { projectId, userId: memberId } },
+    });
+  }
+
+  async leaveProject({
+    projectId,
+    memberId,
+  }: {
+    projectId: string;
+    memberId: string;
+  }) {
+    const member = await this.prisma.projectMember.findFirst({
+      where: {
+        projectId,
+        userId: memberId,
+      },
+    });
+
+    if (!member) {
+      throw new ForbiddenException('You are not member of this project');
+    }
+
+    if (member.role === ProjectMemberRole.owner) {
+      throw new ForbiddenException('You cannot leave project as owner');
+    }
+
+    await this.prisma.projectMember.delete({
+      where: {
+        userId_projectId: {
+          projectId,
+          userId: memberId,
+        },
+      },
     });
   }
 
@@ -466,16 +517,47 @@ export class ProjectsService {
         'Operator or member does not exist in this project',
       );
 
-    switch (projectMember.role) {
-      case ProjectMemberRole.arkadaslar:
-      case ProjectMemberRole.owner:
-        throw new BadRequestException('You can not remove owner');
-      case ProjectMemberRole.manager:
-        if (
-          operator.role !== ProjectMemberRole.owner &&
-          operator.role !== ProjectMemberRole.arkadaslar
-        )
-          throw new BadRequestException('Only owner can remove manager');
+    if (
+      this.rolePriority[operator.role] < this.rolePriority[projectMember.role]
+    ) {
+      throw new BadRequestException('You are not allowed to update this role');
+    }
+    return { operator };
+  }
+
+  private rolePriority = {
+    [ProjectMemberRole.member]: 0,
+    [ProjectMemberRole.manager]: 1,
+    [ProjectMemberRole.owner]: 2,
+    [ProjectMemberRole.arkadaslar]: 3,
+  };
+
+  async updateMemberNotifications({
+    projectId,
+    memberId,
+    permissions,
+  }: {
+    projectId: string;
+    memberId: string;
+    permissions: UpdateMemberNotificationsDto;
+  }) {
+    try {
+      return await this.prisma.projectMember.update({
+        where: {
+          userId_projectId: {
+            projectId,
+            userId: memberId,
+          },
+        },
+        data: {
+          emailNotification: permissions.email,
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Member not found');
+      }
+      throw new BadRequestException(error.message);
     }
   }
 }

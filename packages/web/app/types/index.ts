@@ -28,7 +28,6 @@ export type MeResponse = {
     id: string;
     role: ProjectMemberRole;
   }[];
-  provider: UserProviderType;
 };
 
 export type ProjectVariables = {
@@ -132,7 +131,7 @@ export type VerifyEmailPayload = {
   emailVerificationToken: string;
 };
 
-export enum UserProviderType {
-  google = "google",
-  internal = "internal",
-}
+export type VerifyEmailResponse = {
+  accessToken: string;
+  refreshToken: string;
+};

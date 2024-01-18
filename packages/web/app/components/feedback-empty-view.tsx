@@ -2,7 +2,7 @@ import { ChatBubbleIcon } from "@radix-ui/react-icons";
 import { Link } from "@remix-run/react";
 import { Button } from "./ui/button";
 
-export default function FeedbackEmptyView() {
+export function FeedbackEmptyView() {
   return (
     <div className="flex h-max w-full flex-col items-center justify-center border border-dashed bg-accent/70 px-4 py-16 text-center dark:bg-accent/10">
       <ChatBubbleIcon className="h-12 w-12" />

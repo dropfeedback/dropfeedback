@@ -5,7 +5,9 @@ import {
   type FeedbackStatus,
   type ProjectVariables,
   type VerifyEmailPayload,
+  type ProjectMemberRole,
 } from "~/types";
+import Cookies from "js-cookie";
 
 const getProjects = async () => {
   const { data } = await axiosInstance.get("/projects");
@@ -24,6 +26,13 @@ const updateProject = async (projectId: string, payload: ProjectVariables) => {
 
 const deleteProject = async (projectId: string) => {
   const { data } = await axiosInstance.delete(`/projects/${projectId}`);
+  return data;
+};
+
+const leaveProject = async (projectId: string) => {
+  const { data } = await axiosInstance.delete(
+    `/projects/${projectId}/leave-project`,
+  );
   return data;
 };
 
@@ -68,11 +77,19 @@ const updateUser = async (payload: { fullName: string }) => {
 
 const signup = async (payload: { email: string; password: string }) => {
   const { data } = await axiosInstance.post("/auth/local/signup", payload);
+  setAuthCookies({
+    accessToken: data.accessToken,
+    refreshToken: data.refreshToken,
+  });
   return data;
 };
 
 const signin = async (payload: { email: string; password: string }) => {
   const { data } = await axiosInstance.post("/auth/local/signin", payload);
+  setAuthCookies({
+    accessToken: data.accessToken,
+    refreshToken: data.refreshToken,
+  });
   return data;
 };
 
@@ -93,16 +110,25 @@ const resendVerificationEmail = async () => {
 
 const logout = async () => {
   const { data } = await axiosInstance.post("/auth/logout");
+  removeAuthCookies();
   return data;
 };
 
 const refreshToken = async () => {
   const { data } = await axiosInstance.post("/auth/refresh");
+  setAuthCookies({
+    accessToken: data.accessToken,
+    refreshToken: data.refreshToken,
+  });
   return data;
 };
 
 const googleLogin = async (payload: { idToken: string }) => {
   const { data } = await axiosInstance.post("/auth/google/login", payload);
+  setAuthCookies({
+    accessToken: data.accessToken,
+    refreshToken: data.refreshToken,
+  });
   return data;
 };
 
@@ -122,6 +148,11 @@ const getFeedbacks = async (params: {
   return data;
 };
 
+const getFeedback = async (feedbackId: string) => {
+  const { data } = await axiosInstance.get(`/feedbacks/${feedbackId}`);
+  return data;
+};
+
 const updateFeedbackStatus = async (payload: {
   id: string;
   projectId: string;
@@ -131,11 +162,6 @@ const updateFeedbackStatus = async (payload: {
     `/feedbacks/${payload.id}/status`,
     payload,
   );
-  return data;
-};
-
-const getProjectMembers = async (projectId: string) => {
-  const { data } = await axiosInstance.get(`/projects/${projectId}/members`);
   return data;
 };
 
@@ -157,6 +183,20 @@ const deleteMember = async (projectId: string, memberId: string) => {
   return data;
 };
 
+const updateMemberRole = async (
+  projectId: string,
+  memberId: string,
+  payload: {
+    role: ProjectMemberRole;
+  },
+) => {
+  const { data } = await axiosInstance.patch(
+    `/projects/${projectId}/member/${memberId}`,
+    payload,
+  );
+  return data;
+};
+
 const cancelInvite = async (projectId: string, inviteId: string) => {
   const { data } = await axiosInstance.delete(
     `/projects/${projectId}/invite/${inviteId}`,
@@ -169,11 +209,38 @@ const getProjectTeam = async (projectId: string) => {
   return data;
 };
 
+export const setAuthCookies = ({
+  accessToken,
+  refreshToken,
+}: {
+  accessToken: string;
+  refreshToken: string;
+}) => {
+  Cookies.set("accessToken", accessToken, {
+    sameSite: "strict",
+    path: "/",
+    secure: true,
+    expires: 2,
+  });
+  Cookies.set("refreshToken", refreshToken, {
+    sameSite: "strict",
+    path: "/",
+    secure: true,
+    expires: 7,
+  });
+};
+
+export const removeAuthCookies = () => {
+  Cookies.remove("accessToken");
+  Cookies.remove("refreshToken");
+};
+
 export const fetchers = {
   getProjects,
   getProject,
   updateProject,
   deleteProject,
+  leaveProject,
   createProject,
   getUserInvites,
   acceptInvite,
@@ -188,10 +255,11 @@ export const fetchers = {
   refreshToken,
   googleLogin,
   getFeedbacks,
+  getFeedback,
   updateFeedbackStatus,
-  getProjectMembers,
   inviteMember,
   deleteMember,
+  updateMemberRole,
   cancelInvite,
   getProjectTeam,
 };

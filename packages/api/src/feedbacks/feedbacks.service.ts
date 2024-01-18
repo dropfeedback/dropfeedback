@@ -7,11 +7,20 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateFeedbackDto } from './dto';
 import { CursorPagination, OrderBy } from 'src/common/types';
 import { SetStatusDto } from './dto/set-status.dto';
-import { FeedbackCategory, FeedbackStatus } from '@prisma/client';
+import {
+  Feedback,
+  FeedbackCategory,
+  FeedbackStatus,
+  Project,
+} from '@prisma/client';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class FeedbacksService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private mailService: MailService,
+  ) {}
 
   async getAllByProjectId({
     projectId,
@@ -187,7 +196,7 @@ export class FeedbacksService {
     device: string;
   }) {
     try {
-      return await this.prisma.feedback.create({
+      const feedback = await this.prisma.feedback.create({
         include: {
           project: true,
         },
@@ -198,6 +207,10 @@ export class FeedbacksService {
           meta: dto.meta || {},
         },
       });
+
+      this.sendFeedbackNotificationMail({ feedback });
+
+      return feedback;
     } catch (error) {
       if (error.code === 'P2003') {
         throw new BadRequestException('Project not found');
@@ -226,5 +239,39 @@ export class FeedbacksService {
       }
       throw new BadRequestException(error.message);
     }
+  }
+
+  async sendFeedbackNotificationMail({
+    feedback,
+  }: {
+    feedback: Feedback & {
+      project: Project;
+    };
+  }) {
+    const projectMembers = await this.prisma.projectMember.findMany({
+      where: {
+        projectId: feedback.projectId,
+      },
+      include: {
+        user: {
+          include: {
+            UserProvider: true,
+          },
+        },
+      },
+    });
+
+    projectMembers?.forEach((member) => {
+      // has permission to receive email notification
+      if (!member?.emailNotification) return;
+      // has  atleast one verified email (all providers binded to one email)
+      if (!member.user.UserProvider.some((provider) => provider.emailVerified))
+        return;
+
+      return this.mailService.sendFeedbackNotificationMail({
+        email: member.user.email,
+        feedback,
+      });
+    });
   }
 }

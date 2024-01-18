@@ -1,8 +1,13 @@
 import type { IFeedback } from "../types";
 
+export const API_URL =
+	import.meta.env.MODE === "production"
+		? "https://dropfeedback-prod.up.railway.app"
+		: "http://localhost:8080";
+
 export const sendFeedback = async (feedback: IFeedback) => {
 	try {
-		const response = await fetch("http://localhost:8080/feedbacks", {
+		const response = await fetch(`${API_URL}/feedbacks`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"

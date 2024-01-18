@@ -44,7 +44,7 @@ export function TeamInviteActions({ invite }: { invite: ProjectMemberInvite }) {
   });
 
   const { data: user } = useMe();
-  const userRoleOnProject = user?.projects.find(
+  const userRoleOnProject = user?.projects?.find(
     (project) => project.id === projectId,
   )?.role;
 

@@ -1,9 +1,10 @@
 import axios, { type AxiosError } from "axios";
+import Cookies from "js-cookie";
 import { fetchers } from "~/lib/fetchers";
 
-const BASE_URL =
+export const API_URL =
   process.env.NODE_ENV === "production"
-    ? "https://feedbacky-production.up.railway.app"
+    ? "https://dropfeedback-prod.up.railway.app"
     : "http://localhost:8080";
 
 export type ApiError = AxiosError<{
@@ -13,14 +14,29 @@ export type ApiError = AxiosError<{
 }>;
 
 export const axiosInstance = axios.create({
-  baseURL: BASE_URL,
-  withCredentials: true,
+  baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// refresh tokens if 401
+// auth header for axios
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const accessToken = Cookies.get("accessToken");
+    const refreshToken = Cookies.get("refreshToken");
+
+    if ((accessToken || refreshToken) && config?.headers) {
+      config.headers["Authorization"] = `Bearer ${accessToken}`;
+      config.headers["x-refresh-token"] = refreshToken;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
 axiosInstance.interceptors.response.use(
   (response) => {
     return response;

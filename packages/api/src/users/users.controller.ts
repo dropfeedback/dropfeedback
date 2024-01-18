@@ -7,7 +7,10 @@ import {
   Patch,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { GetCurrentUser } from 'src/common/decorators';
+import {
+  EmailVerificationIsNotRequired,
+  GetCurrentUser,
+} from 'src/common/decorators';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtPayload } from 'src/auth/types';
 
@@ -16,9 +19,13 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get('/me')
+  @EmailVerificationIsNotRequired()
   @HttpCode(HttpStatus.OK)
   async me(@GetCurrentUser() user: JwtPayload) {
-    return this.usersService.me(user.sub);
+    return this.usersService.me({
+      userId: user.sub,
+      userProviderType: user.provider,
+    });
   }
 
   @Patch('/me')

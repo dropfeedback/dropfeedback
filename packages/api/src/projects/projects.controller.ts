@@ -14,9 +14,8 @@ import { ProjectsService } from './projects.service';
 import type { JwtPayload } from 'src/auth/types';
 import { GetCurrentUser } from 'src/common/decorators';
 import { DeleteMemberDto } from './dto/delete-member.dto';
-import { GetMembersParam } from './param/get-members.param';
 import { InviteMemberDto } from './dto/invite-member.dto';
-import { InviteMemberParam } from './dto/invite-member.param';
+import { InviteMemberParam } from './param/invite-member.param';
 import { GetInvitesParam } from './param/get-invites.param';
 import { DeleteMemberInviteParam } from './param/delete-member-invite.param';
 import { AcceptInviteParam } from './param/accept-invite.param';
@@ -27,6 +26,11 @@ import { GetProjectById } from './param/get-project-by-id.param';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { GetTeamParam } from './param/get-team.param';
+import { UpdateMemberRoleParam } from './param/update-member-role.param';
+import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
+import { LeaveProjectParam } from './param/leave-project.param';
+import { UpdateMemberNotificationsDto } from './dto/update-member-notifications';
+import { UpdateMemberNotificationsParam } from './param/update-member-notifications.param';
 
 @Controller('projects')
 export class ProjectsController {
@@ -122,27 +126,6 @@ export class ProjectsController {
     return this.projectService.getTeam({ projectId: param.projectId });
   }
 
-  @Get('/:projectId/members')
-  @HttpCode(HttpStatus.OK)
-  async getMembers(
-    @GetCurrentUser() user: JwtPayload,
-    @Param() param: GetMembersParam,
-  ) {
-    const hasAccess = await this.projectService.hasAccess({
-      acceptedRoles: ['arkadaslar', 'owner', 'manager', 'member'],
-      projectId: param.projectId,
-      userId: user.sub,
-    });
-
-    if (!hasAccess) {
-      throw new ForbiddenException(
-        'You are not allowed to access this resource',
-      );
-    }
-
-    return this.projectService.members({ projectId: param.projectId });
-  }
-
   @Get('/:projectId/invites')
   @HttpCode(HttpStatus.OK)
   async getInvites(
@@ -189,6 +172,32 @@ export class ProjectsController {
     });
   }
 
+  @Patch('/:projectId/member/:memberId')
+  @HttpCode(HttpStatus.OK)
+  async updateMemberRole(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() param: UpdateMemberRoleParam,
+    @Body() body: UpdateMemberRoleDto,
+  ) {
+    const hasAccess = await this.projectService.hasAccess({
+      acceptedRoles: ['arkadaslar', 'owner', 'manager'],
+      projectId: param.projectId,
+      userId: user.sub,
+    });
+
+    if (!hasAccess)
+      throw new ForbiddenException(
+        'You are not allowed to access this resource',
+      );
+
+    await this.projectService.updateMemberRole({
+      projectId: param.projectId,
+      operatorId: user.sub,
+      memberId: param.memberId,
+      newRole: body.role,
+    });
+  }
+
   @Delete('/:projectId/member/:memberId')
   @HttpCode(HttpStatus.OK)
   async removeMember(
@@ -213,6 +222,18 @@ export class ProjectsController {
     });
   }
 
+  @Delete('/:projectId/leave-project')
+  @HttpCode(HttpStatus.OK)
+  async leaveProject(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() param: LeaveProjectParam,
+  ) {
+    await this.projectService.leaveProject({
+      projectId: param.projectId,
+      memberId: user.sub,
+    });
+  }
+
   @Delete('/:projectId/invite/:memberInviteId')
   @HttpCode(HttpStatus.OK)
   async cancelInvite(
@@ -231,5 +252,26 @@ export class ProjectsController {
       );
 
     await this.projectService.cancelInvite(param.memberInviteId);
+  }
+
+  @Patch('/:projectId/member/:memberId/notifications')
+  @HttpCode(HttpStatus.OK)
+  async updateMemberNoficiations(
+    @GetCurrentUser() user: JwtPayload,
+    @Param() param: UpdateMemberNotificationsParam,
+    @Body() body: UpdateMemberNotificationsDto,
+  ) {
+    // user cant update other members notifications
+    if (user.sub !== param.memberId) {
+      throw new ForbiddenException(
+        'You are not allowed to access this resource',
+      );
+    }
+
+    await this.projectService.updateMemberNotifications({
+      projectId: param.projectId,
+      memberId: param.memberId,
+      permissions: body,
+    });
   }
 }

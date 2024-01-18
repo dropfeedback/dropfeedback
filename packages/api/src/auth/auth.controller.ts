@@ -5,12 +5,11 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInLocalDto, SignUpLocalDto } from './dto';
-import type { JwtPayload, JwtPayloadWithRefreshToken, Tokens } from './types';
+import type { JwtPayload, JwtPayloadWithRefreshToken } from './types';
 import { RefreshTokenGuard } from 'src/common/guards';
 import {
   EmailVerificationIsNotRequired,
@@ -18,29 +17,23 @@ import {
   Public,
 } from 'src/common/decorators';
 
-import type { Response } from 'express';
-import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { GoogleLoginDto } from './dto/google-login.dto';
 import { VerifyEmailDto } from './dto/verify-email';
 import { UserProviderType } from '@prisma/client';
+import { ResetPasswordDto } from './dto/reset-password-dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('auth')
 export class AuthController {
   googleClient = new OAuth2Client();
 
-  constructor(
-    private authService: AuthService,
-    private config: ConfigService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @Post('/local/signup')
   @Public()
   @HttpCode(HttpStatus.CREATED)
-  async signupLocal(
-    @Body() dto: SignUpLocalDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async signupLocal(@Body() dto: SignUpLocalDto) {
     const data = await this.authService.signupLocal(dto);
 
     await this.authService.updateRefreshTokenFromDB({
@@ -48,16 +41,15 @@ export class AuthController {
       refreshToken: data.tokens.refreshToken,
     });
 
-    this.setCookies(res, data.tokens);
+    return {
+      ...data.tokens,
+    };
   }
 
   @Post('/local/signin')
   @Public()
   @HttpCode(HttpStatus.OK)
-  async signinLocal(
-    @Body() dto: SignInLocalDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async signinLocal(@Body() dto: SignInLocalDto) {
     const data = await this.authService.signinLocal(dto);
 
     await this.authService.updateRefreshTokenFromDB({
@@ -65,17 +57,16 @@ export class AuthController {
       refreshToken: data.tokens.refreshToken,
     });
 
-    this.setCookies(res, data.tokens);
+    return {
+      ...data.tokens,
+    };
   }
 
   @Post('/local/verify-email')
   @Public()
   @EmailVerificationIsNotRequired()
   @HttpCode(HttpStatus.OK)
-  async verifyEmail(
-    @Body() dto: VerifyEmailDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async verifyEmail(@Body() dto: VerifyEmailDto) {
     const { id, email } = await this.authService.verifyEmail(
       dto.emailVerificationToken,
     );
@@ -93,9 +84,7 @@ export class AuthController {
       refreshToken: refreshToken,
     });
 
-    this.setCookies(res, { accessToken, refreshToken });
-
-    return {};
+    return { accessToken, refreshToken };
   }
 
   @Post('/local/send-verification-email')
@@ -105,25 +94,47 @@ export class AuthController {
     this.authService.sendVerificationMail({ email: user.email });
   }
 
+  @Post('/local/reset-password')
+  @EmailVerificationIsNotRequired()
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  async forgotPassword(@Body() dto: ResetPasswordDto) {
+    await this.authService.resetPassword(dto.email);
+  }
+
+  @Post('/local/change-password')
+  @EmailVerificationIsNotRequired()
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  async changePassword(@Body() dto: ChangePasswordDto) {
+    const { id, email } = await this.authService.changePassword({
+      password: dto.password,
+      passwordResetToken: dto.passwordResetToken,
+    });
+
+    const { accessToken, refreshToken } = await this.authService.signAuthToken({
+      provider: UserProviderType.internal,
+      sub: id,
+      email,
+      isEmailVerified: true,
+      iss: 'dropfeedback.com',
+    } satisfies JwtPayload);
+
+    await this.authService.updateRefreshTokenFromDB({
+      id,
+      refreshToken: refreshToken,
+    });
+
+    return { accessToken, refreshToken };
+  }
+
   @Post('/logout')
   @EmailVerificationIsNotRequired()
   @HttpCode(HttpStatus.OK)
-  logout(
-    @GetCurrentUser() user: JwtPayload,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    res.clearCookie('accessToken', {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      path: '/',
-    });
-    res.clearCookie('refreshToken', {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      path: '/',
-    });
+  logout(@GetCurrentUser() user: JwtPayload) {
+    if (!user) {
+      return true;
+    }
 
     return this.authService.logout(user.sub);
   }
@@ -132,10 +143,7 @@ export class AuthController {
   @Public()
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
-  async refreshTokens(
-    @GetCurrentUser() user: JwtPayloadWithRefreshToken,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async refreshTokens(@GetCurrentUser() user: JwtPayloadWithRefreshToken) {
     const data = await this.authService.refreshTokens({
       id: user.sub,
       refreshToken: user.refreshToken,
@@ -146,16 +154,15 @@ export class AuthController {
       refreshToken: data.tokens.refreshToken,
     });
 
-    this.setCookies(res, data.tokens);
+    return {
+      ...data.tokens,
+    };
   }
 
   @Post('/google/login')
   @Public()
   @HttpCode(HttpStatus.OK)
-  async googleLogin(
-    @Body() dto: GoogleLoginDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async googleLogin(@Body() dto: GoogleLoginDto) {
     const ticket = await this.googleClient.verifyIdToken({
       idToken: dto.idToken,
     });
@@ -171,24 +178,8 @@ export class AuthController {
       refreshToken: data.tokens.refreshToken,
     });
 
-    this.setCookies(res, data.tokens);
-  }
-
-  setCookies(res: Response, tokens: Tokens) {
-    res.cookie('accessToken', tokens.accessToken, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      path: '/',
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
-    });
-
-    res.cookie('refreshToken', tokens.refreshToken, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      path: '/',
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    });
+    return {
+      ...data.tokens,
+    };
   }
 }

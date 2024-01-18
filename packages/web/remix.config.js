@@ -6,7 +6,31 @@ export default {
   appDirectory: "app",
   assetsBuildDirectory: "public/build",
   publicPath: "/build/",
-  serverBuildPath: "build/index.js",
+  server: "./server.ts",
+  serverBuildPath: "functions/[[path]].js",
+  serverConditions: ["workerd", "worker", "browser"],
+  serverMainFields: ["browser", "module", "main"],
+  serverDependenciesToBundle: "all",
+  serverMinify: true,
+  serverModuleFormat: "esm",
+  serverPlatform: "node",
+  serverNodeBuiltinsPolyfill: {
+    modules: {
+      buffer: true,
+      url: true,
+      http: true,
+      https: true,
+      stream: true,
+      path: true,
+      util: true,
+      events: true,
+      assert: true,
+      zlib: true,
+    },
+    globals: {
+      process: true,
+    },
+  },
   routes(defineRoutes) {
     return defineRoutes((route) => {
       // public routes
@@ -27,9 +51,13 @@ export default {
       route("dashboard", "routes/dashboard/layout.tsx", () => {
         route("", "routes/dashboard/route.tsx", { index: true });
         route(":projectId", "routes/dashboard/project/layout.tsx", () => {
-          route("", "routes/dashboard/project/feedbacks.tsx", {
+          route("", "routes/dashboard/project/feedback/route.tsx", {
             index: true,
           });
+          route(
+            "feedback/:feedbackId",
+            "routes/dashboard/project/feedback/detail.tsx",
+          );
           route("team", "routes/dashboard/project/team.tsx", { index: true });
           route("settings", "routes/dashboard/project/settings.tsx", {
             index: true,
