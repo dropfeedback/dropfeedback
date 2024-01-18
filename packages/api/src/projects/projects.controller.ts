@@ -61,23 +61,62 @@ export class ProjectsController {
 
   @Get('/:projectId')
   @HttpCode(HttpStatus.OK)
-  async getProjectById(@Param() param: GetProjectById) {
-    return this.projectService.getProjectById({ projectId: param.projectId });
+  async getProjectById(
+    @Param() param: GetProjectById,
+    @GetCurrentUser() user: JwtPayload,
+  ) {
+    await this.projectService.getProjectMember({
+      projectId: param.projectId,
+      userId: user.sub,
+    });
+
+    return this.projectService.getProjectById({
+      projectId: param.projectId,
+    });
   }
 
   @Patch('/:projectId')
   @HttpCode(HttpStatus.OK)
-  updateProject(
+  async updateProject(
     @Body() dto: UpdateProjectDto,
     @Param() param: UpdateProjectParam,
+    @GetCurrentUser() user: JwtPayload,
   ) {
-    return this.projectService.updateProject({ id: param.projectId, dto });
+    const projectMember = await this.projectService.getProjectMember({
+      projectId: param.projectId,
+      userId: user.sub,
+    });
+
+    if (!['owner', 'manager'].includes(projectMember.role)) {
+      throw new ForbiddenException('You are not allowed to update project');
+    }
+
+    return this.projectService.updateProject({
+      id: param.projectId,
+      dto,
+    });
   }
 
   @Delete('/:projectId')
   @HttpCode(HttpStatus.OK)
-  deleteProject(@Param() param: DeleteProjectParam) {
-    return this.projectService.deleteProject({ id: param.projectId });
+  async deleteProject(
+    @Param() param: DeleteProjectParam,
+    @GetCurrentUser() user: JwtPayload,
+  ) {
+    const hasAccess = await this.projectService.hasAccess({
+      acceptedRoles: ['arkadaslar', 'owner'],
+      projectId: param.projectId,
+      userId: user.sub,
+    });
+
+    if (!hasAccess)
+      throw new ForbiddenException(
+        'You are not allowed to delete this project',
+      );
+
+    return this.projectService.deleteProject({
+      id: param.projectId,
+    });
   }
 
   @Post('/:projectId/invite')
@@ -256,7 +295,7 @@ export class ProjectsController {
 
   @Patch('/:projectId/member/:memberId/notifications')
   @HttpCode(HttpStatus.OK)
-  async updateMemberNoficiations(
+  async updateMemberNotifications(
     @GetCurrentUser() user: JwtPayload,
     @Param() param: UpdateMemberNotificationsParam,
     @Body() body: UpdateMemberNotificationsDto,

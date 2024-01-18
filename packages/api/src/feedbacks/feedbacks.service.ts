@@ -170,20 +170,21 @@ export class FeedbacksService {
     };
   }
 
-  async getById({ id }: { id: string }) {
-    try {
-      return await this.prisma.feedback.findUniqueOrThrow({
-        where: {
-          id,
-        },
-      });
-    } catch (error) {
-      if (error.code === 'P2025') {
-        throw new NotFoundException('Feedback not found');
-      }
+  async getById({ id, userId }: { id: string; userId: string }) {
+    const feedback = await this.prisma.feedback.findUnique({
+      where: {
+        id,
+      },
+    });
 
-      throw new NotFoundException(error.message);
-    }
+    if (!feedback) throw new NotFoundException('Feedback not found');
+
+    await this.getProjectMember({
+      projectId: feedback.projectId,
+      userId,
+    });
+
+    return feedback;
   }
 
   async createByProjectId({
@@ -273,5 +274,25 @@ export class FeedbacksService {
         feedback,
       });
     });
+  }
+
+  async getProjectMember({
+    projectId,
+    userId,
+  }: {
+    projectId: string;
+    userId: string;
+  }) {
+    const projectMember = await this.prisma.projectMember.findUnique({
+      where: {
+        userId_projectId: {
+          userId,
+          projectId,
+        },
+      },
+    });
+
+    if (!projectMember)
+      throw new BadRequestException('You are not a member of this project');
   }
 }
