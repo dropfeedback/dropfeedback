@@ -17,6 +17,5 @@ export default defineConfig({
     rollupOptions: {
       external: ["react/jsx-runtime", ...Object.keys(peerDependencies)],
     },
-    emptyOutDir: false,
   },
 });
