@@ -43,5 +43,13 @@
     "typescript": "^5.2.2",
     "vite": "^5.0.8",
     "vite-plugin-dts": "^3.6.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dropfeedback/dropfeedback.git",
+    "directory": "packages/widget-react"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
