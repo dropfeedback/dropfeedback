@@ -38,7 +38,7 @@ export const DropFeedback = ({
     (window as any).__drop_feedback_injected__ = true;
 
     const script = document.createElement("script");
-    script.src = `https://unpkg.com/@dropfeedback/core@0.0.7-alpha.0/dist/index.umd.js`;
+    script.src = `https://unpkg.com/@dropfeedback/core`;
     script.type = "module";
     script.defer = true;
 
