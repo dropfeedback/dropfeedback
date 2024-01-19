@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "build": "lerna run build --include-dependencies",
-    "build:web": "lerna run build:web --include-dependencies",
+    "build:web": "lerna run build --scope web --include-dependencies",
     "dev": "lerna run dev --stream --parallel --include-dependencies",
     "lint": "eslint --fix \"**/*.{ts,tsx}\"",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
