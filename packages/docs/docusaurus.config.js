@@ -72,10 +72,10 @@ const config = {
         },
         items: [
           {
-            href: 'https://github.com/facebook/docusaurus',
-            position: 'right',
-            className: 'header-github-link',
-            'aria-label': 'GitHub repository',
+            href: "https://github.com/facebook/docusaurus",
+            position: "right",
+            className: "header-github-link",
+            "aria-label": "GitHub repository",
           },
         ],
       },
