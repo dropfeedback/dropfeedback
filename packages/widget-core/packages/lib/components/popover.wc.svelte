@@ -154,8 +154,7 @@
 		>
 			{#if currentStep === "form"}
 				<div class="container">
-					<!-- svelte-ignore a11y-autofocus -->
-					<textarea class="textarea" {placeholder} bind:value={content} autofocus />
+					<textarea class="textarea" {placeholder} bind:value={content} />
 					{#if error}
 						<p
 							class="error-message"
