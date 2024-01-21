@@ -132,24 +132,37 @@ const googleLogin = async (payload: { idToken: string }) => {
   return data;
 };
 
-const getFeedbacks = async (params: {
+const getFeedbacks = async ({
+  projectId,
+  params,
+}: {
   projectId: string;
-  cursor: string;
-  take: number;
-  search?: string;
-  category?: FeedbackCategory;
-  status?: FeedbackStatus;
-  orderBy?: OrderBy;
+  params: {
+    cursor: string;
+    take: number;
+    search?: string;
+    category?: FeedbackCategory;
+    status?: FeedbackStatus;
+    orderBy?: OrderBy;
+  };
 }) => {
-  const { data } = await axiosInstance.get("/feedbacks", {
+  const { data } = await axiosInstance.get(`/projects/${projectId}/feedbacks`, {
     params,
   });
 
   return data;
 };
 
-const getFeedback = async (feedbackId: string) => {
-  const { data } = await axiosInstance.get(`/feedbacks/${feedbackId}`);
+const getFeedback = async ({
+  projectId,
+  feedbackId,
+}: {
+  projectId: string;
+  feedbackId: string;
+}) => {
+  const { data } = await axiosInstance.get(
+    `/projects/${projectId}/feedbacks/${feedbackId}`,
+  );
   return data;
 };
 
@@ -159,7 +172,7 @@ const updateFeedbackStatus = async (payload: {
   status: FeedbackStatus;
 }) => {
   const { data } = await axiosInstance.patch(
-    `/feedbacks/${payload.id}/status`,
+    `/projects/${payload.projectId}/feedbacks/${payload.id}/status`,
     payload,
   );
   return data;

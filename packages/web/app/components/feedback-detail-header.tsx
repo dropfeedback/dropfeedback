@@ -40,7 +40,7 @@ export function FeedbackDetailHeader() {
   const { data, isError } = useQuery<Feedback>({
     queryKey: ["feedbacks", projectId, "detail", feedbackId],
     queryFn: () => {
-      return fetchers.getFeedback(feedbackId);
+      return fetchers.getFeedback({ projectId, feedbackId });
     },
     staleTime: Infinity,
   });
