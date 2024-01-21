@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "ProjectMemberRole" AS ENUM ('arkadaslar', 'owner', 'manager', 'member');
+CREATE TYPE "ProjectMemberRole" AS ENUM ('owner', 'manager', 'member');
 
 -- CreateEnum
 CREATE TYPE "MemberInviteRole" AS ENUM ('manager', 'member');
@@ -12,6 +12,9 @@ CREATE TYPE "UserProviderType" AS ENUM ('google', 'internal');
 
 -- CreateEnum
 CREATE TYPE "FeedbackCategory" AS ENUM ('other', 'issue', 'idea');
+
+-- CreateEnum
+CREATE TYPE "FeedbackType" AS ENUM ('category', 'rating', 'likeDislike');
 
 -- CreateEnum
 CREATE TYPE "FeedbackStatus" AS ENUM ('new', 'archived');
@@ -82,6 +85,7 @@ CREATE TABLE "feedbacks" (
     "content" TEXT NOT NULL,
     "category" "FeedbackCategory" NOT NULL DEFAULT 'other',
     "status" "FeedbackStatus" NOT NULL DEFAULT 'new',
+    "type" "FeedbackType" NOT NULL DEFAULT 'category',
     "meta" JSON,
     "origin" VARCHAR(255),
     "url" VARCHAR(255),
