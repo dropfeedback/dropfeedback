@@ -1,10 +1,12 @@
 import { faker } from '@faker-js/faker';
 import {
+  FeedbackType,
   PrismaClient,
   ProjectMemberRole,
   UserProviderType,
 } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+
 import { addExtensions } from '../src/prisma/prisma.service';
 
 const prisma = new PrismaClient();
@@ -229,6 +231,7 @@ async function main() {
         category,
         projectId: projectDemo.id,
         status: i > 100 ? 'archived' : 'new',
+        type: FeedbackType.category,
         content: faker.lorem.paragraph({ min: 1, max: 3 }),
         device: faker.internet.userAgent(),
         origin: faker.internet.domainSuffix(),
