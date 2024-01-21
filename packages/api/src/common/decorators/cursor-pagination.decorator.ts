@@ -1,7 +1,8 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
-import { CursorPagination } from '../types';
 import { DECORATORS } from '@nestjs/swagger/dist/constants';
+
+import type { CursorPagination } from '../types';
 
 export const GetCursorPagination = createParamDecorator(
   (data, ctx: ExecutionContext): CursorPagination => {

@@ -1,7 +1,8 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
-import { OrderBy } from '../types';
 import { DECORATORS } from '@nestjs/swagger/dist/constants';
+
+import type { OrderBy } from '../types';
 
 export const GetOderBy = createParamDecorator(
   (data, ctx: ExecutionContext): OrderBy => {

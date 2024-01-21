@@ -1,6 +1,5 @@
 //don't remove this import
 import React from 'react';
-
 import {
   Body,
   Container,
@@ -9,11 +8,11 @@ import {
   Html,
   Section,
   Tailwind,
-  Text,
   Img,
   Link,
 } from '@react-email/components';
 import { Feedback, Project } from '@prisma/client';
+
 import { config } from '../../config';
 
 const FeedbackNotificationEmail = ({

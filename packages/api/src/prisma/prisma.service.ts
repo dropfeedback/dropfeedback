@@ -1,6 +1,7 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
+
 import { prismaExtensionCuid2 } from './prisma-cuid2.extension';
 
 @Injectable()
