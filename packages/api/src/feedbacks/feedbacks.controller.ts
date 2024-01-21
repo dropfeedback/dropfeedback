@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -9,46 +8,46 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { FeedbacksService } from './feedbacks.service';
 import {
   Device,
-  GetCurrentUser,
   GetCursorPagination,
   Origin,
   Public,
+  Roles,
 } from 'src/common/decorators';
-import { CreateFeedbackDto } from './dto';
-import { CursorPagination, OrderBy } from 'src/common/types';
-import { GetOderBy } from 'src/common/decorators/order-by.decorator';
-import { SetStatusDto } from './dto/set-status.dto';
-import { SetStatusParam } from './dto/set-status.param';
-import { GetAll } from './dto/get-all.query';
-import { GetOneParam } from './dto/get-one-param';
-import { JwtPayload } from 'src/auth/types';
+import { GetOderBy } from 'src/common/decorators';
+import { UserRoleGuard } from 'src/common/guards';
 
-@Controller('feedbacks')
+import { FeedbacksService } from './feedbacks.service';
+import {
+  CreateFeedbackDto,
+  GetAllDto,
+  GetOneParam,
+  SetStatusDto,
+  SetStatusParam,
+} from './dto';
+
+import type { CursorPagination, OrderBy } from 'src/common/types';
+
+@Controller('projects/:projectId/feedbacks')
 export class FeedbacksController {
   constructor(private feedbackService: FeedbacksService) {}
 
   @Get('/')
+  @Roles(['owner', 'manager', 'member'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
-  async getAllByProjectId(
-    @Query() param: GetAll,
+  getAllByProjectId(
+    @Query() param: GetAllDto,
     @GetCursorPagination() pagination: CursorPagination,
     @GetOderBy() orderBy: OrderBy,
-    @GetCurrentUser() user: JwtPayload,
+    @Param('projectId') projectId: string,
   ) {
-    if (!param.projectId)
-      throw new BadRequestException('Project id is required');
-
-    await this.feedbackService.getProjectMember({
-      projectId: param.projectId,
-      userId: user.sub,
-    });
-
     return this.feedbackService.getAllByProjectId({
       ...param,
+      projectId,
       pagination,
       orderBy,
     });
@@ -61,37 +60,35 @@ export class FeedbacksController {
     @Body() dto: CreateFeedbackDto,
     @Device() device: string,
     @Origin() origin: string,
+    @Param('projectId') projectId: string,
   ) {
-    await this.feedbackService.createByProjectId({ dto, origin, device });
+    await this.feedbackService.createByProjectId({
+      dto,
+      projectId,
+      origin,
+      device,
+    });
     return { success: true };
   }
 
   @Get('/:feedbackId')
+  @Roles(['owner', 'manager', 'member'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
-  async getById(
-    @Param() param: GetOneParam,
-    @GetCurrentUser() user: JwtPayload,
-  ) {
+  getById(@Param() param: GetOneParam) {
     return this.feedbackService.getById({
       id: param.feedbackId,
-      userId: user.sub,
     });
   }
 
   @Patch('/:feedbackId/status')
+  @Roles(['owner', 'manager', 'member'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.CREATED)
-  async setStatus(
-    @Body() dto: SetStatusDto,
-    @Param() param: SetStatusParam,
-    @GetCurrentUser() user: JwtPayload,
-  ) {
-    await this.feedbackService.getProjectMember({
-      projectId: dto.projectId,
-      userId: user.sub,
-    });
-
+  setStatus(@Body() dto: SetStatusDto, @Param() param: SetStatusParam) {
     return this.feedbackService.setStatus({
       dto,
+      projectId: param.projectId,
       id: param.feedbackId,
     });
   }
