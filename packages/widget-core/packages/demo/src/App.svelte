@@ -26,7 +26,6 @@
 </script>
 
 <main>
-
 	<drop-feedback
 		project-id={projectId}
 		theme-scheme={themeScheme}
@@ -121,8 +120,39 @@
 			quam cupiditate, labore nisi perspiciatis! Architecto exercitationem accusamus ipsum minima
 			hic, dolor dolores aut? Quisquam, voluptates beatae.
 		</p>
-		<div data-feedback-input data-theme-scheme="light" />
-
+		<p>
+			Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus consectetur animi cum minus
+			quam cupiditate, labore nisi perspiciatis! Architecto exercitationem accusamus ipsum minima
+			hic, dolor dolores aut? Quisquam, voluptates beatae.
+		</p>
+		<p>
+			Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus consectetur animi cum minus
+			quam cupiditate, labore nisi perspiciatis! Architecto exercitationem accusamus ipsum minima
+			hic, dolor dolores aut? Quisquam, voluptates beatae.
+		</p>
+		<p>
+			Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus consectetur animi cum minus
+			quam cupiditate, labore nisi perspiciatis! Architecto exercitationem accusamus ipsum minima
+			hic, dolor dolores aut? Quisquam, voluptates beatae.
+		</p>
+		<p>
+			Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus consectetur animi cum minus
+			quam cupiditate, labore nisi perspiciatis! Architecto exercitationem accusamus ipsum minima
+			hic, dolor dolores aut? Quisquam, voluptates beatae.
+		</p>
+		<p>
+			Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus consectetur animi cum minus
+			quam cupiditate, labore nisi perspiciatis! Architecto exercitationem accusamus ipsum minima
+			hic, dolor dolores aut? Quisquam, voluptates beatae.
+		</p>
+		<p>
+			Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus consectetur animi cum minus
+			quam cupiditate, labore nisi perspiciatis! Architecto exercitationem accusamus ipsum minima
+			hic, dolor dolores aut? Quisquam, voluptates beatae.
+		</p>
+		<div style="display: flex; justify-content: center; width: 100%;">
+			<div data-feedback-input data-theme-scheme="light" />
+		</div>
 		<p>
 			Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus consectetur animi cum minus
 			quam cupiditate, labore nisi perspiciatis! Architecto exercitationem accusamus ipsum minima

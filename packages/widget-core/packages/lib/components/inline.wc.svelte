@@ -55,11 +55,23 @@
 	}
 
 	const [popperRef, popperContent] = createPopperActions({
-		strategy: "fixed",
+		strategy: "absolute",
 		placement: "bottom"
 	});
 	const extraOpts = {
-		modifiers: [{ name: "offset", options: { offset: [0, -CLOSED_HEIGHT] } }]
+		modifiers: [
+			{ name: "offset", options: { offset: [0, -CLOSED_HEIGHT] } },
+			{
+				name: "flip",
+				enabled: false
+			},
+			{
+				name: "eventListeners",
+				options: {
+					scroll: false
+				}
+			}
+		]
 	};
 
 	onMount(() => {
