@@ -49,7 +49,13 @@ export default function DocItemLayout({ children }) {
             <DocItemContent>{children}</DocItemContent>
             <DocItemFooter />
             <div className={clsx("docusaurus-mt-lg", styles.feedbackContainer)}>
-              <div data-feedback-input />
+              <button
+                data-feedback-button
+                data-side="top"
+                className="button button--primary"
+              >
+                Send Feedback
+              </button>
             </div>
           </article>
           <br />
