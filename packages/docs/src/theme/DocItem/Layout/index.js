@@ -52,6 +52,7 @@ export default function DocItemLayout({ children }) {
               <div data-feedback-input />
             </div>
           </article>
+          <br />
           <DocItemPaginator />
         </div>
       </div>
