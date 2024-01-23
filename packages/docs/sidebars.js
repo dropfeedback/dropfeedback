@@ -28,8 +28,15 @@ const sidebars = {
       className: "custom-category mt-20",
     },
     "feedback-widget/installation-guide",
-    "feedback-widget/@dropfeedback-core",
-    "feedback-widget/@dropfeedback-react",
+    "feedback-widget/javascript-usage",
+    "feedback-widget/react-usage",
+    {
+      type: "html",
+      value: "API Reference",
+      className: "custom-category mt-20",
+    },
+    "api-reference/container-props",
+    "api-reference/trigger-props",
     {
       type: "html",
       value: "Cheat-Sheets",
