@@ -148,6 +148,7 @@
 		<div
 			id="popper"
 			class="popper"
+			class:z-index={!permanentOpen}
 			use:popperContent={extraOpts}
 			transition:fade={{ duration: 100 }}
 			use:clickOutside
@@ -198,7 +199,10 @@
 		width: 340px;
 		overflow: hidden;
 		border-radius: 12px;
-		z-index: 99999 !important;
+	}
+
+	.z-index {
+		z-index: 9999 !important;
 	}
 
 	.container {
