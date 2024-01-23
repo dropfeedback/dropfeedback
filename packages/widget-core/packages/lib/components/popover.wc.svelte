@@ -47,7 +47,10 @@
 		strategy: "fixed"
 	});
 	$: extraOpts = {
-		modifiers: [{ name: "offset", options: { offset: [0, sideOffset] } }],
+		modifiers: [
+			{ name: "offset", options: { offset: [0, sideOffset] } },
+			{ name: "flip", enabled: permanentOpen ? false : true }
+		],
 		placement: side as PopoverSide
 	};
 
