@@ -152,3 +152,39 @@ Alternatively, you can also pass the text color via the trigger like this:
 ```
 
 <Widget textColor="#8a2be2" />
+
+### `report-identifier`
+
+It allows you to identify the user who is sending the feedback. You can pass the user's email or id as the value of the attribute.
+
+```html
+<drop-feedback report-identifier="user@example.com" />
+```
+
+Alternatively, you can also pass the report identifier via the trigger like this:
+
+```html
+<button data-feedback-button data-report-identifier="user@example.com">
+  Feedback
+</button>
+```
+
+If you add the `report-identifier` attribute, you can see the user's email or id in the feedback report on the dashboard. So you can contact the user if you need more information about the feedback.
+
+### `meta-*`
+
+You can pass any custom data to the feedback report. It can be useful to add information. For example, if you want to know the version of your website when the feedback was sent, you can add the version as metadata.
+
+```html
+<drop-feedback meta-version="1.0.0" />
+```
+
+Alternatively, you can also pass the metadata via the trigger like this:
+
+```html
+<button data-feedback-button data-meta-version="1.0.0">Feedback</button>
+```
+
+You can add multiple metadata attributes both on the `<drop-feedback />` element and the trigger.
+
+## Trigger Specific Attributes
