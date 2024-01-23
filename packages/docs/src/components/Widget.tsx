@@ -1,4 +1,5 @@
 import React from "react";
+import { useColorMode } from "@docusaurus/theme-common";
 
 type WidgetProps = {
   primaryColor?: string;
@@ -13,6 +14,7 @@ export const Widget = ({
   backgroundColor,
   textColor,
 }: WidgetProps) => {
+  const { colorMode } = useColorMode();
   return (
     <div className="widget-container">
       <button
@@ -20,7 +22,7 @@ export const Widget = ({
         className="widget-trigger"
         data-permanent-open
         data-side="top"
-        data-theme-scheme={scheme}
+        data-theme-scheme={scheme ?? colorMode}
         data-theme-primary-color={primaryColor}
         data-theme-background-color={backgroundColor}
         data-theme-text-color={textColor}

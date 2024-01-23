@@ -2,15 +2,15 @@
 title: Javascript Usage
 ---
 
-import {Widget} from '@site/src/components/Widget'
+import {Widget} from '@site/src/components/Widget';
+import {ThemedComponent} from '@site/src/components/ThemedComponent';
 
 ## Prerequisites
 
 - [Sign up](https://dropfeedback.com/signup) for a free account.
 - Create a project for your website.
 - Copy the project ID from the project settings page.
-
-Add the script tag to the HTML:
+- Add the script tag to the HTML:
 
 ```html
 <script src="https://unpkg.com/@dropfeedback/core" type="module" defer></script>
@@ -46,57 +46,100 @@ The `project-id` attribute is not required for the `<drop-feedback />`, you can 
 
 It is used to set the theme scheme of the widget. The default value is `light`. You can set it to `dark` to use the dark theme.
 
+<ThemedComponent theme="light">
 ```html
 <drop-feedback theme-scheme="dark" />
 ```
+</ThemedComponent>
+
+<ThemedComponent theme="dark">
+```html
+<drop-feedback theme-scheme="light" />
+```
+</ThemedComponent>
 
 Alternatively, you can also pass the theme scheme via the trigger like this:
 
+<ThemedComponent theme="light">
 ```html
 <button data-feedback-button data-theme-scheme="dark">Feedback</button>
 ```
+</ThemedComponent>
 
-<Widget scheme="dark" />
+<ThemedComponent theme="dark">
+```html
+<button data-feedback-button data-theme-scheme="light">Feedback</button>
+```
+</ThemedComponent>
+
+<ThemedComponent theme="light">
+  <Widget scheme="dark" />
+</ThemedComponent>
+
+<ThemedComponent theme="dark">
+  <Widget scheme="light" />
+</ThemedComponent>
 
 ### `theme-primary-color`
 
-It is used to set the primary color of the widget. The default value is `#1677ff`. You can set it to any valid CSS color value.
+It is used to set the primary color of the widget. The default value is <span style={{     '--ifm-code-background': '#1677ff', color: 'white' }}>`#1677ff`</span>. You can set it to any valid CSS color value.
 
 ```html
-<drop-feedback theme-primary-color="#29bc9b" />
+<drop-feedback theme-primary-color="#52c41a" />
 ```
 
 Alternatively, you can also pass the primary color via the trigger like this:
 
 ```html
-<button data-feedback-button data-theme-primary-color="#29bc9b">
+<button data-feedback-button data-theme-primary-color="#52c41a">
   Feedback
 </button>
 ```
 
-<Widget primaryColor="#29bc9b" />
+<Widget primaryColor="#52c41a" />
 
 ### `theme-background-color`
 
-It is used to set the background color of the widget. The default value is `#ffffff` for the light theme and `#0a0a0a` for the dark theme. You can set it to any valid CSS color value.
+It is used to set the background color of the widget. The default value is <span style={{'--ifm-code-background': '#ffffff', color: 'black' }}>`#ffffff`</span> for the light theme and <span style={{'--ifm-code-background': '#0a0a0a', color: 'white' }}>`#0a0a0a`</span> for the dark theme. You can set it to any valid CSS color value.
 
-```html
-<drop-feedback theme-background-color="#ffffff" />
-```
+<ThemedComponent theme="light">
+  ```html
+  <drop-feedback theme-background-color="#f0f0f0" />
+  ```
+</ThemedComponent>
+<ThemedComponent theme="dark">
+  ```html
+  <drop-feedback theme-background-color="#262626" />
+  ```
+</ThemedComponent>
 
 Alternatively, you can also pass the background color via the trigger like this:
 
-```html
-<button data-feedback-button data-theme-background-color="#f8f9fa">
-  Feedback
-</button>
-```
+<ThemedComponent theme="light">
+  ```html
+  <button data-feedback-button data-theme-background-color="#f0f0f0">
+    Feedback
+  </button>
+  ```
+</ThemedComponent>
+<ThemedComponent theme="dark">
+  ```html
+  <button data-feedback-button data-theme-background-color="#262626">
+    Feedback
+  </button>
+  ```
+</ThemedComponent>
 
-<Widget backgroundColor="#f8f9fa" />
+<ThemedComponent theme="light">
+  <Widget backgroundColor="#f0f0f0" />
+</ThemedComponent>
+<ThemedComponent theme="dark">
+  <Widget backgroundColor="#262626" />
+</ThemedComponent>
 
 ### `theme-text-color`
 
-It is used to set the text color of the widget. The default value is `#171717` for the light theme and `#ededed` for the dark theme. You can set it to any valid CSS color value.
+It is used to set the text color of the widget. The default value is <span style={{     '--ifm-code-background': '#171717', color: 'white' }}>`#171717`</span> for the light theme and <span style={{'--ifm-code-background': '#ededed', color: 'black' }}>`#ededed`</span> for the dark theme. You can set it to any valid CSS color value.
 
 ```html
 <drop-feedback theme-text-color="#171717" />
