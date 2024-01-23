@@ -24,12 +24,11 @@ const sidebars = {
     "getting-started/quickstart-guide",
     {
       type: "html",
-      value: "Feedback Widget",
+      value: "Usage",
       className: "custom-category mt-20",
     },
-    "feedback-widget/installation-guide",
-    "feedback-widget/javascript-usage",
-    "feedback-widget/react-usage",
+    "usage/javascript",
+    "usage/react",
     {
       type: "html",
       value: "API Reference",

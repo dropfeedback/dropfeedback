@@ -6,42 +6,35 @@ slug: /quickstart-guide
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Follow these steps to get started:
+DropFeedback is a feedback widget that you can embed on your website which framework agnostic. 
 
-## Sign Up
+Get started by following the steps below.
+
+## 1. Sign Up
 
 Get started by signing up at [here](https://dropfeedback.com/signup) and create your project for free. You can create as many projects as you want and use them on different websites.
 
-## Widget Installation
+## 2. Widget Installation
 
-Check out the full [installation guide](/installation-guide) to learn how to install the widget on your website.
+### JavaScript
 
-<Tabs groupId="frameworks">
-<TabItem value="js" label="JavaScript">
-
-```bash
-npm i @dropfeedback/core
-```
-
-Or use the CDN to include the script in your HTML:
+To embed the feedback widget on your website, add the script tag to the HTML:
 
 ```html
 <script src="https://unpkg.com/@dropfeedback/core" type="module" defer></script>
 ```
 
-</TabItem>
-<TabItem value="react" label="React">
+### React
+
+If you are using React, you can install the React package, which is a wrapper around the core package.
 
 ```bash
 npm i @dropfeedback/react
 ```
 
-</TabItem>
-</Tabs>
+## 3. Add the Widget
 
-## Basic Usage
-
-### 1. Add container
+### Widget Container
 
 After installing the widget, Add the following code as a container for the widget:
 
@@ -69,7 +62,7 @@ import { DropFeedback } from "@dropfeedback/react";
 We recommend adding the container to the root of your application.
 :::
 
-### 2. Add trigger
+### Widget Trigger
 
 To open the widget, you need to add a trigger. Add the `data-feedback-button` attribute to any element.
 
@@ -85,11 +78,11 @@ If you want to identify the user, you can add the `data-report-identifier` attri
 
 Refer to the [User Identification](/user-identification) cheatsheet for more information.
 
-## Customize Your Widget
+## 4. Customize Your Widget
 
 The widget is fully customizable. You can change the colors, position, and more. Check out the [Widget Customization](/widget-customization) cheatsheet for more information.
 
-## Feedback Analysis
+## 5. Feedback Analysis
 
 Once feedback starts coming in, you can analyze it on the [dashboard](https://dropfeedback.com/dashboard). You can also receive feedback via email.
 

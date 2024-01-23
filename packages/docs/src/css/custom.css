@@ -73,3 +73,14 @@
 [data-theme="dark"] .logo-icon {
   filter: invert(1);
 }
+
+.widget-container {
+  margin-top: 200px;
+  display: flex;
+}
+
+.widget-trigger {
+  visibility: hidden;
+  height: 0px;
+  margin-left: 130px;
+}
