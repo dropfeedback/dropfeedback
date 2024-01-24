@@ -4,6 +4,9 @@ title: Javascript Usage
 
 import {Widget} from '@site/src/components/Widget';
 import {ThemedComponent} from '@site/src/components/ThemedComponent';
+import {SidePreview} from '@site/src/components/SidePreview';
+
+This document provides a comprehensive guide on how to use the `<drop-feedback />` custom element to embed the feedback widget on your website.
 
 ## Prerequisites
 
@@ -188,3 +191,53 @@ Alternatively, you can also pass the metadata via the trigger like this:
 You can add multiple metadata attributes both on the `<drop-feedback />` element and the trigger.
 
 ## Trigger Specific Attributes
+
+Previously, we saw the attributes that can be added both on the `<drop-feedback />` element and the trigger. Now, we will see the attributes that can only be added on the trigger.
+
+### `data-feedback-button`
+
+It is used to identify the trigger. It is required to initialize the widget.
+
+```html
+<button data-feedback-button>Feedback</button>
+```
+
+### `data-side`
+
+It is used to set the side of the widget. The default value is `auto`. You can set it to change the side of the widget. The widget will be rendered on the opposite side if there is not enough space on the specified side.
+
+```html
+<button data-feedback-button data-side="bottom">Feedback</button>
+```
+
+<SidePreview />
+
+### `data-side-offset`
+
+It is used to set the offset of the widget. The default value is `12`. You can set it to change the offset of the widget.
+
+```html
+<button data-feedback-button data-side-offset="6">Feedback</button>
+```
+
+<button data-feedback-button className="button button--outline button--primary" data-side-offset="6">Feedback</button>
+
+### `data-open`
+
+The default value is `false`. You can set it to `true` to open the widget by default.
+
+```html
+<button data-feedback-button data-open="true">Feedback</button>
+```
+
+### `data-permanent-open`
+
+The default value is `false`. You can set it to `true` to keep the widget open permanently.
+
+```html
+<div data-feedback-button data-permanent-open="true" />
+```
+
+<div className="data-permanent-open-preview">
+  <div data-feedback-button data-permanent-open="true" />
+</div>

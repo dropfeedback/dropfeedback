@@ -84,3 +84,37 @@
   height: 0px;
   margin-left: 130px;
 }
+
+.side-preview-container {
+  overflow: auto;
+  place-content: center;
+  display: grid;
+  grid-template-columns: repeat(5, 90px);
+  grid-template-rows: repeat(5, 32px);
+  grid-template-areas:
+    ". top-start top top-end ."
+    "left-start . . . right-start"
+    "left auto-start _auto auto-end right"
+    "left-end . . . right-end"
+    ". bottom-start bottom bottom-end .";
+  gap: 8px;
+}
+
+@media (max-width: 517px) {
+  .side-preview-container {
+    place-content: start;
+  }
+}
+
+.side-preview-button {
+  padding: 0px;
+}
+
+
+.data-permanent-open-preview {
+  height: 220px;
+}
+
+.data-permanent-open-preview button {
+  visibility: hidden;
+}
