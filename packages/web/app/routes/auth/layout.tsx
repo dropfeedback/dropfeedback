@@ -1,7 +1,12 @@
-import { type LoaderFunctionArgs, redirect } from "@remix-run/cloudflare";
+import {
+  type LoaderFunctionArgs,
+  redirect,
+  type MetaFunction,
+} from "@remix-run/cloudflare";
 import { Outlet } from "@remix-run/react";
 import { AuthHeader } from "~/components/headers/auth-header";
 import { API_URL } from "~/lib/axios";
+import { defaultMeta } from "~/lib/default-meta";
 import type { MeResponse } from "~/types";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -47,3 +52,7 @@ export default function Layout() {
     </>
   );
 }
+
+export const meta: MetaFunction = () => {
+  return [...defaultMeta];
+};
