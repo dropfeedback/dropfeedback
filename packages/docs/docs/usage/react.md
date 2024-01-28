@@ -5,6 +5,7 @@ title: React Usage
 import {ThemedComponent} from '@site/src/components/ThemedComponent';
 import {Widget} from '@site/src/components/Widget';
 import {SidePreview} from '@site/src/components/SidePreview';
+import {ColorTag} from '@site/src/components/ColorTag';
 
 This document provides a comprehensive guide for `@dropfeedback/react` package.
 
@@ -231,4 +232,55 @@ You can use it to keep the widget open permanently.
 
 ```html
 <div data-feedback-button data-permanent-open />
+```
+
+## API
+
+### `<DropFeedback />`
+
+| Name               | Type                | Default                                        | Description                                    |
+| ------------------ | ------------------- | ---------------------------------------------- | ---------------------------------------------- |
+| `projectId`        | `string`            | -                                              | Determines the project the feedback is sent to |
+| `reportIdentifier` | `string`            | -                                              | Identifies the user who sent the feedback      |
+| `theme`            | [`Theme`](#theme-1) | [See here](/usage/javascript#drop-feedback--1) | Customizes the theme of the widget             |
+
+### Trigger
+
+| Name               | Type                          | Default | Description                                           |
+| ------------------ | ----------------------------- | ------- | ----------------------------------------------------- |
+| `data-side`        | [`PopoverSide`](#popoverside) | `auto`  | Sets which side of the trigger the widget should open |
+| `data-side-offset` | `number \| string `           | `12`    | Sets the distance between the trigger and the widget  |
+| `data-open`        | `boolean \| string`           | `false` | Opens the widget programmatically                     |
+| `data-permanent`   | `boolean \| string`           | `false` | Keeps the widget open permanently                     |
+
+#### `PopoverSide`
+
+```ts
+type PopoverSide =
+  | "auto"
+  | "auto-start"
+  | "auto-end"
+  | "left"
+  | "right"
+  | "top"
+  | "bottom"
+  | "top-start"
+  | "top-end"
+  | "bottom-start"
+  | "bottom-end"
+  | "right-start"
+  | "right-end"
+  | "left-start"
+  | "left-end";
+```
+
+#### `Theme`
+
+```ts
+type Theme = {
+  scheme: "light" | "dark";
+  primaryColor: string;
+  textColor: string;
+  backgroundColor: string;
+};
 ```

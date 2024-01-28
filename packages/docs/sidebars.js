@@ -31,13 +31,6 @@ const sidebars = {
     "usage/react",
     {
       type: "html",
-      value: "API Reference",
-      className: "custom-category mt-20",
-    },
-    "api-reference/container-props",
-    "api-reference/trigger-props",
-    {
-      type: "html",
       value: "Cheat-Sheets",
       className: "custom-category mt-20",
     },

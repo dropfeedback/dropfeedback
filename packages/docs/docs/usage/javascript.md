@@ -5,6 +5,7 @@ title: Javascript Usage
 import {Widget} from '@site/src/components/Widget';
 import {ThemedComponent} from '@site/src/components/ThemedComponent';
 import {SidePreview} from '@site/src/components/SidePreview';
+import {ColorTag} from '@site/src/components/ColorTag';
 
 This document provides a comprehensive guide on how to use the `<drop-feedback />` custom element to embed the feedback widget on any website.
 
@@ -204,7 +205,7 @@ Sets the distance between the trigger and the widget. The default value is `12`.
 <button data-feedback-button data-side-offset="6">Feedback</button>
 ```
 
-<button data-feedback-button className="button button--outline button--primary" data-side-offset="6">Feedback</button>
+<button data-feedback-button className="button button--outline button--primary" data-side-offset="12">Feedback</button>
 
 ### `data-open`
 
@@ -220,4 +221,47 @@ You can use it to keep the widget open permanently.
 
 ```html
 <div data-feedback-button data-permanent-open />
+```
+
+## API
+
+### `<drop-feedback />`
+
+| Name                     | Type                | Default                                                                                                                         | Description                                    |
+| ------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `project-id`             | `string`            | -                                                                                                                               | Determines the project the feedback is sent to |
+| `report-identifier`      | `string`            | -                                                                                                                               | Identifies the user who sent the feedback      |
+| `theme-scheme`           | `"dark" \| "light"` | light                                                                                                                           | Theme scheme of the widget                     |
+| `theme-primary-color`    | `string`            | <ColorTag bg="#1677ff" text="white">`#1677ff`</ColorTag>                                                                        | Primary color of the widget                    |
+| `theme-text-color`       | `string`            | light: <ColorTag bg="#171717" text="white">`#171717`</ColorTag>, dark: <ColorTag bg="#ededed" text="black">`#ededed`</ColorTag> | Text color of the widget                       |
+| `theme-background-color` | `string`            | light: <ColorTag bg="#ffffff" text="black">`#ffffff`</ColorTag>, dark: <ColorTag bg="#0a0a0a" text="white">`#0a0a0a`</ColorTag> | Background color of the widget                 |
+
+### Trigger
+
+| Name               | Type                          | Default | Description                                           |
+| ------------------ | ----------------------------- | ------- | ----------------------------------------------------- |
+| `data-side`        | [`PopoverSide`](#popoverside) | `auto`  | Sets which side of the trigger the widget should open |
+| `data-side-offset` | `number \| string `           | `12`    | Sets the distance between the trigger and the widget  |
+| `data-open`        | `boolean \| string`           | `false` | Opens the widget programmatically                     |
+| `data-permanent`   | `boolean \| string`           | `false` | Keeps the widget open permanently                     |
+
+#### `PopoverSide`
+
+```ts
+type PopoverSide =
+  | "auto"
+  | "auto-start"
+  | "auto-end"
+  | "left"
+  | "right"
+  | "top"
+  | "bottom"
+  | "top-start"
+  | "top-end"
+  | "bottom-start"
+  | "bottom-end"
+  | "right-start"
+  | "right-end"
+  | "left-start"
+  | "left-end";
 ```
