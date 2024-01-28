@@ -109,12 +109,3 @@
 .side-preview-button {
   padding: 0px;
 }
-
-
-.data-permanent-open-preview {
-  height: 220px;
-}
-
-.data-permanent-open-preview button {
-  visibility: hidden;
-}
