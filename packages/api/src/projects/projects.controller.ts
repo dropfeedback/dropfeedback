@@ -9,28 +9,36 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { GetCurrentUser, Roles } from 'src/common/decorators';
+import { UserRoleGuard } from 'src/common/guards';
+
 import { ProjectsService } from './projects.service';
+import {
+  CreateProjectDto,
+  DeleteMemberDto,
+  InviteMemberDto,
+  UpdateMemberNotificationsDto,
+  UpdateMemberRoleDto,
+  UpdateProjectDto,
+} from './dto';
+import {
+  AcceptInviteParam,
+  DeleteMemberInviteParam,
+  DeleteProjectParam,
+  GetInvitesParam,
+  GetProjectByIdParam,
+  GetTeamParam,
+  InviteMemberParam,
+  LeaveProjectParam,
+  RejectInviteParam,
+  UpdateMemberNotificationsParam,
+  UpdateMemberRoleParam,
+  UpdateProjectParam,
+} from './param';
+
 import type { JwtPayload } from 'src/auth/types';
-import { GetCurrentUser } from 'src/common/decorators';
-import { DeleteMemberDto } from './dto/delete-member.dto';
-import { InviteMemberDto } from './dto/invite-member.dto';
-import { InviteMemberParam } from './param/invite-member.param';
-import { GetInvitesParam } from './param/get-invites.param';
-import { DeleteMemberInviteParam } from './param/delete-member-invite.param';
-import { AcceptInviteParam } from './param/accept-invite.param';
-import { RejectInviteParam } from './param/reject-invite.param';
-import { UpdateProjectParam } from './param/update-project.param';
-import { DeleteProjectParam } from './param/delete-project.param';
-import { GetProjectById } from './param/get-project-by-id.param';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
-import { GetTeamParam } from './param/get-team.param';
-import { UpdateMemberRoleParam } from './param/update-member-role.param';
-import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
-import { LeaveProjectParam } from './param/leave-project.param';
-import { UpdateMemberNotificationsDto } from './dto/update-member-notifications';
-import { UpdateMemberNotificationsParam } from './param/update-member-notifications.param';
 
 @Controller('projects')
 export class ProjectsController {
@@ -53,44 +61,30 @@ export class ProjectsController {
 
   @Get('/current-user-invites')
   @HttpCode(HttpStatus.OK)
-  async getCurrentUserInvites(@GetCurrentUser() user: JwtPayload) {
+  getCurrentUserInvites(@GetCurrentUser() user: JwtPayload) {
     return this.projectService.currentUserInvites({
       email: user.email,
     });
   }
 
   @Get('/:projectId')
+  @Roles(['owner', 'manager', 'member'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
-  async getProjectById(
-    @Param() param: GetProjectById,
-    @GetCurrentUser() user: JwtPayload,
-  ) {
-    await this.projectService.getProjectMember({
-      projectId: param.projectId,
-      userId: user.sub,
-    });
-
+  getProjectById(@Param() param: GetProjectByIdParam) {
     return this.projectService.getProjectById({
       projectId: param.projectId,
     });
   }
 
   @Patch('/:projectId')
+  @Roles(['owner', 'manager'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
-  async updateProject(
+  updateProject(
     @Body() dto: UpdateProjectDto,
     @Param() param: UpdateProjectParam,
-    @GetCurrentUser() user: JwtPayload,
   ) {
-    const projectMember = await this.projectService.getProjectMember({
-      projectId: param.projectId,
-      userId: user.sub,
-    });
-
-    if (!['owner', 'manager'].includes(projectMember.role)) {
-      throw new ForbiddenException('You are not allowed to update project');
-    }
-
     return this.projectService.updateProject({
       id: param.projectId,
       dto,
@@ -98,45 +92,23 @@ export class ProjectsController {
   }
 
   @Delete('/:projectId')
+  @Roles(['owner'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
-  async deleteProject(
-    @Param() param: DeleteProjectParam,
-    @GetCurrentUser() user: JwtPayload,
-  ) {
-    const hasAccess = await this.projectService.hasAccess({
-      acceptedRoles: ['arkadaslar', 'owner'],
-      projectId: param.projectId,
-      userId: user.sub,
-    });
-
-    if (!hasAccess)
-      throw new ForbiddenException(
-        'You are not allowed to delete this project',
-      );
-
+  deleteProject(@Param() param: DeleteProjectParam) {
     return this.projectService.deleteProject({
       id: param.projectId,
     });
   }
 
   @Post('/:projectId/invite')
+  @Roles(['owner', 'manager'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
-  async inviteMember(
-    @GetCurrentUser() user: JwtPayload,
+  inviteMember(
     @Param() param: InviteMemberParam,
     @Body() dto: InviteMemberDto,
   ) {
-    const hasAccess = await this.projectService.hasAccess({
-      acceptedRoles: ['arkadaslar', 'owner', 'manager'],
-      projectId: param.projectId,
-      userId: user.sub,
-    });
-
-    if (!hasAccess)
-      throw new ForbiddenException(
-        'You are not allowed to access this resource',
-      );
-
     return this.projectService.inviteMember({
       projectId: param.projectId,
       email: dto.email,
@@ -145,50 +117,26 @@ export class ProjectsController {
   }
 
   @Get('/:projectId/team')
+  @Roles(['owner', 'manager', 'member'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
-  async getTeam(
-    @GetCurrentUser() user: JwtPayload,
-    @Param() param: GetTeamParam,
-  ) {
-    const hasAccess = await this.projectService.hasAccess({
-      acceptedRoles: ['arkadaslar', 'owner', 'manager', 'member'],
-      projectId: param.projectId,
-      userId: user.sub,
-    });
-
-    if (!hasAccess) {
-      throw new ForbiddenException(
-        'You are not allowed to access this resource',
-      );
-    }
-
+  getTeam(@Param() param: GetTeamParam) {
     return this.projectService.getTeam({ projectId: param.projectId });
   }
 
   @Get('/:projectId/invites')
+  @Roles(['owner', 'manager', 'member'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
-  async getInvites(
-    @GetCurrentUser() user: JwtPayload,
-    @Param() param: GetInvitesParam,
-  ) {
-    const hasAccess = await this.projectService.hasAccess({
-      acceptedRoles: ['arkadaslar', 'owner', 'manager', 'member'],
-      projectId: param.projectId,
-      userId: user.sub,
-    });
-
-    if (!hasAccess) {
-      throw new ForbiddenException(
-        'You are not allowed to access this resource',
-      );
-    }
-
+  getInvites(@Param() param: GetInvitesParam) {
     return this.projectService.invites({ projectId: param.projectId });
   }
 
   @Post('/:projectId/accept-invite')
+  @Roles(['owner', 'manager', 'member'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
-  async acceptInvite(
+  acceptInvite(
     @GetCurrentUser() user: JwtPayload,
     @Param() param: AcceptInviteParam,
   ) {
@@ -201,7 +149,7 @@ export class ProjectsController {
 
   @Post('/:projectId/reject-invite')
   @HttpCode(HttpStatus.OK)
-  async rejectInvite(
+  rejectInvite(
     @GetCurrentUser() user: JwtPayload,
     @Param() param: RejectInviteParam,
   ) {
@@ -212,22 +160,16 @@ export class ProjectsController {
   }
 
   @Patch('/:projectId/member/:memberId')
+  @Roles(['owner', 'manager'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
   async updateMemberRole(
     @GetCurrentUser() user: JwtPayload,
     @Param() param: UpdateMemberRoleParam,
     @Body() body: UpdateMemberRoleDto,
   ) {
-    const hasAccess = await this.projectService.hasAccess({
-      acceptedRoles: ['arkadaslar', 'owner', 'manager'],
-      projectId: param.projectId,
-      userId: user.sub,
-    });
-
-    if (!hasAccess)
-      throw new ForbiddenException(
-        'You are not allowed to access this resource',
-      );
+    if (user.sub === param.memberId)
+      throw new ForbiddenException('You cannot change your own role');
 
     await this.projectService.updateMemberRole({
       projectId: param.projectId,
@@ -238,22 +180,13 @@ export class ProjectsController {
   }
 
   @Delete('/:projectId/member/:memberId')
+  @Roles(['owner', 'manager'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
   async removeMember(
     @GetCurrentUser() user: JwtPayload,
     @Param() param: DeleteMemberDto,
   ) {
-    const hasAccess = await this.projectService.hasAccess({
-      acceptedRoles: ['arkadaslar', 'owner', 'manager'],
-      projectId: param.projectId,
-      userId: user.sub,
-    });
-
-    if (!hasAccess)
-      throw new ForbiddenException(
-        'You are not allowed to access this resource',
-      );
-
     await this.projectService.removeMember({
       projectId: param.projectId,
       operatorId: user.sub,
@@ -262,6 +195,9 @@ export class ProjectsController {
   }
 
   @Delete('/:projectId/leave-project')
+  // owner cant leave project
+  @Roles(['manager', 'member'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
   async leaveProject(
     @GetCurrentUser() user: JwtPayload,
@@ -274,26 +210,16 @@ export class ProjectsController {
   }
 
   @Delete('/:projectId/invite/:memberInviteId')
+  @Roles(['owner', 'manager'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
-  async cancelInvite(
-    @GetCurrentUser() user: JwtPayload,
-    @Param() param: DeleteMemberInviteParam,
-  ) {
-    const hasAccess = await this.projectService.hasAccess({
-      acceptedRoles: ['arkadaslar', 'owner', 'manager'],
-      projectId: param.projectId,
-      userId: user.sub,
-    });
-
-    if (!hasAccess)
-      throw new ForbiddenException(
-        'You are not allowed to access this resource',
-      );
-
+  async cancelInvite(@Param() param: DeleteMemberInviteParam) {
     await this.projectService.cancelInvite(param.memberInviteId);
   }
 
   @Patch('/:projectId/member/:memberId/notifications')
+  @Roles(['owner', 'manager'])
+  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
   async updateMemberNotifications(
     @GetCurrentUser() user: JwtPayload,

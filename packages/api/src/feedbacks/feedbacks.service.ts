@@ -4,16 +4,18 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateFeedbackDto } from './dto';
-import { CursorPagination, OrderBy } from 'src/common/types';
-import { SetStatusDto } from './dto/set-status.dto';
 import {
   Feedback,
   FeedbackCategory,
   FeedbackStatus,
+  FeedbackType,
   Project,
 } from '@prisma/client';
 import { MailService } from 'src/mail/mail.service';
+
+import { CreateFeedbackDto, SetStatusDto } from './dto';
+
+import type { CursorPagination, OrderBy } from 'src/common/types';
 
 @Injectable()
 export class FeedbacksService {
@@ -37,20 +39,6 @@ export class FeedbacksService {
     pagination?: CursorPagination;
     orderBy?: OrderBy;
   }) {
-    try {
-      await this.prisma.project.findUniqueOrThrow({
-        where: {
-          id: projectId,
-        },
-      });
-    } catch (error) {
-      if (error.code === 'P2025') {
-        throw new NotFoundException('Project not found');
-      }
-
-      throw new NotFoundException(error.message);
-    }
-
     const [
       data,
       countAll,
@@ -170,7 +158,7 @@ export class FeedbacksService {
     };
   }
 
-  async getById({ id, userId }: { id: string; userId: string }) {
+  async getById({ id }: { id: string }) {
     const feedback = await this.prisma.feedback.findUnique({
       where: {
         id,
@@ -179,33 +167,32 @@ export class FeedbacksService {
 
     if (!feedback) throw new NotFoundException('Feedback not found');
 
-    await this.getProjectMember({
-      projectId: feedback.projectId,
-      userId,
-    });
-
     return feedback;
   }
 
   async createByProjectId({
     dto,
+    projectId,
     origin,
     device,
   }: {
     dto: CreateFeedbackDto;
+    projectId: string;
     origin: string;
     device: string;
   }) {
     try {
       const feedback = await this.prisma.feedback.create({
-        include: {
-          project: true,
-        },
         data: {
+          projectId,
           ...dto,
+          type: FeedbackType.category,
           origin,
           device,
           meta: dto.meta || {},
+        },
+        include: {
+          project: true,
         },
       });
 
@@ -221,8 +208,16 @@ export class FeedbacksService {
     }
   }
 
-  async setStatus({ dto, id }: { dto: SetStatusDto; id: string }) {
-    const { status, projectId } = dto;
+  async setStatus({
+    dto,
+    projectId,
+    id,
+  }: {
+    dto: SetStatusDto;
+    projectId: string;
+    id: string;
+  }) {
+    const { status } = dto;
 
     try {
       return await this.prisma.feedback.update({
@@ -274,25 +269,5 @@ export class FeedbacksService {
         feedback,
       });
     });
-  }
-
-  async getProjectMember({
-    projectId,
-    userId,
-  }: {
-    projectId: string;
-    userId: string;
-  }) {
-    const projectMember = await this.prisma.projectMember.findUnique({
-      where: {
-        userId_projectId: {
-          userId,
-          projectId,
-        },
-      },
-    });
-
-    if (!projectMember)
-      throw new BadRequestException('You are not a member of this project');
   }
 }

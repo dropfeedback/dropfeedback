@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum } from 'class-validator';
 import { Feedback, FeedbackStatus } from 'src/prisma';
 
 export class SetStatusDto
@@ -18,12 +18,10 @@ export class SetStatusDto
       | 'resolution'
       | 'reportIdentifier'
       | 'url'
+      | 'type'
+      | 'projectId'
     >
 {
-  @IsNotEmpty()
-  @IsString()
-  projectId: string;
-
   @ApiProperty({ enum: ['new', 'archived'], default: 'new' })
   @IsEnum(['new', 'archived'], {
     message: 'Invalid status. Should be one of: "new", "archived"',

@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { FeedbacksService } from './feedbacks.service';
-import { FeedbacksController } from './feedbacks.controller';
 import { AccessTokenStrategy } from 'src/auth/strategies';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MailService } from 'src/mail/mail.service';
 import { JwtModule } from '@nestjs/jwt';
+
+import { FeedbacksController } from './feedbacks.controller';
+import { FeedbacksService } from './feedbacks.service';
 
 @Module({
   imports: [JwtModule.register({})],

@@ -1,7 +1,9 @@
 import { Test } from '@nestjs/testing';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateFeedbackDto } from './dto';
 import { prismaMock } from 'src/test/__mocks__/prisma';
+import { FeedbackType } from '@prisma/client';
+
+import { CreateFeedbackDto } from './dto';
 import { FeedbacksService } from './feedbacks.service';
 import { AppModule } from '../app.module';
 
@@ -24,12 +26,14 @@ describe('Feedbacks', () => {
     it('should create feedback with valid data', async () => {
       const feedbackDto: CreateFeedbackDto = {
         content: 'test',
-        projectId: 'be2f10bf-666f-4535-8a58-2c785ff00bb9',
         meta: {
           browser: 'test',
         },
         category: 'other',
         status: 'new',
+        url: 'test',
+        reportIdentifier: 'test',
+        resolution: 'test',
       };
 
       prismaMock.feedback.create.mockResolvedValueOnce({
@@ -40,12 +44,15 @@ describe('Feedbacks', () => {
         updatedAt: new Date(),
         createdAt: new Date(),
         category: 'other',
+        projectId: 'be2f10bf-666f-4535-8a58-2c785ff00bb9',
         status: 'new',
+        type: FeedbackType.category,
       });
 
       const result = await feedbackService.createByProjectId({
         dto: feedbackDto,
         device: 'test',
+        projectId: 'be2f10bf-666f-4535-8a58-2c785ff00bb9',
         origin: 'test',
       });
 

@@ -1,6 +1,5 @@
 //don't remove this import
 import React from 'react';
-
 import {
   Body,
   Button,
@@ -15,6 +14,7 @@ import {
   Tailwind,
   Text,
 } from '@react-email/components';
+
 import { config } from '../../config';
 
 const ResetPasswordEmail = ({ token }: { token: string }) => {

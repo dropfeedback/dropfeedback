@@ -13,14 +13,18 @@ export class SetStatusParam
       | 'content'
       | 'meta'
       | 'category'
-      | 'projectId'
       | 'status'
       | 'id'
       | 'resolution'
       | 'reportIdentifier'
       | 'url'
+      | 'type'
     >
 {
+  @IsNotEmpty()
+  @IsString()
+  projectId: string;
+
   @IsNotEmpty()
   @IsString()
   feedbackId: string;

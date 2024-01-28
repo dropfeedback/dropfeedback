@@ -1,11 +1,12 @@
 import { INestApplication } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ProjectMemberRole } from '@prisma/client';
-import { ProjectsService } from './projects.service';
+import { FeedbackType, ProjectMemberRole } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import request from 'supertest';
 import { createNestApp } from 'src/test/helpers/create-nest-app';
 import { getAuthCookie } from 'src/test/helpers/auth';
+
+import { ProjectsService } from './projects.service';
 
 describe('Feedbacks - e2e', () => {
   let app: INestApplication;
@@ -84,14 +85,17 @@ describe('Feedbacks - e2e', () => {
         data: [
           {
             content: 'test content1',
+            type: FeedbackType.category,
             projectId: project1.id,
           },
           {
             content: 'test content2',
+            type: FeedbackType.category,
             projectId: project1.id,
           },
           {
             content: 'test content3',
+            type: FeedbackType.category,
             projectId: project2.id,
           },
         ],

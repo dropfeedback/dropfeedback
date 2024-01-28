@@ -6,10 +6,11 @@ import { google } from 'googleapis';
 import { Options } from 'nodemailer/lib/smtp-transport';
 import { JwtService } from '@nestjs/jwt';
 import InviteEmail from 'src/mail/mails/invite-email';
+import { Feedback, Project } from '@prisma/client';
+
 import VerificationEmail from './mails/verification-email';
 import ResetPasswordEmail from './mails/reset-password-email';
 import FeedbackNotificationEmail from './mails/feedback-notification-email';
-import { Feedback, Project } from '@prisma/client';
 
 @Injectable()
 export class MailService {
