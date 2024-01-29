@@ -1,4 +1,9 @@
-import { json, redirect, type LoaderFunctionArgs } from "@remix-run/cloudflare";
+import {
+  json,
+  redirect,
+  type LoaderFunctionArgs,
+  type MetaFunction,
+} from "@remix-run/cloudflare";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import {
   HydrationBoundary,
@@ -7,6 +12,7 @@ import {
 } from "@tanstack/react-query";
 import { DashboardHeader } from "~/components/headers/dashboard-header";
 import { API_URL } from "~/lib/axios";
+import { defaultMeta } from "~/lib/default-meta";
 import type { MeResponse } from "~/types";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -105,3 +111,7 @@ export default function LayoutRoute() {
     </HydrationBoundary>
   );
 }
+
+export const meta: MetaFunction = () => {
+  return [...defaultMeta];
+};
