@@ -157,7 +157,7 @@ It is used to customize the theme of the widget.
 
 </ThemedComponent>
 
-### `meta-*`
+### `meta`
 
 It is used to send additional information about the feedback. You can use it to send metadata like role, location, etc.
 
