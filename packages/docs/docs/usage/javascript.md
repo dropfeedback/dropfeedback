@@ -81,7 +81,9 @@ It is used to identify the user who sent the feedback. It can be an email addres
 **Via a trigger element:**
 
 ```jsx
-<button data-feedback-button data-report-identifier="user@example.com" />
+<button data-feedback-button data-report-identifier="user@example.com">
+  Feedback>
+</button>
 ```
 
 If you don't provide the `reportIdentifier`, the feedback will be sent anonymously.

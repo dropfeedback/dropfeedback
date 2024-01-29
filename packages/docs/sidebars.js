@@ -34,10 +34,9 @@ const sidebars = {
       value: "Cheat-Sheets",
       className: "custom-category mt-20",
     },
-    "cheat-sheets/bind-widget-to-an-element",
     "cheat-sheets/user-identification",
-    "cheat-sheets/widget-customization",
     "cheat-sheets/attach-custom-data",
+    "cheat-sheets/widget-customization",
   ],
 };
 
