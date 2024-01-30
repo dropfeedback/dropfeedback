@@ -118,7 +118,7 @@ It is used to customize the theme of the widget.
 </button>
 ```
 
-<Widget scheme="light" primaryColor="#ff0000" backgroundColor="#ffffff" textColor="#000000" />
+<Widget sideOffset={0} scheme="light" primaryColor="#ff0000" backgroundColor="#ffffff" textColor="#000000" />
 
 </ThemedComponent>
 
@@ -146,7 +146,7 @@ It is used to customize the theme of the widget.
 </button>
 ```
 
-<Widget scheme="dark" primaryColor="#ff7a45" backgroundColor="#000000" textColor="#ffffff"  />
+<Widget sideOffset={0} scheme="dark" primaryColor="#ff7a45" backgroundColor="#000000" textColor="#ffffff"  />
 
 </ThemedComponent>
 

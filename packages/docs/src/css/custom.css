@@ -75,14 +75,15 @@
 }
 
 .widget-container {
-  margin-top: 200px;
-  display: flex;
+ height: 165px;
+ width: 340px;
+ display: flex;
+ align-items: end;
 }
 
 .widget-trigger {
   visibility: hidden;
   height: 0px;
-  margin-left: 130px;
 }
 
 .side-preview-container {
