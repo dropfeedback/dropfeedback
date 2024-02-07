@@ -6,13 +6,15 @@ import {
   HttpStatus,
   Patch,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
 import {
   EmailVerificationIsNotRequired,
   GetCurrentUser,
 } from 'src/common/decorators';
+
+import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtPayload } from 'src/auth/types';
+
+import type { JwtPayload } from 'src/auth/types';
 
 @Controller('users')
 export class UsersController {

@@ -7,22 +7,23 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { SignInLocalDto, SignUpLocalDto } from './dto';
-import type { JwtPayload, JwtPayloadWithRefreshToken } from './types';
 import { RefreshTokenGuard } from 'src/common/guards';
 import {
   EmailVerificationIsNotRequired,
   GetCurrentUser,
   Public,
 } from 'src/common/decorators';
-
 import { OAuth2Client } from 'google-auth-library';
+import { UserProviderType } from '@prisma/client';
+
 import { GoogleLoginDto } from './dto/google-login.dto';
 import { VerifyEmailDto } from './dto/verify-email';
-import { UserProviderType } from '@prisma/client';
+import { SignInLocalDto, SignUpLocalDto } from './dto';
+import { AuthService } from './auth.service';
 import { ResetPasswordDto } from './dto/reset-password-dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+
+import type { JwtPayload, JwtPayloadWithRefreshToken } from './types';
 
 @Controller('auth')
 export class AuthController {

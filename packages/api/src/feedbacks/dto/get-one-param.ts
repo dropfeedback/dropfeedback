@@ -19,6 +19,7 @@ export class GetOneParam
       | 'resolution'
       | 'reportIdentifier'
       | 'url'
+      | 'type'
     >
 {
   @IsNotEmpty()

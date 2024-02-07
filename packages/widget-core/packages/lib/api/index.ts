@@ -7,7 +7,7 @@ export const API_URL =
 
 export const sendFeedback = async (feedback: IFeedback) => {
 	try {
-		const response = await fetch(`${API_URL}/feedbacks`, {
+		const response = await fetch(`${API_URL}/projects/${feedback.projectId}/feedbacks`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"

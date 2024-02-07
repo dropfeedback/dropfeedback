@@ -5,15 +5,17 @@ import {
   BadRequestException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { SignUpLocalDto, SignInLocalDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { JwtPayload } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserProviderType } from '@prisma/client';
 import { TokenPayload as GoogleTokenPayload } from 'google-auth-library';
 import { MailService } from 'src/mail/mail.service';
+
+import { SignUpLocalDto, SignInLocalDto } from './dto';
+
+import type { JwtPayload } from './types';
 
 @Injectable()
 export class AuthService {

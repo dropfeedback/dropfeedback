@@ -37,11 +37,13 @@ export function FeedbackList() {
       const cursor = (pageParam as string) ?? "";
 
       return fetchers.getFeedbacks({
-        projectId: projectId!,
-        cursor,
-        take: PAGE_SIZE,
-        ...filtersAndSorters.filters,
-        orderBy: filtersAndSorters.sorters,
+        projectId,
+        params: {
+          cursor,
+          take: PAGE_SIZE,
+          ...filtersAndSorters.filters,
+          orderBy: filtersAndSorters.sorters,
+        },
       });
     },
     enabled: !!projectId,

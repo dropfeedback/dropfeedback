@@ -1,7 +1,8 @@
 import { Test } from '@nestjs/testing';
 import { ValidationPipe } from '@nestjs/common';
-import { AppModule } from '../../app.module';
 import cookieParser from 'cookie-parser';
+
+import { AppModule } from '../../app.module';
 
 export const createNestApp = async () => {
   // create app instance

@@ -1,4 +1,5 @@
-import { Link } from "@remix-run/react";
+import { Link, type MetaFunction } from "@remix-run/react";
+import { defaultMeta } from "~/lib/default-meta";
 
 export default function Docs() {
   return (
@@ -16,3 +17,7 @@ export default function Docs() {
     </div>
   );
 }
+
+export const meta: MetaFunction = () => {
+  return [...defaultMeta];
+};

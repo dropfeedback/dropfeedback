@@ -2,13 +2,7 @@ import type { MetaFunction } from "@remix-run/cloudflare";
 import { Link } from "@remix-run/react";
 import { ThemeSwitcher } from "~/components/headers/theme-switcher";
 import { DropFeedback } from "@dropfeedback/react";
-
-export const meta: MetaFunction = () => {
-  return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
-  ];
-};
+import { defaultMeta } from "~/lib/default-meta";
 
 export default function Index() {
   return (
@@ -40,3 +34,7 @@ export default function Index() {
     </div>
   );
 }
+
+export const meta: MetaFunction = () => {
+  return [...defaultMeta];
+};

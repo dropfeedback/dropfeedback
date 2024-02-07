@@ -6,7 +6,14 @@ export class CreateFeedbackDto
   implements
     Omit<
       Feedback,
-      'id' | 'createdAt' | 'updatedAt' | 'userId' | 'device' | 'origin'
+      | 'id'
+      | 'createdAt'
+      | 'updatedAt'
+      | 'userId'
+      | 'device'
+      | 'origin'
+      | 'type'
+      | 'projectId'
     >
 {
   @IsNotEmpty()
@@ -15,10 +22,6 @@ export class CreateFeedbackDto
 
   @IsOptional()
   meta: Prisma.JsonValue | null;
-
-  @IsNotEmpty()
-  @IsString()
-  projectId: string;
 
   @ApiProperty({ enum: ['other', 'issue', 'idea'], default: 'other' })
   @IsOptional()

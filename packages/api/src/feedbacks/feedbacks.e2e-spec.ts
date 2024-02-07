@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Project } from '@prisma/client';
+import { FeedbackType, Project } from '@prisma/client';
 import request from 'supertest';
 import { createNestApp } from 'src/test/helpers/create-nest-app';
 import { getAuthCookie } from 'src/test/helpers/auth';
@@ -38,24 +38,28 @@ describe('Feedbacks - e2e', () => {
             content: 'archived other',
             projectId: project?.id,
             status: 'archived',
+            type: FeedbackType.category,
             category: 'other',
           },
           {
             content: 'new other',
             projectId: project?.id,
             status: 'new',
+            type: FeedbackType.category,
             category: 'other',
           },
           {
             content: 'new issue',
             projectId: project?.id,
             status: 'new',
+            type: FeedbackType.category,
             category: 'issue',
           },
           {
             content: 'new idea',
             projectId: project?.id,
             status: 'new',
+            type: FeedbackType.category,
             category: 'idea',
           },
         ],
@@ -64,7 +68,7 @@ describe('Feedbacks - e2e', () => {
 
     it('should get feedbacks', async () => {
       const response = await request(app.getHttpServer())
-        .get('/feedbacks')
+        .get(`projects/${project?.id}/feedbacks`)
         .query({ projectId: project?.id })
         .set('Cookie', authCookie);
 
@@ -83,7 +87,7 @@ describe('Feedbacks - e2e', () => {
 
     it('should count depends to search param', async () => {
       await request(app.getHttpServer())
-        .get('/feedbacks')
+        .get(`projects/${project?.id}/feedbacks`)
         .query({ projectId: project?.id, search: 'other' })
         .set('Cookie', authCookie)
         .then((response) => {
@@ -101,7 +105,7 @@ describe('Feedbacks - e2e', () => {
         });
 
       await request(app.getHttpServer())
-        .get('/feedbacks')
+        .get(`projects/${project?.id}/feedbacks`)
         .query({ projectId: project?.id, search: 'idea' })
         .set('Cookie', authCookie)
         .then((response) => {
@@ -121,7 +125,7 @@ describe('Feedbacks - e2e', () => {
 
     it('should data filter by params', async () => {
       await request(app.getHttpServer())
-        .get('/feedbacks')
+        .get(`projects/${project?.id}/feedbacks`)
         .query({ projectId: project?.id, category: 'issue' })
         .set('Cookie', authCookie)
         .then((response) => {
@@ -139,7 +143,7 @@ describe('Feedbacks - e2e', () => {
         });
 
       await request(app.getHttpServer())
-        .get('/feedbacks')
+        .get(`projects/${project?.id}/feedbacks`)
         .query({ projectId: project?.id, category: 'idea' })
         .set('Cookie', authCookie)
         .then((response) => {
@@ -157,7 +161,7 @@ describe('Feedbacks - e2e', () => {
         });
 
       await request(app.getHttpServer())
-        .get('/feedbacks')
+        .get(`projects/${project?.id}/feedbacks`)
         .query({ projectId: project?.id, category: 'other' })
         .set('Cookie', authCookie)
         .then((response) => {
@@ -175,7 +179,7 @@ describe('Feedbacks - e2e', () => {
         });
 
       await request(app.getHttpServer())
-        .get('/feedbacks')
+        .get(`projects/${project?.id}/feedbacks`)
         .query({ projectId: project?.id, status: 'new' })
         .set('Cookie', authCookie)
         .then((response) => {
@@ -193,7 +197,7 @@ describe('Feedbacks - e2e', () => {
         });
 
       await request(app.getHttpServer())
-        .get('/feedbacks')
+        .get(`projects/${project?.id}/feedbacks`)
         .query({ projectId: project?.id, status: 'archived' })
         .set('Cookie', authCookie)
         .then((response) => {
@@ -204,20 +208,20 @@ describe('Feedbacks - e2e', () => {
 
     it('should handle invalid params', async () => {
       await request(app.getHttpServer())
-        .get('/feedbacks')
+        .get(`projects/${project?.id}/feedbacks`)
         .query({ projectId: '12345' })
         .set('Cookie', authCookie)
         .expect(404);
 
       await request(app.getHttpServer())
-        .get('/feedbacks')
+        .get(`projects/${project?.id}/feedbacks`)
         .query({ projectId: '' })
         .set('Cookie', authCookie)
         .expect(400);
     });
   });
 
-  describe('GET /feedbacks/:feedbackId', () => {
+  describe('GET :projectId/feedbacks/:feedbackId', () => {
     it('should get feedback by id', async () => {
       // create mock project
       const project = await prisma.project.create({
@@ -235,7 +239,7 @@ describe('Feedbacks - e2e', () => {
       });
 
       const response = await request(app.getHttpServer())
-        .get(`/feedbacks/${feedback?.id}`)
+        .get(`/projects/${project.id}/feedbacks/${feedback?.id}`)
         .set('Cookie', authCookie);
 
       expect(response.status).toEqual(200);
@@ -254,23 +258,23 @@ describe('Feedbacks - e2e', () => {
 
     it('should handle invalid params', async () => {
       await request(app.getHttpServer())
-        .get('/feedbacks/12345')
+        .get(`projects/12345/feedbacks/12345`)
         .set('Cookie', authCookie)
         .expect(404);
 
       await request(app.getHttpServer())
-        .get('/feedbacks/')
+        .get('projects/12345/feedbacks/')
         .set('Cookie', authCookie)
         .expect(400);
 
       await request(app.getHttpServer())
-        .get('/feedbacks/b6ec9022-8d13-11ee-b9d1-0242ac120002')
+        .get('projects/12345/feedbacks/b6ec9022-8d13-11ee-b9d1-0242ac120002')
         .set('Cookie', authCookie)
         .expect(404);
     });
   });
 
-  describe('POST /feedbacks', () => {
+  describe('POST projects/:projectId/feedbacks', () => {
     it('should create feedback with valid data', async () => {
       // create mock project
       const project = await prisma.project.create({
@@ -281,7 +285,7 @@ describe('Feedbacks - e2e', () => {
 
       // create feedback
       const response = await request(app.getHttpServer())
-        .post('/feedbacks')
+        .post(`/projects/${project.id}/feedbacks`)
         .send({
           content: 'test content',
           projectId: project?.id,
@@ -299,32 +303,32 @@ describe('Feedbacks - e2e', () => {
 
     it('invalid dto', async () => {
       await request(app.getHttpServer())
-        .post('/feedbacks')
+        .post('projects/12345/feedbacks')
         .send({ projectId: '2114' });
       expect(400);
 
       await request(app.getHttpServer())
-        .post('/feedbacks')
+        .post('projects/12345/feedbacks')
         .send({ content: '' })
         .expect(400);
 
       await request(app.getHttpServer())
-        .post('/feedbacks')
+        .post('projects/12345/feedbacks')
         .send({ content: '12' })
         .expect(400);
 
       await request(app.getHttpServer())
-        .post('/feedbacks')
+        .post('projects/12345/feedbacks')
         .send({ projectId: '' })
         .expect(400);
 
       await request(app.getHttpServer())
-        .post('/feedbacks')
+        .post('projects/12345/feedbacks')
         .send({ projectId: '', content: '' })
         .expect(400);
 
       await request(app.getHttpServer())
-        .post('/feedbacks')
+        .post('projects/12345/feedbacks')
         .send({ projectId: '12345', content: '' })
         .expect(400);
     });

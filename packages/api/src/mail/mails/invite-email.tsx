@@ -1,6 +1,5 @@
 //don't remove this import
 import React from 'react';
-
 import {
   Body,
   Container,
@@ -14,6 +13,7 @@ import {
   Text,
   Img,
 } from '@react-email/components';
+
 import { config } from '../../config';
 
 const InviteEmail = ({

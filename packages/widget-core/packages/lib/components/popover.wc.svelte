@@ -47,7 +47,10 @@
 		strategy: "fixed"
 	});
 	$: extraOpts = {
-		modifiers: [{ name: "offset", options: { offset: [0, sideOffset] } }],
+		modifiers: [
+			{ name: "offset", options: { offset: [0, sideOffset] } },
+			{ name: "flip", enabled: permanentOpen ? false : true }
+		],
 		placement: side as PopoverSide
 	};
 
@@ -145,6 +148,7 @@
 		<div
 			id="popper"
 			class="popper"
+			class:z-index={!permanentOpen}
 			use:popperContent={extraOpts}
 			transition:fade={{ duration: 100 }}
 			use:clickOutside
@@ -195,7 +199,10 @@
 		width: 340px;
 		overflow: hidden;
 		border-radius: 12px;
-		z-index: 99999 !important;
+	}
+
+	.z-index {
+		z-index: 9999 !important;
 	}
 
 	.container {
