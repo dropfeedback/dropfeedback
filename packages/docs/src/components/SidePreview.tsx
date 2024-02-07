@@ -20,7 +20,13 @@ const SIDES = [
 
 export const SidePreview = () => {
   return (
-    <div className="side-preview-container">
+    <div
+      className="side-preview-container"
+      style={{
+        gridTemplateAreas:
+          '". top-start top top-end ." "left-start . . . right-start" "left auto-start _auto auto-end right" "left-end . . . right-end" ". bottom-start bottom bottom-end ."',
+      }}
+    >
       {SIDES.map((side) => (
         <button
           data-feedback-button

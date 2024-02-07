@@ -75,10 +75,10 @@
 }
 
 .widget-container {
- height: 165px;
- width: 340px;
- display: flex;
- align-items: end;
+  height: 165px;
+  width: 340px;
+  display: flex;
+  align-items: flex-end;
 }
 
 .widget-trigger {
@@ -92,12 +92,6 @@
   display: grid;
   grid-template-columns: repeat(5, 90px);
   grid-template-rows: repeat(5, 32px);
-  grid-template-areas:
-    ". top-start top top-end ."
-    "left-start . . . right-start"
-    "left auto-start _auto auto-end right"
-    "left-end . . . right-end"
-    ". bottom-start bottom bottom-end .";
   gap: 8px;
 }
 
