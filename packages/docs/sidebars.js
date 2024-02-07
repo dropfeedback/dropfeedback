@@ -24,21 +24,19 @@ const sidebars = {
     "getting-started/quickstart-guide",
     {
       type: "html",
-      value: "Feedback Widget",
+      value: "Usage",
       className: "custom-category mt-20",
     },
-    "feedback-widget/installation-guide",
-    "feedback-widget/@dropfeedback-core",
-    "feedback-widget/@dropfeedback-react",
+    "usage/javascript",
+    "usage/react",
     {
       type: "html",
       value: "Cheat-Sheets",
       className: "custom-category mt-20",
     },
-    "cheat-sheets/bind-widget-to-an-element",
     "cheat-sheets/user-identification",
-    "cheat-sheets/widget-customization",
     "cheat-sheets/attach-custom-data",
+    "cheat-sheets/widget-customization",
   ],
 };
 

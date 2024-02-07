@@ -14,6 +14,7 @@
   --ifm-color-primary-lighter: #1a1a1a;
   --ifm-color-primary-lightest: #1e1e1e;
   --ifm-code-font-size: 95%;
+  --ifm-link-color: #0070f3;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
   --doc-sidebar-width: 280px !important;
   --text-muted: #666666;
@@ -28,6 +29,7 @@
   --ifm-color-primary-light: #ffffff;
   --ifm-color-primary-lighter: #ffffff;
   --ifm-color-primary-lightest: #ffffff;
+  --ifm-link-color: #3291ff;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
   --text-muted: #a1a1a1;
 }
@@ -70,4 +72,41 @@
 
 [data-theme="dark"] .logo-icon {
   filter: invert(1);
+}
+
+.widget-container {
+ height: 165px;
+ width: 340px;
+ display: flex;
+ align-items: end;
+}
+
+.widget-trigger {
+  visibility: hidden;
+  height: 0px;
+}
+
+.side-preview-container {
+  overflow: auto;
+  place-content: center;
+  display: grid;
+  grid-template-columns: repeat(5, 90px);
+  grid-template-rows: repeat(5, 32px);
+  grid-template-areas:
+    ". top-start top top-end ."
+    "left-start . . . right-start"
+    "left auto-start _auto auto-end right"
+    "left-end . . . right-end"
+    ". bottom-start bottom bottom-end .";
+  gap: 8px;
+}
+
+@media (max-width: 517px) {
+  .side-preview-container {
+    place-content: start;
+  }
+}
+
+.side-preview-button {
+  padding: 0px;
 }

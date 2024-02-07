@@ -1,0 +1,36 @@
+.container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.colorButton {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ifm-color-emphasis-100);
+  color: white;
+}
+
+.colorInput {
+  position: relative;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  padding: 4px;
+}
+
+.colorInput input {
+  visibility: hidden;
+  width: 28px;
+  height: 28px;
+  position: absolute;
+}
+
+.invertedCheckmark {
+  filter: invert(1);
+}

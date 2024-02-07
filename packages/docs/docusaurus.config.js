@@ -9,19 +9,14 @@ import { themes as prismThemes } from "prism-react-renderer";
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "DropFeedback",
-  tagline: "Collect feedback from your users",
+  tagline: "Feedback collection and management",
   favicon: "img/favicon.svg",
 
   // Set the production url of your site here
-  url: "https://your-docusaurus-site.example.com",
+  url: "https://docs.dropfeedback.com",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: "/",
-
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: "facebook", // Usually your GitHub org/user name.
-  projectName: "docusaurus", // Usually your repo name.
 
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
@@ -45,7 +40,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+            "https://github.com/dropfeedback/dropfeedback/tree/master/packages/docs/",
         },
         blog: false,
         theme: {
@@ -59,9 +54,8 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: "img/docusaurus-social-card.jpg",
+      image: "https://raw.githubusercontent.com/dropfeedback/dropfeedback/master/brand-assets/dropfeedback-og-image.png",
       navbar: {
-        hideOnScroll: true,
         title: "DropFeedback",
         logo: {
           alt: "Dropfeedback Logo",
@@ -72,7 +66,7 @@ const config = {
         },
         items: [
           {
-            href: "https://github.com/facebook/docusaurus",
+            href: "https://github.com/dropfeedback/dropfeedback",
             position: "right",
             className: "header-github-link",
             "aria-label": "GitHub repository",
