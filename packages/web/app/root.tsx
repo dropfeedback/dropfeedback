@@ -24,7 +24,7 @@ import { useToast } from "~/components/ui/use-toast";
 import { ToastAction } from "~/components/ui/toast";
 import { ModalRoot } from "~/components/global-modals/modal-root";
 import styles from "./tailwind.css";
-import { AxiosError, isAxiosError } from "axios";
+import { isAxiosError } from "axios";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
