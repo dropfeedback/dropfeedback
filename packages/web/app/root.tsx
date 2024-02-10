@@ -24,6 +24,7 @@ import { useToast } from "~/components/ui/use-toast";
 import { ToastAction } from "~/components/ui/toast";
 import { ModalRoot } from "~/components/global-modals/modal-root";
 import styles from "./tailwind.css";
+import { isAxiosError } from "axios";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -59,10 +60,19 @@ export default function App() {
           },
         },
         queryCache: new QueryCache({
-          onError: () =>
-            toast({
-              title: "Uh oh! Something went wrong.",
-              description: "There was a problem with your request.",
+          onError: (error) => {
+            let title = "Uh oh! Something went wrong.";
+            let description = "There was a problem with your mutation.";
+
+            if (isAxiosError(error)) {
+              const response = error?.response;
+              title = response?.data?.error || title;
+              description = response?.data?.message || description;
+            }
+
+            return toast({
+              title,
+              description,
               action: (
                 <ToastAction
                   altText="Try again"
@@ -71,14 +81,25 @@ export default function App() {
                   Try again
                 </ToastAction>
               ),
-            }),
+            });
+          },
         }),
         mutationCache: new MutationCache({
-          onError: (error, variables, context, mutation) => {
+          onError: (error, _variables, _context, mutation) => {
             if (mutation.options?.meta?.errorToast === false) return;
+
+            let title = "Uh oh! Something went wrong.";
+            let description = "There was a problem with your mutation.";
+
+            if (isAxiosError(error)) {
+              const response = error?.response;
+              title = response?.data?.error || title;
+              description = response?.data?.message || description;
+            }
+
             toast({
-              title: "Uh oh! Something went wrong.",
-              description: "There was a problem with your mutation.",
+              title,
+              description,
             });
           },
         }),
