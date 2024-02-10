@@ -133,8 +133,6 @@ export class ProjectsController {
   }
 
   @Post('/:projectId/accept-invite')
-  @Roles(['owner', 'manager', 'member'])
-  @UseGuards(UserRoleGuard)
   @HttpCode(HttpStatus.OK)
   acceptInvite(
     @GetCurrentUser() user: JwtPayload,
