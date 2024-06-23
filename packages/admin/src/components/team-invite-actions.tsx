@@ -35,7 +35,7 @@ export function TeamInviteActions({ invite }: { invite: ProjectMemberInvite }) {
   const [open, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  const cancelInvite = useMutation<undefined, ApiError, CancelInviteVariables>({
+  const cancelInvite = useMutation<object, ApiError, CancelInviteVariables>({
     mutationFn: ({ inviteId }) => fetchers.cancelInvite(projectId, inviteId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["team", projectId] });

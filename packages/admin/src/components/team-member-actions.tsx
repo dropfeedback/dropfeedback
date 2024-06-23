@@ -61,7 +61,7 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const queryClient = useQueryClient();
 
-  const removeMember = useMutation<undefined, ApiError, DeleteMemberVariables>({
+  const removeMember = useMutation<object, ApiError, DeleteMemberVariables>({
     mutationFn: ({ memberId }) => fetchers.deleteMember(projectId, memberId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["team", projectId] });
@@ -70,7 +70,7 @@ export function TeamMemberActions({ member }: { member: ProjectMember }) {
   });
 
   const updateMemberRole = useMutation<
-    undefined,
+    object,
     ApiError,
     UpdateMemberRoleVariables
   >({

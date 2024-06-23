@@ -4,16 +4,16 @@ import { useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { fetchers } from "@/lib/fetchers";
 import { type ApiError } from "@/lib/axios";
-import { Alert, AlertDescription } from "./ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { TokenResponse } from "@/types";
 
-type Response = { token: string };
 type Variables = { idToken: string };
 
 export function GoogleOAuthButton() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const loginMutation = useMutation<Response, ApiError, Variables>({
+  const loginMutation = useMutation<TokenResponse, ApiError, Variables>({
     mutationFn: fetchers.googleLogin,
     onSuccess: () => {
       const nextURL = searchParams.get("next");

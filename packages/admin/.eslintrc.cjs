@@ -16,7 +16,12 @@ module.exports = {
     project: ["./tsconfig.json", "./tsconfig.node.json"],
     tsconfigRootDir: __dirname,
   },
-  ignorePatterns: ["dist", ".eslintrc.cjs", "src/components/ui/"],
+  ignorePatterns: [
+    "dist",
+    ".eslintrc.cjs",
+    "src/components/ui/",
+    "tailwind.config.js",
+  ],
   rules: {
     "@typescript-eslint/no-unused-vars": [
       "warn",

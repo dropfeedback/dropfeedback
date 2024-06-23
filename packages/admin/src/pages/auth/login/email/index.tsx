@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { fetchers } from "@/lib/fetchers";
 import { type ApiError } from "@/lib/axios";
+import { SigninLocalResponse } from "@/types";
 
 type Variables = { email: string; password: string };
 
@@ -22,7 +23,7 @@ const useLocalLogin = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  return useMutation<undefined, ApiError, Variables>({
+  return useMutation<SigninLocalResponse, ApiError, Variables>({
     mutationFn: fetchers.signin,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["me"] });
