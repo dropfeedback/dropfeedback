@@ -34,7 +34,7 @@ export type ProjectVariables = {
   name: string;
 };
 
-export type ProjectResponse = {
+export type ProjectMutationResponse = {
   id: string;
   name: string;
   createdAt: string;
@@ -47,14 +47,14 @@ export type Feedback = {
   createdAt: string;
   device: string;
   url: string | null;
-  meta: Record<string, any> | object;
+  meta: object;
   category: FeedbackCategory;
   status: FeedbackStatus;
   reportIdentifier: string | null;
   resolution: string | null;
 };
 
-export type FeedbackQueryType = {
+export type FeedbacksQueryResponse = {
   data: Feedback[];
   nextCursor?: string;
   prevCursor?: string;
@@ -131,7 +131,15 @@ export type VerifyEmailPayload = {
   emailVerificationToken: string;
 };
 
-export type VerifyEmailResponse = {
+export type VerifyEmailResponse = TokenResponse;
+
+export type SignupLocalResponse = TokenResponse;
+
+export type SigninLocalResponse = TokenResponse;
+
+export type VerifyEmailLocalResponse = TokenResponse;
+
+export type TokenResponse = {
   accessToken: string;
   refreshToken: string;
 };

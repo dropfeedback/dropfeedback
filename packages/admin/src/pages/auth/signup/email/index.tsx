@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { type ApiError } from "@/lib/axios";
+import { SignupLocalResponse } from "@/types";
 
 type FormValues = {
   email: string;
@@ -26,7 +27,7 @@ type FormValues = {
 export const PageSignupWithEmail = () => {
   const navigate = useNavigate();
 
-  const signUp = useMutation<undefined, ApiError, FormValues>({
+  const signUp = useMutation<SignupLocalResponse, ApiError, FormValues>({
     mutationFn: fetchers.signup,
     onSuccess: () => {
       navigate("/projects");

@@ -31,7 +31,11 @@ import { CopyButton } from "@/components/copy-button";
 import { fetchers } from "@/lib/fetchers";
 import { useMe } from "@/data-hooks";
 import { type ApiError } from "@/lib/axios";
-import { type Project, ProjectMemberRole } from "@/types";
+import {
+  type Project,
+  ProjectMemberRole,
+  type ProjectMutationResponse,
+} from "@/types";
 
 export const PageProjectSettings = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -59,7 +63,11 @@ export const PageProjectSettings = () => {
     }
   }, [project.data, form]);
 
-  const updateMutation = useMutation<Project, ApiError, Pick<Project, "name">>({
+  const updateMutation = useMutation<
+    ProjectMutationResponse,
+    ApiError,
+    Pick<Project, "name">
+  >({
     mutationFn: (variables) => fetchers.updateProject(projectId, variables),
     onSuccess: (data) => {
       //Update the project in the cache

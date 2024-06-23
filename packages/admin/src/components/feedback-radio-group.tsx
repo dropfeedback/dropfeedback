@@ -36,8 +36,6 @@ export function FeedbackRadioGroup() {
     useFeedbackContext();
   const { filters } = filtersAndSorters;
 
-  console.log("FeedbackRadioGroup", counts);
-
   return (
     <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 md:grid-cols-1">
       {categories.map((category) => {

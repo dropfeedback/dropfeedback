@@ -1,67 +1,75 @@
 import Cookies from "js-cookie";
 import { axiosInstance } from "@/lib/axios";
-import {
-  type FeedbackCategory,
-  type FeedbackStatus,
-  type OrderBy,
-  type ProjectMemberRole,
-  type ProjectVariables,
-  type VerifyEmailPayload,
-} from "@/types";
+import * as types from "@/types";
 
 const getProjects = async () => {
-  const { data } = await axiosInstance.get("/projects");
+  const { data } = await axiosInstance.get<types.Project[]>("/projects");
   return data;
 };
 
 const getProject = async (projectId: string) => {
-  const { data } = await axiosInstance.get(`/projects/${projectId}`);
+  const { data } = await axiosInstance.get<types.Project>(
+    `/projects/${projectId}`,
+  );
   return data;
 };
 
-const updateProject = async (projectId: string, payload: ProjectVariables) => {
-  const { data } = await axiosInstance.patch(`/projects/${projectId}`, payload);
+const updateProject = async (
+  projectId: string,
+  payload: types.ProjectVariables,
+) => {
+  const { data } = await axiosInstance.patch<types.ProjectMutationResponse>(
+    `/projects/${projectId}`,
+    payload,
+  );
   return data;
 };
 
 const deleteProject = async (projectId: string) => {
-  const { data } = await axiosInstance.delete(`/projects/${projectId}`);
+  const { data } = await axiosInstance.delete<types.ProjectMutationResponse>(
+    `/projects/${projectId}`,
+  );
   return data;
 };
 
 const leaveProject = async (projectId: string) => {
-  const { data } = await axiosInstance.delete(
+  const { data } = await axiosInstance.delete<types.ProjectMutationResponse>(
     `/projects/${projectId}/leave-project`,
   );
   return data;
 };
 
-const createProject = async (payload: ProjectVariables) => {
-  const { data } = await axiosInstance.post("/projects", payload);
+const createProject = async (payload: types.ProjectVariables) => {
+  const { data } = await axiosInstance.post<types.ProjectMutationResponse>(
+    "/projects",
+    payload,
+  );
   return data;
 };
 
 const getUserInvites = async () => {
-  const { data } = await axiosInstance.get("/projects/current-user-invites");
+  const { data } = await axiosInstance.get<types.ProjectInvite[]>(
+    "/projects/current-user-invites",
+  );
   return data;
 };
 
 const acceptInvite = async ({ projectId }: { projectId: string }) => {
-  const { data } = await axiosInstance.post(
+  const { data } = await axiosInstance.post<object>(
     `/projects/${projectId}/accept-invite`,
   );
   return data;
 };
 
 const rejectInvite = async ({ projectId }: { projectId: string }) => {
-  const { data } = await axiosInstance.post(
+  const { data } = await axiosInstance.post<object>(
     `/projects/${projectId}/reject-invite`,
   );
   return data;
 };
 
 const me = async (cookie?: string) => {
-  const { data } = await axiosInstance.get("/users/me", {
+  const { data } = await axiosInstance.get<types.MeResponse>("/users/me", {
     headers: {
       Cookie: cookie,
     },
@@ -71,12 +79,18 @@ const me = async (cookie?: string) => {
 };
 
 const updateUser = async (payload: { fullName: string }) => {
-  const { data } = await axiosInstance.patch("/users/me", payload);
+  const { data } = await axiosInstance.patch<types.MeResponse>(
+    "/users/me",
+    payload,
+  );
   return data;
 };
 
 const signup = async (payload: { email: string; password: string }) => {
-  const { data } = await axiosInstance.post("/auth/local/signup", payload);
+  const { data } = await axiosInstance.post<types.SignupLocalResponse>(
+    "/auth/local/signup",
+    payload,
+  );
   setAuthCookies({
     accessToken: data.accessToken,
     refreshToken: data.refreshToken,
@@ -85,7 +99,10 @@ const signup = async (payload: { email: string; password: string }) => {
 };
 
 const signin = async (payload: { email: string; password: string }) => {
-  const { data } = await axiosInstance.post("/auth/local/signin", payload);
+  const { data } = await axiosInstance.post<types.SigninLocalResponse>(
+    "/auth/local/signin",
+    payload,
+  );
   setAuthCookies({
     accessToken: data.accessToken,
     refreshToken: data.refreshToken,
@@ -93,8 +110,8 @@ const signin = async (payload: { email: string; password: string }) => {
   return data;
 };
 
-const verifyEmail = async (payload: VerifyEmailPayload) => {
-  const { data } = await axiosInstance.post(
+const verifyEmail = async (payload: types.VerifyEmailPayload) => {
+  const { data } = await axiosInstance.post<types.VerifyEmailLocalResponse>(
     "/auth/local/verify-email",
     payload,
   );
@@ -102,20 +119,21 @@ const verifyEmail = async (payload: VerifyEmailPayload) => {
 };
 
 const resendVerificationEmail = async () => {
-  const { data } = await axiosInstance.post(
+  const { data } = await axiosInstance.post<object>(
     "/auth/local/send-verification-email",
   );
   return data;
 };
 
 const logout = async () => {
-  const { data } = await axiosInstance.post("/auth/logout");
+  const { data } = await axiosInstance.post<object>("/auth/logout");
   removeAuthCookies();
   return data;
 };
 
 const refreshToken = async () => {
-  const { data } = await axiosInstance.post("/auth/refresh");
+  const { data } =
+    await axiosInstance.post<types.TokenResponse>("/auth/refresh");
   setAuthCookies({
     accessToken: data.accessToken,
     refreshToken: data.refreshToken,
@@ -124,7 +142,10 @@ const refreshToken = async () => {
 };
 
 const googleLogin = async (payload: { idToken: string }) => {
-  const { data } = await axiosInstance.post("/auth/google/login", payload);
+  const { data } = await axiosInstance.post<types.TokenResponse>(
+    "/auth/google/login",
+    payload,
+  );
   setAuthCookies({
     accessToken: data.accessToken,
     refreshToken: data.refreshToken,
@@ -141,14 +162,17 @@ const getFeedbacks = async ({
     cursor: string;
     take: number;
     search?: string;
-    category?: FeedbackCategory;
-    status?: FeedbackStatus;
-    orderBy?: OrderBy;
+    category?: types.FeedbackCategory;
+    status?: types.FeedbackStatus;
+    orderBy?: types.OrderBy;
   };
 }) => {
-  const { data } = await axiosInstance.get(`/projects/${projectId}/feedbacks`, {
-    params,
-  });
+  const { data } = await axiosInstance.get<types.FeedbacksQueryResponse>(
+    `/projects/${projectId}/feedbacks`,
+    {
+      params,
+    },
+  );
 
   return data;
 };
@@ -160,7 +184,7 @@ const getFeedback = async ({
   projectId: string;
   feedbackId: string;
 }) => {
-  const { data } = await axiosInstance.get(
+  const { data } = await axiosInstance.get<types.Feedback>(
     `/projects/${projectId}/feedbacks/${feedbackId}`,
   );
   return data;
@@ -169,9 +193,9 @@ const getFeedback = async ({
 const updateFeedbackStatus = async (payload: {
   id: string;
   projectId: string;
-  status: FeedbackStatus;
+  status: types.FeedbackStatus;
 }) => {
-  const { data } = await axiosInstance.patch(
+  const { data } = await axiosInstance.patch<types.Feedback>(
     `/projects/${payload.projectId}/feedbacks/${payload.id}/status`,
     payload,
   );
@@ -182,7 +206,7 @@ const inviteMember = async (
   projectId: string,
   payload: { email: string; role: string },
 ) => {
-  const { data } = await axiosInstance.post(
+  const { data } = await axiosInstance.post<object>(
     `/projects/${projectId}/invite`,
     payload,
   );
@@ -190,7 +214,7 @@ const inviteMember = async (
 };
 
 const deleteMember = async (projectId: string, memberId: string) => {
-  const { data } = await axiosInstance.delete(
+  const { data } = await axiosInstance.delete<object>(
     `/projects/${projectId}/member/${memberId}`,
   );
   return data;
@@ -200,10 +224,10 @@ const updateMemberRole = async (
   projectId: string,
   memberId: string,
   payload: {
-    role: ProjectMemberRole;
+    role: types.ProjectMemberRole;
   },
 ) => {
-  const { data } = await axiosInstance.patch(
+  const { data } = await axiosInstance.patch<object>(
     `/projects/${projectId}/member/${memberId}`,
     payload,
   );
@@ -211,14 +235,16 @@ const updateMemberRole = async (
 };
 
 const cancelInvite = async (projectId: string, inviteId: string) => {
-  const { data } = await axiosInstance.delete(
+  const { data } = await axiosInstance.delete<object>(
     `/projects/${projectId}/invite/${inviteId}`,
   );
   return data;
 };
 
 const getProjectTeam = async (projectId: string) => {
-  const { data } = await axiosInstance.get(`/projects/${projectId}/team`);
+  const { data } = await axiosInstance.get<types.ProjectTeam>(
+    `/projects/${projectId}/team`,
+  );
   return data;
 };
 

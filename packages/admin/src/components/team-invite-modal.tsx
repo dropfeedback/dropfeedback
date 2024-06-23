@@ -52,16 +52,12 @@ export function TeamInviteModal() {
     (project) => project.id === projectId,
   )?.role;
 
-  const inviteUser = useMutation<
-    InviteMemberVariables,
-    ApiError,
-    InviteMemberVariables
-  >({
+  const inviteUser = useMutation<object, ApiError, InviteMemberVariables>({
     mutationFn: (variables) => fetchers.inviteMember(projectId, variables),
-    onSuccess: () => {
+    onSuccess: async () => {
       form.reset();
       setOpen(false);
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["team", projectId],
       });
     },

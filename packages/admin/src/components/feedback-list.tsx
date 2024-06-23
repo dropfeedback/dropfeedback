@@ -3,7 +3,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import useLocalStorageState from "use-local-storage-state";
 import { fetchers } from "@/lib/fetchers";
-import { type FeedbackQueryType } from "@/types";
+import { type FeedbacksQueryResponse } from "@/types";
 import { FeedbackCardSkeleton } from "./feedback-card-skeleton";
 import { FeedbackCard } from "./feedback-card";
 import { LoadingIndicator } from "./loading-indicator";
@@ -24,7 +24,7 @@ export function FeedbackList() {
   );
 
   const { data, isPending, isError, fetchNextPage, hasNextPage, status } =
-    useInfiniteQuery<FeedbackQueryType>({
+    useInfiniteQuery<FeedbacksQueryResponse>({
       queryKey: ["feedbacks", projectId, { ...filtersAndSorters }],
       queryFn: ({ pageParam }) => {
         const cursor = (pageParam as string) ?? "";

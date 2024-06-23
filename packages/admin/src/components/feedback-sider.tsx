@@ -70,7 +70,7 @@ export function FeedbackSider() {
                       setFiltersAndSorters((prev) => ({
                         ...prev,
                         sorters: Object.fromEntries(
-                          Object.entries(prev.sorters).map(([key, value]) => [
+                          Object.entries(prev.sorters).map(([key]) => [
                             key,
                             "desc",
                           ]),
@@ -89,7 +89,7 @@ export function FeedbackSider() {
                       setFiltersAndSorters((prev) => ({
                         ...prev,
                         sorters: Object.fromEntries(
-                          Object.entries(prev.sorters).map(([key, value]) => [
+                          Object.entries(prev.sorters).map(([key]) => [
                             key,
                             "asc",
                           ]),

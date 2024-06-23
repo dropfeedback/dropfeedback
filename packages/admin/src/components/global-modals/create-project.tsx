@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { fetchers } from "@/lib/fetchers";
-import { type ProjectResponse, type ProjectVariables } from "@/types";
+import { type ProjectMutationResponse, type ProjectVariables } from "@/types";
 import { type ApiError } from "@/lib/axios";
 import { Button } from "../ui/button";
 import {
@@ -44,13 +44,13 @@ export function CreateProject() {
   };
 
   const { mutate, isPending } = useMutation<
-    ProjectResponse,
+    ProjectMutationResponse,
     ApiError,
     ProjectVariables
   >({
     mutationFn: fetchers.createProject,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    onSuccess: async (data) => {
+      await queryClient.invalidateQueries({ queryKey: ["projects"] });
       close();
       navigate(`/projects/${data.id}`);
     },

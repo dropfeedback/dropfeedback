@@ -51,8 +51,8 @@ export function FeedbackDetailHeader() {
     UpdateFeedbackStatusVariables
   >({
     mutationFn: (variables) => fetchers.updateFeedbackStatus(variables),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
         queryKey: ["feedbacks", projectId],
       });
     },

@@ -63,8 +63,8 @@ axiosInstance.interceptors.response.use(
 
       // API returns 403 and message is "Email is not verified". redirect to /email-verification
       if (status === 403 && message === "Email is not verified") {
-        if (window.location.pathname !== "/projects/email-verification") {
-          window.location.replace("/projects/email-verification");
+        if (window.location.pathname !== "/email-verification") {
+          window.location.replace("/email-verification");
         }
         return Promise.reject(error);
       }

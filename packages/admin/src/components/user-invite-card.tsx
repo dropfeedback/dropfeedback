@@ -20,8 +20,8 @@ export function UserInviteCard({ projectName, projectId }: ProjectInvite) {
   });
   const { mutate: rejectInvite } = useMutation({
     mutationFn: fetchers.rejectInvite,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-invites"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["user-invites"] });
     },
   });
 
