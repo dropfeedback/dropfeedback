@@ -9,7 +9,6 @@
     "target": "es2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
@@ -22,10 +21,11 @@
     "moduleResolution": "node",
     "jsx": "react-jsx",
     "types": ["vitest/globals"],
+    "baseUrl": "./",
     "paths": {
-      "src/*": ["./src/*"]
-    }
+      "src/*": ["./src/*"],
+    },
   },
   "exclude": ["node_modules", "build"],
-  "include": ["**/*.ts", "**/*.tsx", "**/*.js"]
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js"],
 }
