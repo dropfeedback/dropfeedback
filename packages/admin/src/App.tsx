@@ -28,6 +28,10 @@ import { PageSettings } from "@/pages/settings";
 import { PageProjectFeedbackDetail } from "@/pages/projects/feedbacks/detail";
 import { PageEmailVerification } from "@/pages/email-verification";
 
+window.addEventListener("vite:preloadError", () => {
+  window.location.reload();
+});
+
 const App = () => {
   return (
     <BrowserRouter>
