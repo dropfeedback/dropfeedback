@@ -1,7 +1,7 @@
 export type IFeedback = {
 	projectId: string;
 	content: string;
-	meta: Record<string, any>;
+	meta: object;
 	category: Categories;
 	resolution: string;
 	reportIdentifier?: string;

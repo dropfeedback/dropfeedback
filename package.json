@@ -2,16 +2,20 @@
   "private": true,
   "scripts": {
     "build": "lerna run build --include-dependencies",
-    "build:web": "lerna run build --scope web --include-dependencies",
     "dev": "lerna run dev --stream --parallel --include-dependencies",
-    "lint": "eslint --fix \"**/*.{ts,tsx}\"",
+    "lint": "eslint \"**/*.{ts,tsx}\"",
+    "lint:fix": "eslint --fix \"**/*.{ts,tsx}\"",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "lerna run test --stream",
     "test:e2e": "lerna run test:e2e --stream",
     "clean": "lerna clean --yes",
     "docker": "docker compose down && docker compose up -d",
     "version": "lerna version --no-private",
-    "publish": "lerna publish from-package --no-private"
+    "publish": "lerna publish from-package --no-private",
+    "nuke": "echo 'Removing all node_modules, builds and lockfiles'; npm run nuke:node_modules; npm run nuke:builds; npm run nuke:lockfiles;",
+    "nuke:builds": "lerna exec -- rm -rf dist && lerna exec -- rm -rf .next && lerna exec -- rm -rf build",
+    "nuke:lockfiles": "lerna exec -- rm -rf package-lock.json && lerna exec -- rm -rf yarn.lock && lerna exec -- rm -rf pnpm-lock.yaml",
+    "nuke:node_modules": "lerna clean --yes"
   },
   "devDependencies": {
     "eslint": "^8.56.0",
